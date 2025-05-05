@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('title');
             $table->string('isbn');
             $table->string('cover_page');
-            $table->string('author');
+            $table->longText('author');
             $table->longText('overview');
             $table->timestamps();
         });
