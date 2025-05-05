@@ -5,27 +5,25 @@ const banners = [AboutUsBanner];
 
 export default function AboutUs() {
     return (
-        <div className="max-w-7xl mx-auto break-words space-y-4">
+        <div className="max-w-7xl mx-auto break-words space-y-4 p-4">
             <h1 className="text-center font-semibold">
-                Zas The Digital Institute Training and Development Services (
-                {import.meta.env.VITE_APP_NAME}) offers the following services:
-                Research Consultant, Statistics and Data Analyst, Feasibility
-                Studies Consultant, Operations/Systems Analyst, Business
-                Planning, and Seminar/Training/Workshops to equip clients with
-                the necessary skills while promoting fulfillment in their
-                undertakings.
+                Zas The Digital Institute Training and Development Services
+                (DIT.ADS) offers the following services: Research Consultant,
+                Statistics and Data Analyst, Feasibility Studies Consultant,
+                Operations/Systems Analyst, Business Planning, and
+                Seminar/Training/Workshops to equip clients with the necessary
+                skills while promoting fulfillment in their undertakings.
             </h1>
             <div className="space-y-4">
                 <h1 className="font-medium text-primary">History</h1>
                 <p className="text-sm text-justify">
                     Neilson and Wilson made up the name zas Digital Institute
-                    Training and Development Services (
-                    {import.meta.env.VITE_APP_NAME}) on June 19, 2019. The
-                    concept of the business started when Neilson, the son, and
-                    Wilson, the father attended the Seminar on Research held at
-                    Davao City. The two (Neilson and Wilson) together with the
-                    support of the family members envisioned to help the
-                    students and teachers in the city of Cagayan de Oro and
+                    Training and Development Services (DIT.ADS) on June 19,
+                    2019. The concept of the business started when Neilson, the
+                    son, and Wilson, the father attended the Seminar on Research
+                    held at Davao City. The two (Neilson and Wilson) together
+                    with the support of the family members envisioned to help
+                    the students and teachers in the city of Cagayan de Oro and
                     those who find difficulty in engaging research especially
                     when a research paper required the use of descriptive and
                     inferential statistical tools. The pioneered also
@@ -49,14 +47,13 @@ export default function AboutUs() {
             <div className="space-y-4">
                 <h1 className="font-medium text-primary">Business Profile</h1>
                 <p className="text-sm text-justify">
-                    Zas DIGITAL INSTITUTE TRAINING AND DEVELOPMENT SERVICES (
-                    {import.meta.env.VITE_APP_NAME}) provides Management,
-                    Marketing, Finance, Accounting, Real Estate, Environmental
-                    Planning, Production Planning, Data Analysis, Data
-                    Interpretation, Academic and Business Research, Hospitality
-                    consultancy, and Training services. It also offers
-                    customized training sessions to students, managers, and
-                    company owners.
+                    Zas DIGITAL INSTITUTE TRAINING AND DEVELOPMENT SERVICES
+                    (DIT.ADS) provides Management, Marketing, Finance,
+                    Accounting, Real Estate, Environmental Planning, Production
+                    Planning, Data Analysis, Data Interpretation, Academic and
+                    Business Research, Hospitality consultancy, and Training
+                    services. It also offers customized training sessions to
+                    students, managers, and company owners.
                 </p>
             </div>
             <div className="grid sm:grid-cols-2 gap-4">

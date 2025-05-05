@@ -19,6 +19,12 @@ import {
 } from "@/components/ui/sheet";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+} from "@/components/ui/carousel";
+import AutoScroll from "embla-carousel-auto-scroll";
 
 const banners = [BookPublicationBanner];
 
@@ -43,46 +49,77 @@ export default function BookPublication() {
     };
 
     return (
-        <>
-            <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                {books.map((book) => (
-                    <Card key={book.isbn} className="shadow-none">
-                        <CardHeader className="p-4">
-                            <div className="flex gap-2 items-center text-primary">
-                                <Calendar size={16} />
-                                <span className="text-xs">
-                                    {formatDate(book.created_at)}
-                                </span>
-                            </div>
-                            <div className="h-[200px] w-full">
+        <div className="space-y-4 mt-4">
+            <Carousel
+                opts={{ loop: true }}
+                plugins={[
+                    AutoScroll({
+                        stopOnInteraction: false,
+                        speed: 2,
+                    }),
+                ]}
+            >
+                <CarouselContent>
+                    {[...books, ...books].map((book, index) => (
+                        <CarouselItem
+                            key={`${book.isbn}-${index}`}
+                            className="sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
+                        >
+                            <div className="h-[200px]">
                                 <img
                                     src={book.cover_page}
-                                    alt="avatar"
-                                    className="object-cover size-full"
+                                    alt="cover_page"
+                                    className="object-contain size-full"
                                 />
                             </div>
-                            <span className="text-xs">ISBN: {book.isbn}</span>
-                        </CardHeader>
-                        <CardContent className="space-y-4 px-4">
-                            <CardTitle className="break-words line-clamp-3">
-                                {book.title}
-                            </CardTitle>
-                            <CardDescription className="italic text-xs break-words line-clamp-2">
-                                {book.author}
-                            </CardDescription>
-                        </CardContent>
-                        <CardFooter className="px-4 pb-4">
-                            <Button
-                                onClick={() => handleOpen(book)}
-                                variant="ghost"
-                                size="sm"
-                            >
-                                Read more
-                                <MoveRight />
-                            </Button>
-                        </CardFooter>
-                    </Card>
-                ))}
+                        </CarouselItem>
+                    ))}
+                </CarouselContent>
+            </Carousel>
+
+            <div className="container mx-auto px-4 pb-4">
+                <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {books.map((book) => (
+                        <Card key={book.isbn} className="shadow-none">
+                            <CardHeader className="p-4">
+                                <div className="flex gap-2 items-center text-primary">
+                                    <Calendar size={16} />
+                                    <span className="text-xs">
+                                        {formatDate(book.created_at)}
+                                    </span>
+                                </div>
+                                <div className="h-[200px] w-full">
+                                    <img
+                                        src={book.cover_page}
+                                        alt="cover_page"
+                                        className="object-contain size-full"
+                                    />
+                                </div>
+                                <span className="text-xs">
+                                    ISBN: {book.isbn}
+                                </span>
+                            </CardHeader>
+                            <CardContent className="space-y-4 px-4">
+                                <CardTitle className="break-words line-clamp-3">
+                                    {book.title}
+                                </CardTitle>
+                                <CardDescription className="italic text-xs break-words line-clamp-2">
+                                    {book.author}
+                                </CardDescription>
+                            </CardContent>
+                            <CardFooter className="px-4 pb-4">
+                                <Button
+                                    onClick={() => handleOpen(book)}
+                                    variant="ghost"
+                                    size="sm"
+                                >
+                                    Read more
+                                    <MoveRight />
+                                </Button>
+                            </CardFooter>
+                        </Card>
+                    ))}
+                </div>
             </div>
 
             <Sheet open={open} onOpenChange={() => handleOpen()}>
@@ -103,7 +140,7 @@ export default function BookPublication() {
                     <p className="text-justify mt-4">{book?.overview}</p>
                 </SheetContent>
             </Sheet>
-        </>
+        </div>
     );
 }
 

@@ -136,10 +136,10 @@ export default function AboutJournal() {
             <h1>
                 All manuscripts can be submitted to (e-mail){" "}
                 <a
-                    href={`mailto:${import.meta.env.VITE_APP_EMAIL}`}
-                    className="hover:underline text-primary"
+                    href="mailto:ditadsimrj@ditadsinternationalmultidisciplinaryresearchjournal.net"
+                    className="hover:underline text-primary break-words"
                 >
-                    {import.meta.env.VITE_APP_EMAIL}
+                    ditadsimrj@ditadsinternationalmultidisciplinaryresearchjournal.net
                 </a>
             </h1>
         </div>

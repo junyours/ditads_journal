@@ -7,27 +7,39 @@ const banners = [ContactUsBanner];
 export default function ContactUs() {
     return (
         <div className="max-w-7xl mx-auto space-y-4">
-            <h1 className="text-center font-semibold">
-                METRO SQUARE R118 ZONE 2, IPONAN, CDO CITY
-            </h1>
-            <div className="grid sm:grid-cols-2 gap-4 place-items-center">
-                <div className="flex flex-col items-center gap-1">
-                    <Phone className="text-primary" />
-                    <a
-                        href={`tel:${import.meta.env.VITE_APP_PHONE}`}
-                        className="font-medium hover:underline"
-                    >
-                        {import.meta.env.VITE_APP_PHONE}
-                    </a>
-                </div>
-                <div className="flex flex-col items-center">
-                    <Mail className="text-primary" />
-                    <a
-                        href={`mailto:${import.meta.env.VITE_APP_EMAIL}`}
-                        className="font-medium hover:underline"
-                    >
-                        {import.meta.env.VITE_APP_EMAIL}
-                    </a>
+            <div className="space-y-4 p-4">
+                <h1 className="text-center font-semibold">
+                    METRO SQUARE R118 ZONE 2, IPONAN, CDO CITY
+                </h1>
+                <div className="grid sm:grid-cols-2 gap-4 place-items-center">
+                    <div className="flex flex-col items-center gap-1">
+                        <Phone className="text-primary" />
+                        <a
+                            href="tel:09171281320"
+                            className="font-medium hover:underline"
+                        >
+                            09171281320
+                        </a>
+                    </div>
+                    <div className="flex flex-col items-center">
+                        <Mail className="text-primary" />
+                        <a
+                            href="mailto:ditads@infosheet.dev"
+                            className="font-medium hover:underline"
+                        >
+                            <span className="break-all">
+                                ditads@infosheet.dev
+                            </span>
+                        </a>
+                        <a
+                            href="mailto:ditadsimrj@ditadsinternationalmultidisciplinaryresearchjournal.net"
+                            className="font-medium hover:underline"
+                        >
+                            <span className="break-all">
+                                ditadsimrj@ditadsinternationalmultidisciplinaryresearchjournal.net
+                            </span>
+                        </a>
+                    </div>
                 </div>
             </div>
             <iframe

@@ -3,12 +3,11 @@ export default function AimScope() {
         <div className="text-justify text-sm">
             <p>
                 zDitads. Magazine: Mindset | Mastery | Momentum is the
-                international, multidisciplinary publication of the{" "}
-                {import.meta.env.VITE_APP_NAME} Research Center – Philippines.
-                The magazine aims to contribute to human and societal
-                development by sharing diverse articles that inspire individuals
-                to live purposefully, strive for excellence, and honor the
-                Almighty through service to others.
+                international, multidisciplinary publication of the DIT.ADS
+                Research Center – Philippines. The magazine aims to contribute
+                to human and societal development by sharing diverse articles
+                that inspire individuals to live purposefully, strive for
+                excellence, and honor the Almighty through service to others.
             </p>
             <br />
             <p>
@@ -21,8 +20,8 @@ export default function AimScope() {
                 educational journeys, career achievements, and professional
                 recognitions. Additionally, it showcases best practices from
                 educational institutions and other sectors, and regularly
-                highlights events organized by {import.meta.env.VITE_APP_NAME}{" "}
-                and its partner institutions.
+                highlights events organized by DIT.ADS and its partner
+                institutions.
             </p>
         </div>
     );

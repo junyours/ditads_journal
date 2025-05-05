@@ -9,7 +9,7 @@ export default function WebLayout({ children, banners }) {
                 <WebHeader />
                 <main>
                     <WebBanner images={banners || []} />
-                    <div className="container mx-auto p-4">{children}</div>
+                    {children}
                 </main>
             </div>
             <WebFooter />
