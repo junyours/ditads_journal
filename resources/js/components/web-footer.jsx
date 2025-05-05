@@ -59,7 +59,7 @@ export default function WebFooter() {
                         </div>
                         <div>
                             <h2 className="mb-6 text-sm font-semibold uppercase">
-                                Legal
+                                Permits/Certificates
                             </h2>
                             <ul className="font-medium">
                                 <li className="mb-4">
@@ -67,7 +67,8 @@ export default function WebFooter() {
                                         href="#"
                                         className="hover:underline break-words"
                                     >
-                                        Privacy Policy
+                                        Business Permit Number: BP-33229 and
+                                        Certificate Number: 2019-25829
                                     </a>
                                 </li>
                                 <li>
@@ -75,7 +76,24 @@ export default function WebFooter() {
                                         href="#"
                                         className="hover:underline break-words"
                                     >
-                                        Terms &amp; Conditions
+                                        DTI Certificate of Business Registration
+                                        No. 1033992
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                        href="#"
+                                        className="hover:underline break-words"
+                                    >
+                                        Philgeps No.:201910-17877-1307663177
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                        href="#"
+                                        className="hover:underline break-words"
+                                    >
+                                        NBDB No.:7515
                                     </a>
                                 </li>
                             </ul>

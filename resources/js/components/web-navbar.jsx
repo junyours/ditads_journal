@@ -12,6 +12,10 @@ import { Button } from "./ui/button";
 
 const items = [
     {
+        title: "Home",
+        url: "/",
+    },
+    {
         title: "About Us",
         url: "/about-us",
     },

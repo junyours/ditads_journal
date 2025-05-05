@@ -7,7 +7,7 @@ export default function AboutUs() {
     return (
         <div className="max-w-7xl mx-auto break-words space-y-4">
             <h1 className="text-center font-semibold">
-                The Digital Institute Training and Development Services (
+                Zas The Digital Institute Training and Development Services (
                 {import.meta.env.VITE_APP_NAME}) offers the following services:
                 Research Consultant, Statistics and Data Analyst, Feasibility
                 Studies Consultant, Operations/Systems Analyst, Business
@@ -64,7 +64,7 @@ export default function AboutUs() {
                     <h1 className="font-medium text-primary">Vision</h1>
                     <p className="text-sm text-justify">
                         To be the leading research institute in Mindanao by
-                        2025.” To create dependable management, marketing,
+                        2030.” To create dependable management, marketing,
                         finance, accounting, hospitality consultancy business,
                         and training services that provide employment and
                         business opportunities to common and highly respected
