@@ -43,16 +43,16 @@ export default function WebFooter() {
                         </div>
                         <div>
                             <h2 className="mb-6 text-sm font-semibold uppercase">
-                                Follow us
+                                Address
                             </h2>
                             <ul className="font-medium">
                                 <li className="mb-4">
                                     <a
-                                        href={import.meta.env.VITE_APP_FACEBOOK}
-                                        target="_blank"
+                                        href="#"
                                         className="hover:underline break-words"
                                     >
-                                        Facebook
+                                        R188 Metro Square, Zone 2 Iponan,
+                                        Cagayan de Oro City
                                     </a>
                                 </li>
                             </ul>
@@ -94,6 +94,22 @@ export default function WebFooter() {
                                         className="hover:underline break-words"
                                     >
                                         NBDB No.:7515
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h2 className="mb-6 text-sm font-semibold uppercase">
+                                Follow us
+                            </h2>
+                            <ul className="font-medium">
+                                <li className="mb-4">
+                                    <a
+                                        href={import.meta.env.VITE_APP_FACEBOOK}
+                                        target="_blank"
+                                        className="hover:underline break-words"
+                                    >
+                                        Facebook
                                     </a>
                                 </li>
                             </ul>
