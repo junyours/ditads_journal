@@ -242,7 +242,7 @@ export default function BookPublication() {
                         </div>
                         <div className="space-y-1">
                             <Label>Author/s</Label>
-                            <Input
+                            <Textarea
                                 value={data.author}
                                 onChange={(e) =>
                                     setData("author", e.target.value)
