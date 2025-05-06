@@ -50,16 +50,16 @@ export default function JournalLayout() {
 
     return (
         <div className="container mx-auto p-4">
-            {contents.map((content, index) => (
-                <Accordion key={index} type="single" collapsible>
-                    <AccordionItem value={`item-${index}`}>
+            <Accordion type="single" collapsible>
+                {contents.map((content, index) => (
+                    <AccordionItem key={index} value={`item-${index}`}>
                         <AccordionTrigger>{content.title}</AccordionTrigger>
                         <AccordionContent>
                             <content.page {...(content.props || {})} />
                         </AccordionContent>
                     </AccordionItem>
-                </Accordion>
-            ))}
+                ))}
+            </Accordion>
         </div>
     );
 }
