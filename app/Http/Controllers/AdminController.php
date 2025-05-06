@@ -127,7 +127,7 @@ class AdminController extends Controller
         $request->validate([
             'title' => ['required'],
             'isbn' => ['required', 'unique:book_publications'],
-            'cover_page' => ['required', 'mimes:jpeg,jpg,png', 'max:2048'],
+            'cover_page' => ['required', 'mimes:jpeg,jpg,png', 'max:3048'],
             'author' => ['required'],
             'overview' => ['required']
         ]);
@@ -172,7 +172,7 @@ class AdminController extends Controller
 
         if ($request->hasFile('cover_page')) {
             $request->validate([
-                'cover_page' => ['mimes:jpeg,jpg,png', 'max:2048']
+                'cover_page' => ['mimes:jpeg,jpg,png', 'max:3048']
             ]);
 
             if ($book->cover_page) {
@@ -206,7 +206,7 @@ class AdminController extends Controller
     public function uploadMagazine(Request $request)
     {
         $request->validate([
-            'cover_page' => ['required', 'mimes:jpeg,jpg,png', 'max:2048'],
+            'cover_page' => ['required', 'mimes:jpeg,jpg,png', 'max:3048'],
             'volume' => ['required'],
             'issue' => ['required']
         ]);
@@ -245,7 +245,7 @@ class AdminController extends Controller
 
         if ($request->hasFile('cover_page')) {
             $request->validate([
-                'cover_page' => ['mimes:jpeg,jpg,png', 'max:2048']
+                'cover_page' => ['mimes:jpeg,jpg,png', 'max:3048']
             ]);
 
             if ($magazine->cover_page) {
