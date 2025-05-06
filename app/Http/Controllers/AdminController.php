@@ -137,7 +137,7 @@ class AdminController extends Controller
         if ($request->hasFile('cover_page')) {
             $uploadedFile = Cloudinary::uploadApi()->upload(
                 $request->file('cover_page')->getRealPath(),
-                ['folder' => 'test/books/cover_page']
+                ['folder' => 'ditads/books/cover_page']
             );
 
             $fileUrl = $uploadedFile['secure_url'];
