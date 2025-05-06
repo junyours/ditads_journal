@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BookPublication;
 use App\Models\Magazine;
+use App\Models\ResearchJournal;
 use App\Models\User;
 use Cloudinary\Api\Upload\UploadApi;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
@@ -268,7 +269,47 @@ class AdminController extends Controller
 
     public function getResearchJournal()
     {
-        return Inertia::render('web/admin/research-journal');
+        $journals = ResearchJournal::select(
+            'volume',
+            'issue',
+            'title',
+            'author',
+            'abstract',
+            'pdf_file',
+            'created_at'
+        )
+            ->get();
+
+        return Inertia::render('web/admin/research-journal', [
+            'journals' => $journals
+        ]);
+    }
+
+    public function uploadResearchJournal(Request $request)
+    {
+        $request->validate([
+            'volume' => ['required'],
+            'issue' => ['required'],
+            'title' => ['required'],
+            'author' => ['required'],
+            'abstract' => ['required'],
+            'pdf_file' => ['required', 'mimes:pdf', 'max:2048']
+        ]);
+
+        $file = $request->file('pdf_file');
+
+        $filename = Str::uuid() . '/' . $file->getClientOriginalName();
+
+        $file->storeAs('journal/pdf_files', $filename, 'public');
+
+        ResearchJournal::create([
+            'volume' => $request->volume,
+            'issue' => $request->issue,
+            'title' => $request->title,
+            'author' => $request->author,
+            'abstract' => $request->abstract,
+            'pdf_file' => $filename
+        ]);
     }
 
     public function getSchool()

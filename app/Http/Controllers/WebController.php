@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BookPublication;
 use App\Models\Magazine;
+use App\Models\ResearchJournal;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -51,8 +52,20 @@ class WebController extends Controller
             ->where('role', 'editor')
             ->get();
 
+        $journals = ResearchJournal::select(
+            'volume',
+            'issue',
+            'title',
+            'author',
+            'abstract',
+            'pdf_file',
+            'created_at'
+        )
+            ->get();
+
         return Inertia::render('web/journal/layout', [
-            'editors' => $editors
+            'editors' => $editors,
+            'journals' => $journals
         ]);
     }
 

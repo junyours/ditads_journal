@@ -17,7 +17,7 @@ import { usePage } from "@inertiajs/react";
 const banners = [JournalBanner];
 
 export default function JournalLayout() {
-    const { editors } = usePage().props;
+    const { editors, journals } = usePage().props;
 
     const contents = [
         {
@@ -44,6 +44,7 @@ export default function JournalLayout() {
         {
             title: "Research Journal",
             page: ResearchJournal,
+            props: { journals },
         },
     ];
 
