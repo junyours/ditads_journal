@@ -60,10 +60,10 @@ export default function BookPublication() {
                 ]}
             >
                 <CarouselContent>
-                    {[...books, ...books].map((book, index) => (
+                    {books.map((book, index) => (
                         <CarouselItem
                             key={`${book.isbn}-${index}`}
-                            className="sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
+                            className="sm:basis-1/2 lg:basis-1/3"
                         >
                             <div className="h-[200px]">
                                 <img
