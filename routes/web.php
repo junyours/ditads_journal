@@ -1,8 +1,15 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\WebController;
 use Illuminate\Support\Facades\Route;
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/settings/profile', [SettingController::class, 'profile']);
+    Route::get('/settings/password', [SettingController::class, 'password']);
+    Route::post('/settings/password/update', [SettingController::class, 'updatePassword']);
+});
 
 Route::middleware(['auth', 'admin', 'verified'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);

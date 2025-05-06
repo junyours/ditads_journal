@@ -5,6 +5,7 @@ import { createInertiaApp } from "@inertiajs/react";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { createRoot } from "react-dom/client";
 import { Toaster } from "./components/ui/sonner";
+import { SecurityProvider } from "./components/security-modal";
 
 createInertiaApp({
     title: () => import.meta.env.VITE_APP_NAME,
@@ -18,7 +19,9 @@ createInertiaApp({
 
         root.render(
             <>
-                <App {...props} />
+                <SecurityProvider>
+                    <App {...props} />
+                </SecurityProvider>
                 <Toaster position="top-right" />
             </>
         );

@@ -89,7 +89,11 @@ export function NavUser({ user }) {
                         </DropdownMenuLabel>
                         <DropdownMenuSeparator />
                         <DropdownMenuGroup>
-                            <DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() =>
+                                    router.visit("/settings/profile")
+                                }
+                            >
                                 <Settings />
                                 Settings
                             </DropdownMenuItem>

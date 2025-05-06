@@ -1,20 +1,27 @@
 import { AppSidebar } from "@/components/app-sidebar";
-import {
-    Breadcrumb,
-    BreadcrumbItem,
-    BreadcrumbLink,
-    BreadcrumbList,
-    BreadcrumbPage,
-    BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+import { useSecurity } from "@/components/security-modal";
 import { Separator } from "@/components/ui/separator";
 import {
     SidebarInset,
     SidebarProvider,
     SidebarTrigger,
 } from "@/components/ui/sidebar";
+import { usePage } from "@inertiajs/react";
+import { useEffect } from "react";
 
 export default function AppLayout({ children, title = "" }) {
+    const user = usePage().props.auth.user;
+    const { setOpen } = useSecurity();
+    const currentPath = usePage().url;
+
+    useEffect(() => {
+        if (user.is_default === 1 && currentPath !== "/settings/password") {
+            setOpen(true);
+        } else {
+            setOpen(false);
+        }
+    }, [user]);
+
     return (
         <SidebarProvider>
             <AppSidebar />
