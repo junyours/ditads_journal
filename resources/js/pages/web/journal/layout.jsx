@@ -13,6 +13,7 @@ import ReviewProcess from "./review-process";
 import EditorialBoard from "./editorial-board";
 import ResearchJournal from "./research-journal";
 import { usePage } from "@inertiajs/react";
+import AboutPublisher from "./about-publisher";
 
 const banners = [JournalBanner];
 
@@ -27,6 +28,10 @@ export default function JournalLayout() {
         {
             title: "Aims and Scope",
             page: AimScope,
+        },
+        {
+            title: "About the Publisher",
+            page: AboutPublisher,
         },
         {
             title: "Submission Guidelines",
