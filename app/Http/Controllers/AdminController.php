@@ -352,7 +352,9 @@ class AdminController extends Controller
             'title' => $request->title,
             'author' => $request->author,
             'abstract' => $request->abstract,
-            'published_at' => Carbon::parse($request->published_at)->format('Y-m-d'),
+            'published_at' => Carbon::parse($request->published_at)
+                ->timezone('Asia/Manila')
+                ->toDateString(),
             'country' => $request->country,
             'page_number' => $request->page_number,
         ]);
