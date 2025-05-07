@@ -13,7 +13,10 @@ class ResearchJournal extends Model
         'issue',
         'title',
         'author',
+        'country',
+        'page_number',
         'abstract',
-        'pdf_file'
+        'pdf_file',
+        'published_at'
     ];
 }

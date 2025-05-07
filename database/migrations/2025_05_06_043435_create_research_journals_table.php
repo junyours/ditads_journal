@@ -17,8 +17,11 @@ return new class extends Migration
             $table->string('issue');
             $table->string('title');
             $table->longText('author');
+            $table->string('country');
+            $table->string('page_number');
             $table->longText('abstract');
             $table->string('pdf_file');
+            $table->date('published_at');
             $table->timestamps();
         });
     }

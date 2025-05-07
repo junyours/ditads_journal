@@ -6,6 +6,7 @@ use App\Models\BookPublication;
 use App\Models\Magazine;
 use App\Models\ResearchJournal;
 use App\Models\User;
+use Carbon\Carbon;
 use Cloudinary\Api\Upload\UploadApi;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Hash;
@@ -270,13 +271,16 @@ class AdminController extends Controller
     public function getResearchJournal()
     {
         $journals = ResearchJournal::select(
+            'id',
             'volume',
             'issue',
             'title',
             'author',
             'abstract',
             'pdf_file',
-            'created_at'
+            'published_at',
+            'country',
+            'page_number'
         )
             ->get();
 
@@ -293,14 +297,24 @@ class AdminController extends Controller
             'title' => ['required'],
             'author' => ['required'],
             'abstract' => ['required'],
-            'pdf_file' => ['required', 'mimes:pdf', 'max:2048']
+            'pdf_file' => ['required', 'mimes:pdf', 'max:2048'],
+            'published_at' => ['required'],
+            'country' => ['required'],
+            'page_number' => ['required'],
         ]);
 
-        $file = $request->file('pdf_file');
+        $fileUrl = null;
 
-        $filename = Str::uuid() . '/' . $file->getClientOriginalName();
+        if ($request->hasFile('pdf_file')) {
+            $uploadedFile = Cloudinary::uploadApi()->upload(
+                $request->file('pdf_file')->getRealPath(),
+                [
+                    'folder' => 'ditads/journal/pdf_file',
+                ]
+            );
 
-        $file->storeAs('journal/pdf_files', $filename, 'public');
+            $fileUrl = $uploadedFile['secure_url'];
+        }
 
         ResearchJournal::create([
             'volume' => $request->volume,
@@ -308,7 +322,37 @@ class AdminController extends Controller
             'title' => $request->title,
             'author' => $request->author,
             'abstract' => $request->abstract,
-            'pdf_file' => $filename
+            'pdf_file' => $fileUrl,
+            'published_at' => Carbon::parse($request->published_at)->format('Y-m-d'),
+            'country' => $request->country,
+            'page_number' => $request->page_number,
+        ]);
+    }
+
+    public function updateResearchJournal(Request $request)
+    {
+        $journal = ResearchJournal::findOrFail($request->id);
+
+        $request->validate([
+            'volume' => ['required'],
+            'issue' => ['required'],
+            'title' => ['required'],
+            'author' => ['required'],
+            'abstract' => ['required'],
+            'published_at' => ['required'],
+            'country' => ['required'],
+            'page_number' => ['required'],
+        ]);
+
+        $journal->update([
+            'volume' => $request->volume,
+            'issue' => $request->issue,
+            'title' => $request->title,
+            'author' => $request->author,
+            'abstract' => $request->abstract,
+            'published_at' => Carbon::parse($request->published_at)->format('Y-m-d'),
+            'country' => $request->country,
+            'page_number' => $request->page_number,
         ]);
     }
 

@@ -28,13 +28,17 @@ export default function ResearchJournal({ journals }) {
                                 <p className="italic">{journal.author}</p>
                             </div>
                             <div className="flex max-sm:flex-col sm:gap-2 whitespace-nowrap">
+                                <h1 className="font-bold">Country:</h1>
+                                <p>{journal.country}</p>
+                            </div>
+                            <div className="flex max-sm:flex-col sm:gap-2 whitespace-nowrap">
                                 <h1 className="font-bold">Volume & Issue:</h1>
                                 <div className="flex gap-2">
                                     <p>Volume: {journal.volume},</p>
                                     <p>Issue: {journal.issue},</p>
                                     <p>
                                         {new Date(
-                                            journal.created_at
+                                            journal.published_at
                                         ).toLocaleString("en-US", {
                                             month: "long",
                                             year: "numeric",
@@ -42,20 +46,24 @@ export default function ResearchJournal({ journals }) {
                                     </p>
                                 </div>
                             </div>
+                            <div className="flex max-sm:flex-col sm:gap-2 whitespace-nowrap">
+                                <h1 className="font-bold">Page No.:</h1>
+                                <p>{journal.page_number}</p>
+                            </div>
                             <div className="flex flex-col">
                                 <h1 className="font-bold">Abstract:</h1>
                                 <p
                                     className="text-justify whitespace-pre-line sm:px-2"
                                     dangerouslySetInnerHTML={{
                                         __html: journal.abstract.replace(
-                                            /(Aims:|Methodology:|Study Design:|Results?:|Conclusion:)/g,
+                                            /(Aims:|Methodology:|Study Design:|Results?:|Conclusion:|Keywords?:)/g,
                                             '<span class="font-semibold">$1</span>'
                                         ),
                                     }}
                                 />
                             </div>
                             <a
-                                href={`/storage/journal/pdf_files/${journal.pdf_file}`}
+                                href={journal.pdf_file}
                                 target="_blank"
                                 className="w-fit"
                             >

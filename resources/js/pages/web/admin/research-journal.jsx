@@ -25,6 +25,9 @@ import InputError from "@/components/input-error";
 import { Textarea } from "@/components/ui/textarea";
 import Pdf from "../../../../../public/images/pdf.png";
 import { toast } from "sonner";
+import DatePicker from "@/components/date-picker";
+import Combobox from "@/components/combobox";
+import countries from "../../../../../public/files/countries.json";
 
 export default function ResearchJournal() {
     const { journals } = usePage().props;
@@ -45,10 +48,32 @@ export default function ResearchJournal() {
             author: "",
             abstract: "",
             pdf_file: null,
+            published_at: null,
+            country: "",
+            page_number: "",
         });
 
-    const handleOpen = () => {
+    const handleOpen = (journal = null) => {
+        if (journal) {
+            setEditData(true);
+            setData({
+                id: journal.id,
+                volume: journal.volume,
+                issue: journal.issue,
+                title: journal.title,
+                author: journal.author,
+                abstract: journal.abstract,
+                pdf_file: journal.pdf_file,
+                published_at: journal.published_at,
+                country: journal.country,
+                page_number: journal.page_number,
+            });
+        } else {
+            setEditData(false);
+            reset();
+        }
         setOpen(!open);
+        clearErrors();
     };
 
     const handleUpload = () => {
@@ -57,6 +82,16 @@ export default function ResearchJournal() {
             onSuccess: () => {
                 handleOpen();
                 toast.success("Journal uploaded successfully.");
+            },
+        });
+    };
+
+    const handleUpdate = () => {
+        clearErrors();
+        post("/admin/web/research-journal/update", {
+            onSuccess: () => {
+                handleOpen();
+                toast.success("Journal updated successfully.");
             },
         });
     };
@@ -79,11 +114,11 @@ export default function ResearchJournal() {
             ),
         },
         {
-            accessorKey: "created_at",
+            accessorKey: "published_at",
             header: "Published at",
             cell: ({ row }) => {
                 const journal = row.original;
-                return formatDate(journal.created_at);
+                return formatDate(journal.published_at);
             },
         },
         {
@@ -140,12 +175,22 @@ export default function ResearchJournal() {
                     </SheetHeader>
                     <div className="flex-1 space-y-4 overflow-y-auto px-2 pb-2">
                         <div className="space-y-1">
-                            <div className=" flex items-center space-x-4 rounded-md border p-4">
+                            <div className="flex items-center space-x-4 rounded-md border p-4">
                                 <img src={Pdf} className="size-8" />
                                 <div className="flex-1 space-y-1">
-                                    {data.pdf_file ? (
+                                    {typeof data.pdf_file === "string" ? (
                                         <>
-                                            <p className="text-sm font-medium leading-none line-clamp-1">
+                                            <a
+                                                href={data.pdf_file}
+                                                target="_blank"
+                                                className="text-sm text-blue-600 hover:underline"
+                                            >
+                                                View PDF
+                                            </a>
+                                        </>
+                                    ) : data.pdf_file ? (
+                                        <>
+                                            <p className="text-sm font-medium line-clamp-1">
                                                 {data.pdf_file.name}
                                             </p>
                                             <p className="text-xs text-muted-foreground">
@@ -153,22 +198,24 @@ export default function ResearchJournal() {
                                             </p>
                                         </>
                                     ) : (
-                                        <p className="text-sm font-medium leading-none">
+                                        <p className="text-sm font-medium">
                                             No file chosen
                                         </p>
                                     )}
                                 </div>
-                                <Button
-                                    onClick={() =>
-                                        document
-                                            .getElementById("pdf_file")
-                                            .click()
-                                    }
-                                    size="icon"
-                                    variant="ghost"
-                                >
-                                    <Upload />
-                                </Button>
+                                {!editData && (
+                                    <Button
+                                        onClick={() =>
+                                            document
+                                                .getElementById("pdf_file")
+                                                .click()
+                                        }
+                                        size="icon"
+                                        variant="ghost"
+                                    >
+                                        <Upload />
+                                    </Button>
+                                )}
                             </div>
                             <input
                                 accept=".pdf"
@@ -182,34 +229,67 @@ export default function ResearchJournal() {
                             <InputError message={errors.pdf_file} />
                         </div>
                         <div className="space-y-1">
-                            <Label>Volume</Label>
-                            <Input
-                                value={data.volume}
-                                onChange={(e) =>
-                                    setData("volume", e.target.value)
-                                }
-                            />
-                            <InputError message={errors.volume} />
-                        </div>
-                        <div className="space-y-1">
-                            <Label>Issue</Label>
-                            <Input
-                                value={data.issue}
-                                onChange={(e) =>
-                                    setData("issue", e.target.value)
-                                }
-                            />
-                            <InputError message={errors.issue} />
-                        </div>
-                        <div className="space-y-1">
                             <Label>Title</Label>
-                            <Input
+                            <Textarea
                                 value={data.title}
                                 onChange={(e) =>
                                     setData("title", e.target.value)
                                 }
                             />
                             <InputError message={errors.title} />
+                        </div>
+                        <div className="space-y-1">
+                            <Label>Country</Label>
+                            <Combobox
+                                options={countries}
+                                value={data.country}
+                                setValue={(val) => setData("country", val)}
+                            />
+                            <InputError message={errors.country} />
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-1">
+                                <Label>Volume</Label>
+                                <Input
+                                    type="number"
+                                    value={data.volume}
+                                    onChange={(e) =>
+                                        setData("volume", e.target.value)
+                                    }
+                                />
+                                <InputError message={errors.volume} />
+                            </div>
+                            <div className="space-y-1">
+                                <Label>Issue</Label>
+                                <Input
+                                    type="number"
+                                    value={data.issue}
+                                    onChange={(e) =>
+                                        setData("issue", e.target.value)
+                                    }
+                                />
+                                <InputError message={errors.issue} />
+                            </div>
+                        </div>
+                        <div className="space-y-1">
+                            <Label>Published at</Label>
+                            <DatePicker
+                                date={data.published_at}
+                                setDate={(date) =>
+                                    setData("published_at", date)
+                                }
+                            />
+                            <InputError message={errors.published_at} />
+                        </div>
+                        <div className="space-y-1">
+                            <Label>Page number</Label>
+                            <Input
+                                value={data.page_number}
+                                onChange={(e) =>
+                                    setData("page_number", e.target.value)
+                                }
+                            />
+                            <InputError message={errors.page_number} />
                         </div>
                         <div className="space-y-1">
                             <Label>Author/s</Label>
@@ -240,7 +320,10 @@ export default function ResearchJournal() {
                         >
                             Cancel
                         </Button>
-                        <Button onClick={handleUpload} disabled={processing}>
+                        <Button
+                            onClick={editData ? handleUpdate : handleUpload}
+                            disabled={processing}
+                        >
                             {editData ? "Update" : "Save"}
                         </Button>
                     </SheetFooter>

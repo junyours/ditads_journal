@@ -59,7 +59,9 @@ class WebController extends Controller
             'author',
             'abstract',
             'pdf_file',
-            'created_at'
+            'published_at',
+            'country',
+            'page_number'
         )
             ->get();
 
