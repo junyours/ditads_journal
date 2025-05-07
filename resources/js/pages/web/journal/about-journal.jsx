@@ -3,21 +3,30 @@ export default function AboutJournal() {
         <div className="space-y-4">
             <div className="space-y-2">
                 <h1 className="font-medium text-primary">
-                    Publication Frequency: Quarterly
+                    Publication Frequency
                 </h1>
                 <p className="text-sm text-justify">
-                    All manuscripts need to be written in English. A4
-                    manuscripts should not include more than 30 single-spaced A4
-                    pages (font size 12, 1" margins), and they should not have
-                    more than 10 tables, figures, or pictures. The references
-                    page would be included in the total number of pages.
-                    Generally, manuscripts are printed in black and white,
-                    however, authors can opt colored printed content subject to
-                    additional charges. If the manuscripts are accepted for
-                    publication, they must be made available in Microsoft Word
-                    format.
+                    The publication frequency of this journal is quarterly,
+                    meaning that new issues are released four times a year. This
+                    schedule ensures regular dissemination of research findings,
+                    trends, and advancements in the field, while providing ample
+                    time for peer review, editorial processes, and content
+                    development. By adhering to a quarterly cycle, the journal
+                    maintains a balance between timely publication and
+                    high-quality, well-curated.
                 </p>
             </div>
+            <p className="text-sm text-justify">
+                All manuscripts need to be written in English. A4 manuscripts
+                should not include more than 30 single-spaced A4 pages (font
+                size 12, 1" margins), and they should not have more than 10
+                tables, figures, or pictures. The references page would be
+                included in the total number of pages. Generally, manuscripts
+                are printed in black and white, however, authors can opt colored
+                printed content subject to additional charges. If the
+                manuscripts are accepted for publication, they must be made
+                available in Microsoft Word format.
+            </p>
             <div className="space-y-2">
                 <h1 className="font-medium text-primary">1. Title</h1>
                 <p className="text-sm text-justify">
