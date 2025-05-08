@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\BookPublication;
 use App\Models\Magazine;
 use App\Models\ResearchJournal;
+use App\Models\School;
 use App\Models\User;
 use Carbon\Carbon;
 use Cloudinary\Api\Upload\UploadApi;
@@ -362,6 +363,39 @@ class AdminController extends Controller
 
     public function getSchool()
     {
-        return Inertia::render('others/school');
+        $schools = School::select('id', 'name', 'abbreviation')
+            ->get();
+
+        return Inertia::render('others/school', [
+            'schools' => $schools
+        ]);
+    }
+
+    public function addSchool(Request $request)
+    {
+        $request->validate([
+            'name' => ['required'],
+            'abbreviation' => ['required'],
+        ]);
+
+        School::create([
+            'name' => $request->name,
+            'abbreviation' => $request->abbreviation,
+        ]);
+    }
+
+    public function updateSchool(Request $request)
+    {
+        $school = School::findOrFail($request->id);
+
+        $request->validate([
+            'name' => ['required'],
+            'abbreviation' => ['required'],
+        ]);
+
+        $school->update([
+            'name' => $request->name,
+            'abbreviation' => $request->abbreviation,
+        ]);
     }
 }

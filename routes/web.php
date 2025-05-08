@@ -33,6 +33,8 @@ Route::middleware(['auth', 'admin', 'verified'])->group(function () {
     Route::post('/admin/web/research-journal/update', [AdminController::class, 'updateResearchJournal']);
 
     Route::get('/admin/others/school', [AdminController::class, 'getSchool']);
+    Route::post('/admin/others/school/add', [AdminController::class, 'addSchool']);
+    Route::post('/admin/others/school/update', [AdminController::class, 'updateSchool']);
 });
 
 Route::get('/', [WebController::class, 'welcome']);
