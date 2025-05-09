@@ -25,7 +25,7 @@ export function DataTable({
     button = { title: "", icon, onClick },
 }) {
     const [sorting, setSorting] = useState([]);
-    const [columnFilters, setColumnFilters] = useState([]);
+    const [globalFilter, setGlobalFilter] = useState("");
 
     const table = useReactTable({
         data,
@@ -34,11 +34,11 @@ export function DataTable({
         getPaginationRowModel: getPaginationRowModel(),
         onSortingChange: setSorting,
         getSortedRowModel: getSortedRowModel(),
-        onColumnFiltersChange: setColumnFilters,
+        onGlobalFilterChange: setGlobalFilter,
         getFilteredRowModel: getFilteredRowModel(),
         state: {
             sorting,
-            columnFilters,
+            globalFilter,
         },
     });
 
@@ -46,13 +46,9 @@ export function DataTable({
         <div className="space-y-4">
             <div className="flex items-center justify-between gap-4">
                 <Input
-                    placeholder="Search for name"
-                    value={table.getColumn("name")?.getFilterValue() ?? ""}
-                    onChange={(event) =>
-                        table
-                            .getColumn("name")
-                            ?.setFilterValue(event.target.value)
-                    }
+                    placeholder="Search"
+                    value={globalFilter}
+                    onChange={(e) => setGlobalFilter(e.target.value)}
                     className="max-w-sm"
                 />
                 {button && (

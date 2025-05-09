@@ -40,6 +40,7 @@ const items = [
 export default function WebNavbar({ open, onOpenChange }) {
     const isMobile = useIsMobile();
     const user = usePage().props.auth.user;
+    const currentPath = window.location.pathname;
 
     return (
         <div className="flex justify-center">
@@ -57,7 +58,11 @@ export default function WebNavbar({ open, onOpenChange }) {
                                         }}
                                         key={item.title}
                                         variant="ghost"
-                                        className="justify-center w-full"
+                                        className={`justify-center w-full ${
+                                            currentPath === item.url
+                                                ? "text-primary"
+                                                : ""
+                                        }`}
                                     >
                                         {item.title}
                                     </Button>
@@ -106,7 +111,12 @@ export default function WebNavbar({ open, onOpenChange }) {
                             <NavigationMenuItem key={item.title}>
                                 <NavigationMenuLink
                                     asChild
-                                    className={navigationMenuTriggerStyle()}
+                                    className={navigationMenuTriggerStyle({
+                                        className:
+                                            currentPath === item.url
+                                                ? "text-primary hover:text-primary focus:text-primary"
+                                                : "",
+                                    })}
                                 >
                                     <Link href={item.url}>{item.title}</Link>
                                 </NavigationMenuLink>
