@@ -7,6 +7,7 @@ use App\Models\Magazine;
 use App\Models\ResearchJournal;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 use Inertia\Inertia;
 
 class WebController extends Controller
@@ -69,6 +70,22 @@ class WebController extends Controller
             'editors' => $editors,
             'journals' => $journals
         ]);
+    }
+
+    public function viewJournal($file_name)
+    {
+        $cloudinaryUrl = 'https://res.cloudinary.com/dzzyp9crw/image/upload/v1746585817/ditads/journal/pdf_file/' . $file_name;
+
+        $response = Http::get($cloudinaryUrl);
+
+        if ($response->ok()) {
+            return response($response->body(), 200, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename=' . $file_name,
+            ]);
+        }
+
+        abort(404);
     }
 
     public function contactUs()
