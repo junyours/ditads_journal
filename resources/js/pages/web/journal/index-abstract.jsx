@@ -31,7 +31,7 @@ const images = [
     { name: WorldCat, link: "https://search.worldcat.org/" },
 ];
 
-export default function IndexService() {
+export default function IndexAbstract() {
     return (
         <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
             {images.map((image, index) => (

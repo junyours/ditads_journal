@@ -14,7 +14,7 @@ import EditorialBoard from "./editorial-board";
 import ResearchJournal from "./research-journal";
 import { usePage } from "@inertiajs/react";
 import AboutPublisher from "./about-publisher";
-import IndexService from "./index-service";
+import IndexAbstract from "./index-abstract";
 
 const banners = [JournalBanner];
 
@@ -43,8 +43,8 @@ export default function JournalLayout() {
             page: ReviewProcess,
         },
         {
-            title: "Indexing Service and Archiving",
-            page: IndexService
+            title: "Indexing and Abstracting",
+            page: IndexAbstract,
         },
         {
             title: "Editorial Board",
