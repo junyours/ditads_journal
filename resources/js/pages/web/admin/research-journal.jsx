@@ -28,35 +28,60 @@ import { toast } from "sonner";
 import DatePicker from "@/components/date-picker";
 import Combobox from "@/components/combobox";
 import countries from "../../../../../public/files/countries.json";
+import {
+    AlertDialog,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
+const baseYear = 2025;
+const now = new Date();
+const currentYear = now.getFullYear();
+const currentMonth = now.getMonth() + 1;
+
+const calculatedVolume = currentYear - baseYear + 1;
+
+let calculatedIssue = 1;
+if (currentMonth >= 4 && currentMonth <= 6) {
+    calculatedIssue = 2;
+} else if (currentMonth >= 7 && currentMonth <= 9) {
+    calculatedIssue = 3;
+} else if (currentMonth >= 10 && currentMonth <= 12) {
+    calculatedIssue = 4;
+}
 
 export default function ResearchJournal() {
     const { journals } = usePage().props;
     const [open, setOpen] = useState(false);
     const [editData, setEditData] = useState(false);
+    const [initialData, setInitialData] = useState(null);
+    const [showConfirmClose, setShowConfirmClose] = useState(false);
     const formatDate = (date) =>
         new Date(date).toLocaleDateString("en-US", {
             year: "numeric",
             month: "long",
             day: "numeric",
         });
-    const { data, setData, post, processing, errors, reset, clearErrors } =
-        useForm({
-            id: null,
-            volume: "",
-            issue: "",
-            title: "",
-            author: "",
-            abstract: "",
-            pdf_file: null,
-            published_at: null,
-            country: "",
-            page_number: "",
-        });
+    const { data, setData, post, processing, errors, clearErrors } = useForm({
+        id: null,
+        volume: calculatedVolume,
+        issue: calculatedIssue,
+        title: "",
+        author: "",
+        abstract: "",
+        pdf_file: null,
+        published_at: null,
+        country: "",
+        page_number: "",
+    });
 
     const handleOpen = (journal = null) => {
         if (journal) {
             setEditData(true);
-            setData({
+            const journalData = {
                 id: journal.id,
                 volume: journal.volume,
                 issue: journal.issue,
@@ -67,13 +92,32 @@ export default function ResearchJournal() {
                 published_at: journal.published_at,
                 country: journal.country,
                 page_number: journal.page_number,
-            });
+            };
+            setData(journalData);
+            setInitialData(journalData);
         } else {
             setEditData(false);
-            reset();
+            const newData = {
+                id: null,
+                volume: calculatedVolume,
+                issue: calculatedIssue,
+                title: "",
+                author: "",
+                abstract: "",
+                pdf_file: null,
+                published_at: null,
+                country: "",
+                page_number: "",
+            };
+            setData(newData);
+            setInitialData(newData);
         }
         setOpen(!open);
         clearErrors();
+    };
+
+    const hasUnsavedChanges = () => {
+        return JSON.stringify(data) !== JSON.stringify(initialData);
     };
 
     const handleUpload = () => {
@@ -161,9 +205,13 @@ export default function ResearchJournal() {
 
             <Sheet
                 open={open}
-                onOpenChange={() => {
+                onOpenChange={(val) => {
                     if (!processing) {
-                        handleOpen();
+                        if (!val && hasUnsavedChanges()) {
+                            setShowConfirmClose(true);
+                        } else {
+                            setOpen(val);
+                        }
                     }
                 }}
             >
@@ -181,7 +229,7 @@ export default function ResearchJournal() {
                                     {typeof data.pdf_file === "string" ? (
                                         <>
                                             <a
-                                                href={data.pdf_file}
+                                                href={`/IMRJ/${data.pdf_file}`}
                                                 target="_blank"
                                                 className="text-sm text-blue-600 hover:underline"
                                             >
@@ -203,19 +251,17 @@ export default function ResearchJournal() {
                                         </p>
                                     )}
                                 </div>
-                                {!editData && (
-                                    <Button
-                                        onClick={() =>
-                                            document
-                                                .getElementById("pdf_file")
-                                                .click()
-                                        }
-                                        size="icon"
-                                        variant="ghost"
-                                    >
-                                        <Upload />
-                                    </Button>
-                                )}
+                                <Button
+                                    onClick={() =>
+                                        document
+                                            .getElementById("pdf_file")
+                                            .click()
+                                    }
+                                    size="icon"
+                                    variant="ghost"
+                                >
+                                    <Upload />
+                                </Button>
                             </div>
                             <input
                                 accept=".pdf"
@@ -314,7 +360,15 @@ export default function ResearchJournal() {
                     </div>
                     <SheetFooter>
                         <Button
-                            onClick={() => handleOpen()}
+                            onClick={() => {
+                                if (!processing) {
+                                    if (hasUnsavedChanges()) {
+                                        setShowConfirmClose(true);
+                                    } else {
+                                        setOpen(false);
+                                    }
+                                }
+                            }}
                             variant="ghost"
                             disabled={processing}
                         >
@@ -329,6 +383,35 @@ export default function ResearchJournal() {
                     </SheetFooter>
                 </SheetContent>
             </Sheet>
+
+            <AlertDialog open={showConfirmClose}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Discard changes?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            You have unsaved changes. Are you sure you want to
+                            cancel?
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <Button
+                            variant="ghost"
+                            onClick={() => setShowConfirmClose(false)}
+                        >
+                            No, keep editing
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            onClick={() => {
+                                setShowConfirmClose(false);
+                                setOpen(false);
+                            }}
+                        >
+                            Yes, discard
+                        </Button>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </>
     );
 }

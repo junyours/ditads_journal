@@ -1,104 +1,84 @@
-import AuthLayout from "@/layouts/auth-layout";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Link, router } from "@inertiajs/react";
-import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Link, useForm } from "@inertiajs/react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import InputError from "@/components/input-error";
+import AuthLayout from "@/layouts/auth-layout";
 import InputPassword from "@/components/input-password";
-import { toast } from "sonner";
 
-const formSchema = z.object({
-    email: z
-        .string()
-        .min(1, { message: "Email is required" })
-        .email({ message: "Invalid email" }),
-    password: z.string().min(1, { message: "Password is required" }),
-});
-
-export default function SignIn() {
-    const [processing, setProcessing] = useState(false);
-
-    const form = useForm({
-        resolver: zodResolver(formSchema),
-        defaultValues: {
-            email: "",
-            password: "",
-        },
+export default function Login({ status, canResetPassword }) {
+    const { data, setData, post, processing, errors, clearErrors } = useForm({
+        email: "",
+        password: "",
+        remember: false,
     });
 
-    const onSubmit = (values) => {
-        setProcessing(true);
-        router.post("/sign-in", values, {
-            onError: (error) => {
-                toast.error(error.email);
-            },
-            onFinish: () => {
-                setProcessing(false);
-            },
-        });
+    const handleLogin = (e) => {
+        e.preventDefault();
+        clearErrors();
+        post(route("login"));
     };
 
     return (
-        <Form {...form}>
-            <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="flex flex-col gap-6"
-            >
-                <FormField
-                    control={form.control}
-                    name="email"
-                    render={({ field }) => (
-                        <FormItem>
-                            <FormLabel>Email</FormLabel>
-                            <FormControl>
-                                <Input {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
+        <AuthLayout title="Welcome back" description="Sign in to your account">
+            <form onSubmit={handleLogin} className="space-y-6">
+                <div className="space-y-4">
+                    {status && (
+                        <Alert className="border-primary">
+                            <AlertDescription className="text-primary">
+                                {status}
+                            </AlertDescription>
+                        </Alert>
                     )}
-                />
-                <FormField
-                    control={form.control}
-                    name="password"
-                    render={({ field }) => (
-                        <FormItem>
-                            <div className="flex justify-between items-end">
-                                <FormLabel>Password</FormLabel>
-                                <Link
-                                    href="/forgot-password"
-                                    className="text-sm font-medium hover:underline"
-                                    tabIndex={-1}
-                                >
-                                    Forgot password?
-                                </Link>
-                            </div>
-                            <FormControl>
-                                <InputPassword {...field} />
-                            </FormControl>
-                            <FormMessage />
-                        </FormItem>
-                    )}
-                />
-                <Button disabled={processing}>Sign in</Button>
+                    <div className="space-y-1">
+                        <Label>Email address</Label>
+                        <Input
+                            type="email"
+                            value={data.email}
+                            onChange={(e) => setData("email", e.target.value)}
+                        />
+                        <InputError message={errors.email} />
+                    </div>
+                    <div className="space-y-1">
+                        <Label>Password</Label>
+                        <InputPassword
+                            value={data.password}
+                            onChange={(e) =>
+                                setData("password", e.target.value)
+                            }
+                        />
+                        <InputError message={errors.password} />
+                    </div>
+                    <div className="flex items-center justify-between gap-4">
+                        <div className="flex items-center space-x-2">
+                            <Checkbox
+                                checked={data.remember}
+                                onCheckedChange={(val) =>
+                                    setData("remember", val)
+                                }
+                                id="remember"
+                            />
+                            <Label htmlFor="remember">Remember me</Label>
+                        </div>
+                        {canResetPassword && (
+                            <Link href={route("password.request")}>
+                                <Label>Forgot password?</Label>
+                            </Link>
+                        )}
+                    </div>
+                </div>
+                <Button className="w-full" disabled={processing}>
+                    Log in
+                </Button>
+                <div className="text-muted-foreground text-center text-sm">
+                    Don't have an account?{" "}
+                    <Link href={route("register")} className="hover:underline">
+                        Register
+                    </Link>
+                </div>
             </form>
-        </Form>
+        </AuthLayout>
     );
 }
-
-SignIn.layout = (page) => (
-    <AuthLayout
-        children={page}
-        title="Welcome back"
-        description="Sign in to your account"
-    />
-);

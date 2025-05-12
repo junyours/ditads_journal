@@ -123,7 +123,10 @@ export default function BookPublication() {
             </div>
 
             <Sheet open={open} onOpenChange={() => handleOpen()}>
-                <SheetContent side="bottom" className="h-full overflow-y-auto">
+                <SheetContent
+                    side="bottom"
+                    className="h-full overflow-y-auto text-sm"
+                >
                     <SheetHeader>
                         <div className="flex gap-2 items-center text-primary">
                             <Calendar size={16} />
@@ -135,7 +138,7 @@ export default function BookPublication() {
                         <SheetDescription className="italic">
                             {book?.author}
                         </SheetDescription>
-                        <span className="text-xs">ISBN: {book?.isbn}</span>
+                        <span>ISBN: {book?.isbn}</span>
                     </SheetHeader>
                     <p className="text-justify mt-4">{book?.overview}</p>
                 </SheetContent>

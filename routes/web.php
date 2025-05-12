@@ -42,7 +42,7 @@ Route::get('/about-us', [WebController::class, 'aboutUs']);
 Route::get('/book-publication', [WebController::class, 'bookPublication']);
 Route::get('/magazine', [WebController::class, 'magazine']);
 Route::get('/research-journal', [WebController::class, 'researchJournal']);
-Route::get('/journal/{file_name}', [WebController::class, 'viewJournal']);
+Route::get('/IMRJ/{path}', [WebController::class, 'viewJournal'])->where('path', '.*');
 Route::get('/contact-us', [WebController::class, 'contactUs']);
 
 require __DIR__ . '/auth.php';

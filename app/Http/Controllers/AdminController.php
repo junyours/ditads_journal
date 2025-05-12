@@ -304,17 +304,17 @@ class AdminController extends Controller
             'page_number' => ['required'],
         ]);
 
-        $fileUrl = null;
-
         if ($request->hasFile('pdf_file')) {
             $uploadedFile = Cloudinary::uploadApi()->upload(
                 $request->file('pdf_file')->getRealPath(),
                 [
                     'folder' => 'ditads/journal/pdf_file',
+                    'resource_type' => 'raw',
+                    'format' => 'pdf',
                 ]
             );
 
-            $fileUrl = $uploadedFile['secure_url'];
+            $fileName = 'v' . $uploadedFile['version'] . '/' . $uploadedFile['public_id'];
         }
 
         ResearchJournal::create([
@@ -323,7 +323,7 @@ class AdminController extends Controller
             'title' => $request->title,
             'author' => $request->author,
             'abstract' => $request->abstract,
-            'pdf_file' => $fileUrl,
+            'pdf_file' => $fileName,
             'published_at' => Carbon::parse($request->published_at)
                 ->timezone('Asia/Manila')
                 ->toDateString(),
@@ -347,6 +347,31 @@ class AdminController extends Controller
             'page_number' => ['required'],
         ]);
 
+        if ($request->hasFile('pdf_file')) {
+            $request->validate([
+                'pdf_file' => ['mimes:pdf', 'max:2048'],
+            ]);
+            if ($journal->pdf_file) {
+                $publicId = explode('/', $journal->pdf_file, 2)[1];
+                Cloudinary::uploadApi()->destroy($publicId, [
+                    'resource_type' => 'raw',
+                ]);
+            }
+
+            $uploadedFile = Cloudinary::uploadApi()->upload(
+                $request->file('pdf_file')->getRealPath(),
+                [
+                    'folder' => 'ditads/journal/pdf_file',
+                    'resource_type' => 'raw',
+                    'format' => 'pdf',
+                ]
+            );
+
+            $fileName = 'v' . $uploadedFile['version'] . '/' . $uploadedFile['public_id'];
+
+            $journal->pdf_file = $fileName;
+        }
+
         $journal->update([
             'volume' => $request->volume,
             'issue' => $request->issue,
@@ -358,6 +383,7 @@ class AdminController extends Controller
                 ->toDateString(),
             'country' => $request->country,
             'page_number' => $request->page_number,
+            'pdf_file' => $journal->pdf_file,
         ]);
     }
 

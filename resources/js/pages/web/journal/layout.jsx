@@ -15,6 +15,7 @@ import ResearchJournal from "./research-journal";
 import { usePage } from "@inertiajs/react";
 import AboutPublisher from "./about-publisher";
 import IndexAbstract from "./index-abstract";
+import Download from "./download";
 
 const banners = [JournalBanner];
 
@@ -37,6 +38,10 @@ export default function JournalLayout() {
         {
             title: "Submission Guidelines",
             page: SubmissionGuideline,
+        },
+        {
+            title: "Downloads",
+            page: Download,
         },
         {
             title: "Review Process",

@@ -33,18 +33,18 @@ const images = [
 
 export default function IndexAbstract() {
     return (
-        <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
+        <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {images.map((image, index) => (
                 <a
                     key={index}
                     href={image.link}
                     target="_blank"
-                    className="size-full border p-2 flex items-center"
+                    className="size-full border p-4 flex items-center"
                 >
                     <img
                         src={image.name}
                         alt="indexing"
-                        className="object-contain"
+                        className="object-contain "
                     />
                 </a>
             ))}

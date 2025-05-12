@@ -25,14 +25,14 @@ export default function DatePicker({ date, setDate }) {
                     {date && format(date, "PPP")}
                 </Button>
             </PopoverTrigger>
-            <PopoverContent
-                className="w-auto p-0"
-                align="start"
-            >
+            <PopoverContent className="w-auto p-0" align="start">
                 <Calendar
                     mode="single"
                     selected={date}
                     onSelect={setDate}
+                    disabled={(date) =>
+                        date > new Date() || date < new Date("1900-01-01")
+                    }
                     initialFocus
                 />
             </PopoverContent>

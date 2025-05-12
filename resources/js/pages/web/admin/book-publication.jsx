@@ -24,46 +24,70 @@ import { Input } from "@/components/ui/input";
 import InputError from "@/components/input-error";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
+import {
+    AlertDialog,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function BookPublication() {
     const { books } = usePage().props;
     const [open, setOpen] = useState(false);
     const [previewCoverPage, setPreviewCoverPage] = useState(null);
     const [editData, setEditData] = useState(false);
+    const [initialData, setInitialData] = useState(null);
+    const [showConfirmClose, setShowConfirmClose] = useState(false);
     const formatDate = (date) =>
         new Date(date).toLocaleDateString("en-US", {
             year: "numeric",
             month: "long",
             day: "numeric",
         });
-    const { data, setData, post, processing, errors, reset, clearErrors } =
-        useForm({
-            id: null,
-            title: "",
-            isbn: "",
-            cover_page: null,
-            author: "",
-            overview: "",
-        });
+    const { data, setData, post, processing, errors, clearErrors } = useForm({
+        id: null,
+        title: "",
+        isbn: "",
+        cover_page: null,
+        author: "",
+        overview: "",
+    });
 
     const handleOpen = (book = null) => {
         if (book) {
             setEditData(true);
-            setData({
+            const bookData = {
                 id: book.id,
                 title: book.title,
                 isbn: book.isbn,
                 author: book.author,
                 overview: book.overview,
-            });
+            };
+            setData(bookData);
+            setInitialData(bookData);
             setPreviewCoverPage(book.cover_page);
         } else {
             setEditData(false);
-            reset();
+            const newData = {
+                id: null,
+                title: "",
+                isbn: "",
+                cover_page: null,
+                author: "",
+                overview: "",
+            };
+            setData(newData);
+            setInitialData(newData);
             setPreviewCoverPage(null);
         }
         setOpen(!open);
         clearErrors();
+    };
+
+    const hasUnsavedChanges = () => {
+        return JSON.stringify(data) !== JSON.stringify(initialData);
     };
 
     const handleUpload = () => {
@@ -160,9 +184,13 @@ export default function BookPublication() {
 
             <Sheet
                 open={open}
-                onOpenChange={() => {
+                onOpenChange={(val) => {
                     if (!processing) {
-                        handleOpen();
+                        if (!val && hasUnsavedChanges()) {
+                            setShowConfirmClose(true);
+                        } else {
+                            setOpen(val);
+                        }
                     }
                 }}
             >
@@ -263,7 +291,15 @@ export default function BookPublication() {
                     </div>
                     <SheetFooter>
                         <Button
-                            onClick={() => handleOpen()}
+                            onClick={() => {
+                                if (!processing) {
+                                    if (hasUnsavedChanges()) {
+                                        setShowConfirmClose(true);
+                                    } else {
+                                        setOpen(false);
+                                    }
+                                }
+                            }}
                             variant="ghost"
                             disabled={processing}
                         >
@@ -278,6 +314,35 @@ export default function BookPublication() {
                     </SheetFooter>
                 </SheetContent>
             </Sheet>
+
+            <AlertDialog open={showConfirmClose}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Discard changes?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            You have unsaved changes. Are you sure you want to
+                            cancel?
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <Button
+                            variant="ghost"
+                            onClick={() => setShowConfirmClose(false)}
+                        >
+                            No, keep editing
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            onClick={() => {
+                                setShowConfirmClose(false);
+                                setOpen(false);
+                            }}
+                        >
+                            Yes, discard
+                        </Button>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </>
     );
 }

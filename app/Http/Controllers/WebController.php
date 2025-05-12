@@ -72,16 +72,14 @@ class WebController extends Controller
         ]);
     }
 
-    public function viewJournal($file_name)
+    public function viewJournal($path)
     {
-        $cloudinaryUrl = 'https://res.cloudinary.com/dzzyp9crw/image/upload/v1746585817/ditads/journal/pdf_file/' . $file_name;
-
+        $cloudinaryUrl = 'https://res.cloudinary.com/dzzyp9crw/raw/upload/' . $path;
         $response = Http::get($cloudinaryUrl);
 
         if ($response->ok()) {
             return response($response->body(), 200, [
                 'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'inline; filename=' . $file_name,
             ]);
         }
 
