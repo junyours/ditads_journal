@@ -41,6 +41,9 @@ export default function ResearchJournal({ journals }) {
                                 <p className="italic text-xs">
                                     {journal.author}
                                 </p>
+                                <p className="text-xs font-medium">
+                                    Country: {journal.country}
+                                </p>
                                 <div className="flex gap-1 text-xs font-medium">
                                     <p>Volume: {journal.volume},</p>
                                     <p>Issue: {journal.issue},</p>
@@ -106,6 +109,10 @@ export default function ResearchJournal({ journals }) {
                     <div className="sm:flex gap-1">
                         <p className="font-bold">Author/s:</p>
                         <p>{journal?.author}</p>
+                    </div>
+                    <div className="sm:flex gap-1">
+                        <p className="font-bold">Country:</p>
+                        <p>{journal?.country}</p>
                     </div>
                     <div className="sm:flex gap-1">
                         <p className="font-bold">Volume & Issue:</p>
