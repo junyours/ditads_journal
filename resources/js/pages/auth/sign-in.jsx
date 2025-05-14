@@ -75,7 +75,7 @@ export default function Login({ status, canResetPassword }) {
                 <div className="text-muted-foreground text-center text-sm">
                     Don't have an account?{" "}
                     <Link href={route("register")} className="hover:underline">
-                        Register
+                        Sign up
                     </Link>
                 </div>
             </form>
