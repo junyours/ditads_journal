@@ -3,16 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader } from "@/components/ui/sheet";
 import { useState } from "react";
 import { MoveRight } from "lucide-react";
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card";
 
-export default function ResearchJournal({ journals }) {
+export default function ResearchJournal({ journals, archives }) {
     const [open, setOpen] = useState(false);
     const [journal, setJournal] = useState(null);
 
@@ -87,11 +79,17 @@ export default function ResearchJournal({ journals }) {
                 </div>
                 <div className="w-full max-w-[300px] border h-fit p-4 rounded-lg space-y-4 hidden lg:block">
                     <h1 className="font-semibold">Quarterly Archive</h1>
-                    <div className="space-y-2">
-                        <Button className="text-wrap text-xs w-full">
-                            Volume 1, Issue 1 (Current Issue) (January - March
-                            2025)
-                        </Button>
+                    <div>
+                        {archives.map((archive, index) => (
+                            <Button
+                                key={index}
+                                size="sm"
+                                variant="ghost"
+                                className="text-wrap w-full"
+                            >
+                                {archive.label}
+                            </Button>
+                        ))}
                     </div>
                 </div>
             </div>

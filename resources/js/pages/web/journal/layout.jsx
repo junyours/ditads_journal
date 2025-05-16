@@ -20,7 +20,7 @@ import Download from "./download";
 const banners = [JournalBanner];
 
 export default function JournalLayout() {
-    const { editors, journals } = usePage().props;
+    const { editors, journals, archives } = usePage().props;
 
     const contents = [
         {
@@ -59,7 +59,7 @@ export default function JournalLayout() {
         {
             title: "Research Journal",
             page: ResearchJournal,
-            props: { journals },
+            props: { journals, archives },
         },
     ];
 

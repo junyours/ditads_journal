@@ -64,11 +64,37 @@ class WebController extends Controller
             'country',
             'page_number'
         )
+            ->latest('published_at')
             ->get();
+
+        $archives = ResearchJournal::select('volume', 'issue', 'published_at')
+            ->orderByDesc('volume')
+            ->orderByDesc('issue')
+            ->distinct()
+            ->get()
+            ->groupBy(function ($item) {
+                return "Volume {$item->volume}, Issue {$item->issue}";
+            })->map(function ($group) {
+                $first = $group->first();
+                $month = date('n', strtotime($first->published_at));
+                $year = date('Y', strtotime($first->published_at));
+                $range = match ((int) ceil($month / 3)) {
+                    1 => "January - March",
+                    2 => "April - June",
+                    3 => "July - September",
+                    4 => "October - December",
+                };
+                return [
+                    'volume' => $first->volume,
+                    'issue' => $first->issue,
+                    'label' => "Volume {$first->volume}, Issue {$first->issue} ({$range} {$year})"
+                ];
+            })->values();
 
         return Inertia::render('web/journal/layout', [
             'editors' => $editors,
-            'journals' => $journals
+            'journals' => $journals,
+            'archives' => $archives
         ]);
     }
 
