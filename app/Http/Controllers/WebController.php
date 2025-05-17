@@ -47,8 +47,23 @@ class WebController extends Controller
         ]);
     }
 
-    public function researchJournal()
+    public function researchJournal(Request $request)
     {
+        $volume = $request->query('volume');
+        $issue = $request->query('issue');
+
+        if (!$volume || !$issue) {
+            $latest = ResearchJournal::select('volume', 'issue')
+                ->orderByDesc('volume')
+                ->orderByDesc('issue')
+                ->first();
+
+            if ($latest) {
+                $volume = $latest->volume;
+                $issue = $latest->issue;
+            }
+        }
+
         $editors = User::select('name', 'position', 'email', 'department', 'avatar')
             ->where('role', 'editor')
             ->get();
@@ -64,6 +79,8 @@ class WebController extends Controller
             'country',
             'page_number'
         )
+            ->where('volume', $volume)
+            ->where('issue', $issue)
             ->latest('published_at')
             ->get();
 
@@ -94,7 +111,9 @@ class WebController extends Controller
         return Inertia::render('web/journal/layout', [
             'editors' => $editors,
             'journals' => $journals,
-            'archives' => $archives
+            'archives' => $archives,
+            'activeVolume' => $volume,
+            'activeIssue' => $issue,
         ]);
     }
 

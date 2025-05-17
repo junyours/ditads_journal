@@ -3,10 +3,20 @@ import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader } from "@/components/ui/sheet";
 import { useState } from "react";
 import { MoveRight } from "lucide-react";
+import { router } from "@inertiajs/react";
 
-export default function ResearchJournal({ journals, archives }) {
+export default function ResearchJournal({
+    journals,
+    archives,
+    activeVolume,
+    activeIssue,
+}) {
     const [open, setOpen] = useState(false);
     const [journal, setJournal] = useState(null);
+    const [selectedArchive, setSelectedArchive] = useState({
+        volume: activeVolume,
+        issue: activeIssue,
+    });
 
     const handleOpen = (journal = null) => {
         if (journal) {
@@ -17,12 +27,25 @@ export default function ResearchJournal({ journals, archives }) {
         setOpen(!open);
     };
 
+    const handleArchiveClick = (volume, issue) => {
+        setSelectedArchive({ volume, issue });
+        router.get(
+            "/research-journal",
+            { volume, issue },
+            {
+                preserveScroll: true,
+                preserveState: true,
+            }
+        );
+    };
+
     return (
         <>
             <div className="flex gap-4">
                 <div className="space-y-4 flex-1">
                     <h1 className="font-semibold">
-                        Volume 1, Issue 1 (Current Issue) (January - March 2025)
+                        Volume {selectedArchive.volume}, Issue{" "}
+                        {selectedArchive.issue}
                     </h1>
                     {journals.map((journal, index) => (
                         <div key={index} className="space-y-2 sm:px-2">
@@ -82,10 +105,16 @@ export default function ResearchJournal({ journals, archives }) {
                     <div>
                         {archives.map((archive, index) => (
                             <Button
+                                onClick={() =>
+                                    handleArchiveClick(
+                                        archive.volume,
+                                        archive.issue
+                                    )
+                                }
                                 key={index}
                                 size="sm"
                                 variant="ghost"
-                                className="text-wrap w-full"
+                                className="justify-start text-wrap w-full"
                             >
                                 {archive.label}
                             </Button>
