@@ -281,7 +281,8 @@ class AdminController extends Controller
             'pdf_file',
             'published_at',
             'country',
-            'page_number'
+            'page_number',
+            'tracking_number'
         )
             ->get();
 
@@ -302,6 +303,7 @@ class AdminController extends Controller
             'published_at' => ['required'],
             'country' => ['required'],
             'page_number' => ['required'],
+            'tracking_number' => ['required', 'unique:research_journals']
         ]);
 
         if ($request->hasFile('pdf_file')) {
@@ -329,6 +331,7 @@ class AdminController extends Controller
                 ->toDateString(),
             'country' => $request->country,
             'page_number' => $request->page_number,
+            'tracking_number' => $request->tracking_number
         ]);
     }
 
@@ -345,6 +348,7 @@ class AdminController extends Controller
             'published_at' => ['required'],
             'country' => ['required'],
             'page_number' => ['required'],
+            'tracking_number' => ['required', 'unique:research_journals,tracking_number,' . $request->id]
         ]);
 
         if ($request->hasFile('pdf_file')) {
@@ -384,6 +388,7 @@ class AdminController extends Controller
             'country' => $request->country,
             'page_number' => $request->page_number,
             'pdf_file' => $journal->pdf_file,
+            'tracking_number' => $request->tracking_number
         ]);
     }
 

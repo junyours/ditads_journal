@@ -76,6 +76,7 @@ export default function ResearchJournal() {
         published_at: null,
         country: "",
         page_number: "",
+        tracking_number: "",
     });
 
     const handleOpen = (journal = null) => {
@@ -92,6 +93,7 @@ export default function ResearchJournal() {
                 published_at: journal.published_at,
                 country: journal.country,
                 page_number: journal.page_number,
+                tracking_number: journal.tracking_number,
             };
             setData(journalData);
             setInitialData(journalData);
@@ -108,6 +110,7 @@ export default function ResearchJournal() {
                 published_at: null,
                 country: "",
                 page_number: "",
+                tracking_number: "",
             };
             setData(newData);
             setInitialData(newData);
@@ -336,6 +339,16 @@ export default function ResearchJournal() {
                                 }
                             />
                             <InputError message={errors.page_number} />
+                        </div>
+                        <div className="space-y-1">
+                            <Label>Tracking number</Label>
+                            <Input
+                                value={data.tracking_number}
+                                onChange={(e) =>
+                                    setData("tracking_number", e.target.value)
+                                }
+                            />
+                            <InputError message={errors.tracking_number} />
                         </div>
                         <div className="space-y-1">
                             <Label>Author/s</Label>
