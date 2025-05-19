@@ -15,7 +15,7 @@ export default function EditorialBoard({ editors }) {
                         <img
                             src={editor.avatar ? editor.avatar : User}
                             alt="avatar"
-                            className="object-cover size-full rounded-t-lg"
+                            className="object-contain size-full rounded-t-lg"
                         />
                     </div>
                     <CardHeader className="space-y-4">
