@@ -8,7 +8,6 @@ import { useState } from "react";
 export default function WebHeader() {
     const [open, setOpen] = useState(false);
     const user = usePage().props.auth.user;
-    const currentPath = window.location.pathname;
 
     return (
         <header className="h-16 container mx-auto grid grid-cols-3 items-center px-4">
@@ -29,7 +28,7 @@ export default function WebHeader() {
                     <Menu />
                 </Button>
             </div>
-            {/* <div className="hidden md:flex justify-end">
+            <div className="hidden md:flex justify-end">
                 {user ? (
                     <Link href={`/${user.role}/dashboard`}>
                         <Button>Dashboard</Button>
@@ -39,10 +38,12 @@ export default function WebHeader() {
                         <Link href="/sign-in">
                             <Button variant="outline">Sign in</Button>
                         </Link>
-                        <Button>Get started</Button>
+                        <Link href="/sign-up">
+                            <Button>Join us</Button>
+                        </Link>
                     </div>
                 )}
-            </div> */}
+            </div>
         </header>
     );
 }

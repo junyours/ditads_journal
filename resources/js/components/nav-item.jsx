@@ -22,6 +22,7 @@ import {
     ChevronRight,
     FileText,
     LayoutDashboard,
+    NotebookPen,
     School,
     Users,
 } from "lucide-react";
@@ -81,8 +82,8 @@ const navAdmin = [
         name: "Others",
         items: [
             {
-                title: "School",
-                url: "/admin/others/school",
+                title: "Schools",
+                url: "/admin/others/schools",
                 icon: School,
                 collapse: false,
             },
@@ -92,7 +93,30 @@ const navAdmin = [
 
 const navEditor = [];
 
-const navAuthor = [];
+const navAuthor = [
+    {
+        name: "Main",
+        items: [
+            {
+                title: "Dashboard",
+                url: "/author/dashboard",
+                icon: LayoutDashboard,
+                collapse: false,
+            },
+        ],
+    },
+    {
+        name: "Journal",
+        items: [
+            {
+                title: "Requests",
+                url: "/author/journal/requests",
+                icon: NotebookPen,
+                collapse: false,
+            },
+        ],
+    },
+];
 
 export function NavItem({ user }) {
     const { setOpenMobile } = useSidebar();

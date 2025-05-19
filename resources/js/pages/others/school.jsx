@@ -1,4 +1,3 @@
-import { ColumnHeader } from "@/components/table/column-header";
 import AppLayout from "@/layouts/app-layout";
 import {
     DropdownMenu,
@@ -20,7 +19,6 @@ import {
 } from "@/components/ui/sheet";
 import { useForm, usePage } from "@inertiajs/react";
 import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import InputError from "@/components/input-error";
 
@@ -32,7 +30,6 @@ export default function School() {
         useForm({
             id: null,
             name: "",
-            abbreviation: "",
         });
 
     const handleOpen = (school = null) => {
@@ -41,7 +38,6 @@ export default function School() {
             setData({
                 id: school.id,
                 name: school.name,
-                abbreviation: school.abbreviation,
             });
         } else {
             setEditData(false);
@@ -53,7 +49,7 @@ export default function School() {
 
     const handleAdd = () => {
         clearErrors();
-        post("/admin/others/school/add", {
+        post("/admin/others/schools/add", {
             onSuccess: () => {
                 handleOpen();
             },
@@ -62,7 +58,7 @@ export default function School() {
 
     const handleUpdate = () => {
         clearErrors();
-        post("/admin/others/school/update", {
+        post("/admin/others/schools/update", {
             onSuccess: () => {
                 handleOpen();
             },
@@ -73,12 +69,6 @@ export default function School() {
         {
             accessorKey: "name",
             header: "Name",
-        },
-        {
-            accessorKey: "abbreviation",
-            header: ({ column }) => (
-                <ColumnHeader column={column} title="Abbreviation" />
-            ),
         },
         {
             id: "actions",
@@ -143,16 +133,6 @@ export default function School() {
                                 }
                             />
                             <InputError message={errors.name} />
-                        </div>
-                        <div className="space-y-1">
-                            <Label>Abbreviation</Label>
-                            <Input
-                                value={data.abbreviation}
-                                onChange={(e) =>
-                                    setData("abbreviation", e.target.value)
-                                }
-                            />
-                            <InputError message={errors.abbreviation} />
                         </div>
                     </div>
                     <SheetFooter>

@@ -5,13 +5,13 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\WebController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/settings/profile', [SettingController::class, 'profile']);
     Route::get('/settings/password', [SettingController::class, 'password']);
     Route::post('/settings/password/update', [SettingController::class, 'updatePassword']);
 });
 
-Route::middleware(['auth', 'admin', 'verified'])->group(function () {
+Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
 
     Route::get('/admin/users/editor', [AdminController::class, 'getEditor']);
@@ -32,9 +32,9 @@ Route::middleware(['auth', 'admin', 'verified'])->group(function () {
     Route::post('/admin/web/research-journal/upload', [AdminController::class, 'uploadResearchJournal']);
     Route::post('/admin/web/research-journal/update', [AdminController::class, 'updateResearchJournal']);
 
-    Route::get('/admin/others/school', [AdminController::class, 'getSchool']);
-    Route::post('/admin/others/school/add', [AdminController::class, 'addSchool']);
-    Route::post('/admin/others/school/update', [AdminController::class, 'updateSchool']);
+    Route::get('/admin/others/schools', [AdminController::class, 'getSchool']);
+    Route::post('/admin/others/schools/add', [AdminController::class, 'addSchool']);
+    Route::post('/admin/others/schools/update', [AdminController::class, 'updateSchool']);
 });
 
 Route::get('/', [WebController::class, 'welcome']);

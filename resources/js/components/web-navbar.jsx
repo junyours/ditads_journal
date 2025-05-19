@@ -68,7 +68,7 @@ export default function WebNavbar({ open, onOpenChange }) {
                                     </Button>
                                 </Link>
                             ))}
-                            {/* {user ? (
+                            {user ? (
                                 <div className="grid">
                                     <Link href={`/${user.role}/dashboard`}>
                                         <Button
@@ -98,9 +98,20 @@ export default function WebNavbar({ open, onOpenChange }) {
                                             Sign in
                                         </Button>
                                     </Link>
-                                    <Button>Get started</Button>
+                                    <Link href="/sign-up">
+                                        <Button
+                                            onClick={() => {
+                                                if (isMobile) {
+                                                    onOpenChange(false);
+                                                }
+                                            }}
+                                            className="w-full"
+                                        >
+                                            Join us
+                                        </Button>
+                                    </Link>
                                 </div>
-                            )} */}
+                            )}
                         </div>
                     </DrawerContent>
                 </Drawer>

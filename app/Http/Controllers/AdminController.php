@@ -13,7 +13,6 @@ use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Hash;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Storage;
 use Str;
 
 class AdminController extends Controller
@@ -394,7 +393,7 @@ class AdminController extends Controller
 
     public function getSchool()
     {
-        $schools = School::select('id', 'name', 'abbreviation')
+        $schools = School::select('id', 'name')
             ->get();
 
         return Inertia::render('others/school', [
@@ -406,12 +405,10 @@ class AdminController extends Controller
     {
         $request->validate([
             'name' => ['required'],
-            'abbreviation' => ['required'],
         ]);
 
         School::create([
             'name' => $request->name,
-            'abbreviation' => $request->abbreviation,
         ]);
     }
 
@@ -421,12 +418,10 @@ class AdminController extends Controller
 
         $request->validate([
             'name' => ['required'],
-            'abbreviation' => ['required'],
         ]);
 
         $school->update([
             'name' => $request->name,
-            'abbreviation' => $request->abbreviation,
         ]);
     }
 }

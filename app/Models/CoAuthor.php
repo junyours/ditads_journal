@@ -4,11 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class School extends Model
+class CoAuthor extends Model
 {
-    protected $table = 'schools';
+    protected $table = 'co_authors';
 
     protected $fillable = [
+        'request_id',
+        'school_id',
         'name'
     ];
 }
