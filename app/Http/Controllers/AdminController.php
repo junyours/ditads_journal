@@ -42,7 +42,7 @@ class AdminController extends Controller
             'department' => ['required'],
         ]);
 
-        $password = Str::random(8);
+        // $password = Str::random(8);
 
         $fileUrl = null;
 
@@ -59,7 +59,7 @@ class AdminController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'email_verified_at' => now(),
-            'password' => Hash::make($password),
+            'password' => Hash::make('P@ssw0rd'),
             'is_default' => 1,
             'role' => 'editor',
             'position' => $request->position,

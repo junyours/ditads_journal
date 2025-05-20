@@ -32,6 +32,7 @@ import {
 import { useForm, usePage } from "@inertiajs/react";
 import InputError from "@/components/input-error";
 import { toast } from "sonner";
+import { Textarea } from "@/components/ui/textarea";
 
 const positions = ["Editor in chief", "Associate editor", "Editorial board"];
 
@@ -265,7 +266,7 @@ export default function Editor() {
                         </div>
                         <div className="space-y-1">
                             <Label>Department</Label>
-                            <Input
+                            <Textarea
                                 value={data.department}
                                 onChange={(e) =>
                                     setData("department", e.target.value)

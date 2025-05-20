@@ -17,7 +17,7 @@ class AuthorController extends Controller
         return Inertia::render('journal/author/dashboard');
     }
 
-    public function request(Request $request)
+    public function getRequest(Request $request)
     {
         $schools = School::select('id', 'name')
             ->get();
@@ -47,9 +47,11 @@ class AuthorController extends Controller
         $request->validate([
             'journal_file' => ['required', 'file'],
             'school' => ['required'],
-            'co_authors' => ['array'],
             'co_authors.*.name' => ['required'],
             'co_authors.*.school' => ['required'],
+        ], [
+            'co_authors.*.name.required' => 'The co-author name field is required.',
+            'co_authors.*.school.required' => 'The co-author school field is required.',
         ]);
 
         $req = \App\Models\Request::create([

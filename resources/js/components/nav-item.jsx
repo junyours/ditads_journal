@@ -20,6 +20,7 @@ import {
     BookOpenText,
     BookText,
     ChevronRight,
+    FileInput,
     FileText,
     LayoutDashboard,
     NotebookPen,
@@ -52,6 +53,17 @@ const navAdmin = [
                         url: "/author",
                     },
                 ],
+            },
+        ],
+    },
+    {
+        name: "Journal",
+        items: [
+            {
+                title: "Requests",
+                url: "/admin/journal/requests",
+                icon: NotebookPen,
+                collapse: false,
             },
         ],
     },
@@ -91,7 +103,30 @@ const navAdmin = [
     },
 ];
 
-const navEditor = [];
+const navEditor = [
+    {
+        name: "Main",
+        items: [
+            {
+                title: "Dashboard",
+                url: "/editor/dashboard",
+                icon: LayoutDashboard,
+                collapse: false,
+            },
+        ],
+    },
+    {
+        name: "Journal",
+        items: [
+            {
+                title: "Assign Documents",
+                url: "/editor/journal/assign-documents",
+                icon: FileInput,
+                collapse: false,
+            },
+        ],
+    },
+];
 
 const navAuthor = [
     {
@@ -109,7 +144,7 @@ const navAuthor = [
         name: "Journal",
         items: [
             {
-                title: "Requests",
+                title: "My Requests",
                 url: "/author/journal/requests",
                 icon: NotebookPen,
                 collapse: false,

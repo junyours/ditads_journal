@@ -15,6 +15,11 @@ class Request extends Model
         'status'
     ];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'author_id');
+    }
+
     public function school()
     {
         return $this->belongsTo(School::class, 'school_id');

@@ -11,6 +11,7 @@ import Semantic from "../../../../../public/images/index-services/Semantic-Schol
 import Web from "../../../../../public/images/index-services/web-of-science.png";
 import WorldCat from "../../../../../public/images/index-services/WorldCat.png";
 import Zenodo from "../../../../../public/images/index-services/Zenodo.png";
+import Crossref from "../../../../../public/images/index-services/Crossref.png";
 
 const images = [
     { name: Mendeley, link: "https://doaj.org/" },
@@ -29,6 +30,7 @@ const images = [
         link: "https://clarivate.com/academia-government/scientific-and-academic-research/research-discovery-and-referencing/web-of-science/",
     },
     { name: WorldCat, link: "https://search.worldcat.org/" },
+    { name: Crossref, link: "https://www.crossref.org/" },
 ];
 
 export default function IndexAbstract() {

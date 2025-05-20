@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -21,22 +20,12 @@ return new class extends Migration
             $table->boolean('is_default')->default(0);
             $table->string('role')->default('author');
             $table->string('position')->nullable();
-            $table->string('department')->nullable();
+            $table->longText('department')->nullable();
             $table->string('avatar')->nullable();
             $table->string('status')->default('active');
             $table->rememberToken();
             $table->timestamps();
         });
-
-        User::create([
-            'name' => 'Admin',
-            'email' => 'admin@gmail.com',
-            'email_verified_at' => now(),
-            'password' => Hash::make('password'),
-            'is_default' => 1,
-            'role' => 'admin',
-            'status' => 'active',
-        ]);
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();

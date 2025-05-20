@@ -5,13 +5,13 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\WebController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/settings/profile', [SettingController::class, 'profile']);
     Route::get('/settings/password', [SettingController::class, 'password']);
     Route::post('/settings/password/update', [SettingController::class, 'updatePassword']);
 });
 
-Route::middleware(['auth', 'admin'])->group(function () {
+Route::middleware(['auth', 'admin', 'verified'])->group(function () {
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
 
     Route::get('/admin/users/editor', [AdminController::class, 'getEditor']);

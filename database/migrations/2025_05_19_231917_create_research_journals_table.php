@@ -22,6 +22,7 @@ return new class extends Migration
             $table->longText('abstract');
             $table->string('pdf_file');
             $table->date('published_at');
+            $table->string('tracking_number');
             $table->timestamps();
         });
     }

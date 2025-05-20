@@ -26,7 +26,6 @@ import { Textarea } from "@/components/ui/textarea";
 import Pdf from "../../../../../public/images/pdf.png";
 import { toast } from "sonner";
 import DatePicker from "@/components/date-picker";
-import Combobox from "@/components/combobox";
 import countries from "../../../../../public/files/countries.json";
 import {
     AlertDialog,
@@ -36,6 +35,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import CountryCombobox from "@/components/country-combobox";
 
 const baseYear = 2025;
 const now = new Date();
@@ -289,7 +289,7 @@ export default function ResearchJournal() {
                         </div>
                         <div className="space-y-1">
                             <Label>Country</Label>
-                            <Combobox
+                            <CountryCombobox
                                 options={countries}
                                 value={data.country}
                                 setValue={(val) => setData("country", val)}

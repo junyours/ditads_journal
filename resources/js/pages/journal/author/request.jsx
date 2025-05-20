@@ -8,7 +8,12 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { FilePenLine, MoreHorizontal, Plus, Upload } from "lucide-react";
+import {
+    FileText,
+    MoreHorizontal,
+    Plus,
+    Upload,
+} from "lucide-react";
 import { DataTable } from "@/components/table/data-table";
 import {
     Sheet,
@@ -22,9 +27,15 @@ import { Label } from "@/components/ui/label";
 import InputError from "@/components/input-error";
 import Word from "../../../../../public/images/word.png";
 import { Input } from "@/components/ui/input";
-import SchoolCombobox from "@/components/school-combobox";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
+import {
+    Dialog,
+    DialogContent,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import Combobox from "@/components/combobox";
 
 export default function Request() {
     const { schools, journals } = usePage().props;
@@ -36,11 +47,20 @@ export default function Request() {
             co_authors: [],
         });
     const [open, setOpen] = useState(false);
-
-    console.log(journals);
+    const [isOpen, setIsOpen] = useState(false);
+    const [request, setRequest] = useState(null);
 
     const handleOpen = () => {
         setOpen(!open);
+    };
+
+    const handleIsOpen = (request = null) => {
+        if (request) {
+            setRequest(request);
+        } else {
+            setRequest(null);
+        }
+        setIsOpen(!isOpen);
     };
 
     const handleSubmit = () => {
@@ -91,9 +111,11 @@ export default function Request() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem>
-                                <FilePenLine />
-                                Edit
+                            <DropdownMenuItem
+                                onClick={() => handleIsOpen(request)}
+                            >
+                                <FileText />
+                                View
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -174,7 +196,7 @@ export default function Request() {
                                 <InputError message={errors.journal_file} />
                             </div>
                             <div className="space-y-1">
-                                <SchoolCombobox
+                                <Combobox
                                     options={schools}
                                     value={data.school}
                                     setValue={(val) => setData("school", val)}
@@ -241,7 +263,7 @@ export default function Request() {
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <SchoolCombobox
+                                        <Combobox
                                             options={schools}
                                             value={coAuthor.school}
                                             setValue={(val) => {
@@ -278,6 +300,19 @@ export default function Request() {
                     </SheetFooter>
                 </SheetContent>
             </Sheet>
+
+            <Dialog open={isOpen} onOpenChange={() => handleIsOpen()}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>
+                            Request Number: {request?.request_number}
+                        </DialogTitle>
+                    </DialogHeader>
+                    <div>
+                        
+                    </div>
+                </DialogContent>
+            </Dialog>
         </>
     );
 }

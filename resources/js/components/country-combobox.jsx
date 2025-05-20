@@ -16,7 +16,7 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover";
 
-export default function SchoolCombobox({ value, setValue, options }) {
+export default function CountryCombobox({ value, setValue, options }) {
     const [open, setOpen] = React.useState(false);
 
     return (
@@ -28,9 +28,7 @@ export default function SchoolCombobox({ value, setValue, options }) {
                     aria-expanded={open}
                     className="w-full justify-between"
                 >
-                    {value
-                        ? options.find((option) => option.id === value)?.name
-                        : "Select School"}
+                    {value ? value : "Select"}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
@@ -42,22 +40,22 @@ export default function SchoolCombobox({ value, setValue, options }) {
                         <CommandGroup>
                             {options.map((option) => (
                                 <CommandItem
-                                    key={option.id}
-                                    value={option.id}
-                                    onSelect={() => {
-                                        setValue(option.id);
+                                    key={option}
+                                    value={option}
+                                    onSelect={(currentValue) => {
+                                        setValue(currentValue);
                                         setOpen(false);
                                     }}
                                 >
                                     <Check
                                         className={cn(
                                             "mr-2 h-4 w-4",
-                                            value === option.id
+                                            value === option
                                                 ? "opacity-100"
                                                 : "opacity-0"
                                         )}
                                     />
-                                    {option.name}
+                                    {option}
                                 </CommandItem>
                             ))}
                         </CommandGroup>

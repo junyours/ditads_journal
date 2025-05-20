@@ -28,7 +28,9 @@ export default function Combobox({ value, setValue, options }) {
                     aria-expanded={open}
                     className="w-full justify-between"
                 >
-                    {value ? value : "Select"}
+                    {value
+                        ? options.find((option) => option.id === value)?.name
+                        : "Select"}
                     <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                 </Button>
             </PopoverTrigger>
@@ -40,22 +42,22 @@ export default function Combobox({ value, setValue, options }) {
                         <CommandGroup>
                             {options.map((option) => (
                                 <CommandItem
-                                    key={option}
-                                    value={option}
-                                    onSelect={(currentValue) => {
-                                        setValue(currentValue);
+                                    key={option.id}
+                                    value={option.id}
+                                    onSelect={() => {
+                                        setValue(option.id);
                                         setOpen(false);
                                     }}
                                 >
                                     <Check
                                         className={cn(
                                             "mr-2 h-4 w-4",
-                                            value === option
+                                            value === option.id
                                                 ? "opacity-100"
                                                 : "opacity-0"
                                         )}
                                     />
-                                    {option}
+                                    {option.name}
                                 </CommandItem>
                             ))}
                         </CommandGroup>
