@@ -140,7 +140,9 @@ export default function BookPublication() {
                         </SheetDescription>
                         <span>ISBN: {book?.isbn}</span>
                     </SheetHeader>
-                    <p className="text-justify mt-4">{book?.overview}</p>
+                    <p className="text-justify whitespace-pre-line mt-4">
+                        {book?.overview}
+                    </p>
                 </SheetContent>
             </Sheet>
         </div>
