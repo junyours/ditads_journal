@@ -33,6 +33,14 @@ import { useForm, usePage } from "@inertiajs/react";
 import InputError from "@/components/input-error";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
+import {
+    AlertDialog,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const positions = ["Editor in chief", "Associate editor", "Editorial board"];
 
@@ -41,26 +49,29 @@ export default function Editor() {
     const [open, setOpen] = useState(false);
     const [previewAvatar, setPreviewAvatar] = useState(null);
     const [editData, setEditData] = useState(false);
-    const { data, setData, post, processing, errors, reset, clearErrors } =
-        useForm({
-            id: null,
-            name: "",
-            email: "",
-            position: "",
-            department: "",
-            avatar: null,
-        });
+    const [initialData, setInitialData] = useState(null);
+    const [showConfirmClose, setShowConfirmClose] = useState(false);
+    const { data, setData, post, processing, errors, clearErrors } = useForm({
+        id: null,
+        name: "",
+        email: "",
+        position: "",
+        department: "",
+        avatar: null,
+    });
 
     const handleOpen = (editor = null) => {
         if (editor) {
             setEditData(true);
-            setData({
+            const editorData = {
                 id: editor.id,
                 name: editor.name,
                 email: editor.email,
                 position: editor.position,
                 department: editor.department,
-            });
+            };
+            setData(editorData);
+            setInitialData(editorData);
             if (editor.avatar) {
                 setPreviewAvatar(editor.avatar);
             } else {
@@ -68,11 +79,23 @@ export default function Editor() {
             }
         } else {
             setEditData(false);
-            reset();
+            const newData = {
+                id: null,
+                name: "",
+                email: "",
+                position: "",
+                department: "",
+            };
+            setData(newData);
+            setInitialData(newData);
             setPreviewAvatar(null);
         }
         setOpen(!open);
         clearErrors();
+    };
+
+    const hasUnsavedChanges = () => {
+        return JSON.stringify(data) !== JSON.stringify(initialData);
     };
 
     const handleAdd = () => {
@@ -169,9 +192,13 @@ export default function Editor() {
 
             <Sheet
                 open={open}
-                onOpenChange={() => {
+                onOpenChange={(val) => {
                     if (!processing) {
-                        handleOpen();
+                        if (!val && hasUnsavedChanges()) {
+                            setShowConfirmClose(true);
+                        } else {
+                            setOpen(val);
+                        }
                     }
                 }}
             >
@@ -288,7 +315,15 @@ export default function Editor() {
                     </div>
                     <SheetFooter>
                         <Button
-                            onClick={() => handleOpen()}
+                            onClick={() => {
+                                if (!processing) {
+                                    if (hasUnsavedChanges()) {
+                                        setShowConfirmClose(true);
+                                    } else {
+                                        setOpen(false);
+                                    }
+                                }
+                            }}
                             variant="ghost"
                             disabled={processing}
                         >
@@ -303,6 +338,35 @@ export default function Editor() {
                     </SheetFooter>
                 </SheetContent>
             </Sheet>
+
+            <AlertDialog open={showConfirmClose}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Discard changes?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            You have unsaved changes. Are you sure you want to
+                            cancel?
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <Button
+                            variant="ghost"
+                            onClick={() => setShowConfirmClose(false)}
+                        >
+                            No, keep editing
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            onClick={() => {
+                                setShowConfirmClose(false);
+                                setOpen(false);
+                            }}
+                        >
+                            Yes, discard
+                        </Button>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </>
     );
 }
