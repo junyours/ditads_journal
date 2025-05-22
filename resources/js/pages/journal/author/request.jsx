@@ -1,5 +1,5 @@
 import AppLayout from "@/layouts/app-layout";
-import { useForm, usePage } from "@inertiajs/react";
+import { router, useForm, usePage } from "@inertiajs/react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -8,12 +8,7 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import {
-    FileText,
-    MoreHorizontal,
-    Plus,
-    Upload,
-} from "lucide-react";
+import { Download, FileText, MoreHorizontal, Plus, Upload } from "lucide-react";
 import { DataTable } from "@/components/table/data-table";
 import {
     Sheet,
@@ -36,16 +31,29 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import Combobox from "@/components/combobox";
+import {
+    Accordion,
+    AccordionContent,
+    AccordionItem,
+    AccordionTrigger,
+} from "@/components/ui/accordion";
 
 export default function Request() {
     const { schools, journals } = usePage().props;
-    const { data, setData, post, processing, errors, reset, clearErrors } =
-        useForm({
-            id: null,
-            journal_file: null,
-            school: null,
-            co_authors: [],
+    const formatDateTime = (date) =>
+        new Date(date).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+            hour: "numeric",
+            minute: "numeric",
         });
+    const { data, setData, post, processing, errors, clearErrors } = useForm({
+        id: null,
+        journal_file: null,
+        school: null,
+        co_authors: [],
+    });
     const [open, setOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [request, setRequest] = useState(null);
@@ -95,6 +103,14 @@ export default function Request() {
                         {request.status}
                     </Badge>
                 );
+            },
+        },
+        {
+            accessorKey: "created_at",
+            header: "Requested at",
+            cell: ({ row }) => {
+                const request = row.original;
+                return formatDateTime(request.created_at);
             },
         },
         {
@@ -308,9 +324,57 @@ export default function Request() {
                             Request Number: {request?.request_number}
                         </DialogTitle>
                     </DialogHeader>
-                    <div>
-                        
-                    </div>
+                    {request?.journal_file.map((journal, index) => (
+                        <Accordion key={index} type="single" collapsible>
+                            <AccordionItem value={`item-${index}`}>
+                                <AccordionTrigger className="hover:no-underline">
+                                    <div className="w-full flex items-center justify-between">
+                                        {formatDateTime(journal.created_at)}
+                                        {journal.status && (
+                                            <Badge
+                                                variant="secondary"
+                                                className="capitalize mr-2"
+                                            >
+                                                {journal.status}
+                                            </Badge>
+                                        )}
+                                    </div>
+                                </AccordionTrigger>
+                                <AccordionContent>
+                                    <div>
+                                        <div className="flex items-center space-x-4 rounded-md border p-4">
+                                            <img
+                                                src={Word}
+                                                className="size-8"
+                                            />
+                                            <div className="flex-1 space-y-1">
+                                                <p className="text-sm font-medium leading-none">
+                                                    {journal.journal_file
+                                                        .split("/")
+                                                        .pop()}
+                                                </p>
+                                                <p className="text-xs text-muted-foreground">
+                                                    Word document
+                                                </p>
+                                            </div>
+                                            <Button
+                                                onClick={() =>
+                                                    window.open(
+                                                        journal.journal_file,
+                                                        "_blank"
+                                                    )
+                                                }
+                                                size="icon"
+                                                variant="ghost"
+                                            >
+                                                <Download />
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </AccordionContent>
+                            </AccordionItem>
+                        </Accordion>
+                    ))}
                 </DialogContent>
             </Dialog>
         </>

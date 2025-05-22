@@ -8,6 +8,9 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth', 'admin', 'verified'])->group(function () {
   Route::get('/admin/journal/requests', [AdminController::class, 'getRequest']);
   Route::post('/admin/journal/requests/accept', [AdminController::class, 'acceptRequest']);
+
+  Route::get('/admin/journal/assign-documents/me', [AdminController::class, 'assignDocumentMe']);
+  Route::get('/admin/journal/assign-documents/editor', [AdminController::class, 'assignDocumentEditor']);
 });
 
 Route::middleware(['auth', 'editor', 'verified'])->group(function () {

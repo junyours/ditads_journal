@@ -12,4 +12,14 @@ class AssignEditor extends Model
         'request_id',
         'user_id'
     ];
+
+    public function request()
+    {
+        return $this->belongsTo(Request::class, 'request_id');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
 }

@@ -65,6 +65,22 @@ const navAdmin = [
                 icon: NotebookPen,
                 collapse: false,
             },
+            {
+                title: "Assign Documents",
+                url: "/admin/journal/assign-documents",
+                icon: FileInput,
+                collapse: true,
+                subitems: [
+                    {
+                        title: "Me",
+                        url: "/me",
+                    },
+                    {
+                        title: "Editor",
+                        url: "/editor",
+                    },
+                ],
+            },
         ],
     },
     {

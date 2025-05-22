@@ -6,9 +6,10 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Check, MoreHorizontal, User, Users } from "lucide-react";
+import { Check, FileText, MoreHorizontal, User, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DataTable } from "@/components/table/data-table";
 import {
@@ -35,11 +36,11 @@ export default function Request() {
             minute: "numeric",
         });
     const [open, setOpen] = useState(false);
-    const [selected, setSelected] = useState(null);
     const { data, setData, post, processing, errors, clearErrors } = useForm({
         id: null,
         request_id: null,
         editor_id: null,
+        selected: null,
     });
 
     const handleOpen = (request_id = null) => {
@@ -111,12 +112,21 @@ export default function Request() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem
-                                onClick={() => handleOpen(request.id)}
-                            >
-                                <Check />
-                                Accept
+                            <DropdownMenuItem>
+                                <FileText />
+                                View
                             </DropdownMenuItem>
+                            {request.status === "pending" && (
+                                <>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem
+                                        onClick={() => handleOpen(request.id)}
+                                    >
+                                        <Check />
+                                        Accept
+                                    </DropdownMenuItem>
+                                </>
+                            )}
                         </DropdownMenuContent>
                     </DropdownMenu>
                 );
@@ -128,7 +138,14 @@ export default function Request() {
         <>
             <DataTable columns={columns} data={journals} button={null} />
 
-            <Dialog open={open} onOpenChange={() => handleOpen()}>
+            <Dialog
+                open={open}
+                onOpenChange={() => {
+                    if (!processing) {
+                        handleOpen();
+                    }
+                }}
+            >
                 <DialogContent>
                     <DialogHeader>
                         <DialogTitle>
@@ -137,9 +154,9 @@ export default function Request() {
                     </DialogHeader>
                     <div className="grid grid-cols-2 gap-6">
                         <Card
-                            onClick={() => setSelected(1)}
+                            onClick={() => setData("selected", 1)}
                             className={`shadow-none cursor-pointer hover:bg-accent hover:text-accent-foreground ${
-                                selected === 1 ? "ring-2 ring-primary" : ""
+                                data.selected === 1 ? "ring-2 ring-primary" : ""
                             }`}
                         >
                             <div className="flex flex-col items-center space-y-2 p-4">
@@ -149,11 +166,11 @@ export default function Request() {
                         </Card>
                         <Card
                             onClick={() => {
-                                setSelected(2);
+                                setData("selected", 2);
                                 setData("editor_id", null);
                             }}
                             className={`shadow-none cursor-pointer hover:bg-accent hover:text-accent-foreground ${
-                                selected === 2 ? "ring-2 ring-primary" : ""
+                                data.selected === 2 ? "ring-2 ring-primary" : ""
                             }`}
                         >
                             <div className="flex flex-col items-center space-y-2 p-4">
@@ -162,7 +179,7 @@ export default function Request() {
                             </div>
                         </Card>
                     </div>
-                    {selected === 1 && (
+                    {data.selected === 1 && (
                         <div className="space-y-1">
                             <Combobox
                                 options={editors}
@@ -172,9 +189,13 @@ export default function Request() {
                             <InputError message={errors.editor_id} />
                         </div>
                     )}
-                    <DialogFooter>
-                        <Button onClick={handleSave}>Save</Button>
-                    </DialogFooter>
+                    {data.selected && (
+                        <DialogFooter>
+                            <Button onClick={handleSave} disabled={processing}>
+                                Save
+                            </Button>
+                        </DialogFooter>
+                    )}
                 </DialogContent>
             </Dialog>
         </>

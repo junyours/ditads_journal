@@ -5,14 +5,13 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Button } from "@/components/ui/button";
 import { FileText, MoreHorizontal } from "lucide-react";
 import { DataTable } from "@/components/table/data-table";
-import { Button } from "@/components/ui/button";
 
-export default function AssignDocument() {
+export default function Me() {
     const { journals } = usePage().props;
 
     const columns = [
@@ -21,7 +20,7 @@ export default function AssignDocument() {
             header: "Request Number",
         },
         {
-            accessorKey: "user.name",
+            accessorKey: "request.user.name",
             header: "Author Name",
         },
         {
@@ -56,6 +55,6 @@ export default function AssignDocument() {
     );
 }
 
-AssignDocument.layout = (page) => (
-    <AppLayout children={page} title="Assign Documents" />
+Me.layout = (page) => (
+    <AppLayout children={page} title="Assign Documents for Me" />
 );
