@@ -239,7 +239,12 @@ class AdminController extends Controller
             ]);
 
             if ($book->pdf_file) {
-                $publicId = pathinfo(parse_url($book->pdf_file, PHP_URL_PATH), PATHINFO_FILENAME);
+                $parsedUrl = parse_url($book->pdf_file, PHP_URL_PATH);
+                $segments = explode('/', $parsedUrl);
+                $versionIndex = array_search('upload', $segments) + 1;
+                $publicIdParts = array_slice($segments, $versionIndex + 1);
+                $filenameWithExtension = implode('/', $publicIdParts);
+                $publicId = preg_replace('/\.pdf$/', '', $filenameWithExtension);
                 Cloudinary::uploadApi()->destroy($publicId, [
                     'resource_type' => 'raw',
                 ]);
