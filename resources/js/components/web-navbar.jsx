@@ -98,7 +98,7 @@ export default function WebNavbar({ open, onOpenChange }) {
                                             Sign in
                                         </Button>
                                     </Link>
-                                    <Link href="/sign-up">
+                                    {/* <Link href="/sign-up">
                                         <Button
                                             onClick={() => {
                                                 if (isMobile) {
@@ -109,7 +109,7 @@ export default function WebNavbar({ open, onOpenChange }) {
                                         >
                                             Join us
                                         </Button>
-                                    </Link>
+                                    </Link> */}
                                 </div>
                             )}
                         </div>

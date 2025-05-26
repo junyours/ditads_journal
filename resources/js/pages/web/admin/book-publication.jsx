@@ -4,9 +4,18 @@ import {
     DropdownMenuContent,
     DropdownMenuItem,
     DropdownMenuLabel,
+    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { BookText, FilePenLine, MoreHorizontal, Plus } from "lucide-react";
+import {
+    BookText,
+    FilePenLine,
+    FileText,
+    Loader,
+    MoreHorizontal,
+    Plus,
+    Upload,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { DataTable } from "@/components/table/data-table";
@@ -32,9 +41,12 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import DatePicker from "@/components/date-picker";
+import Pdf from "../../../../../public/images/pdf.png";
+import BookCategoryCombobox from "@/components/bookcategory-combobox";
 
 export default function BookPublication() {
-    const { books } = usePage().props;
+    const { books, categories } = usePage().props;
     const [open, setOpen] = useState(false);
     const [previewCoverPage, setPreviewCoverPage] = useState(null);
     const [editData, setEditData] = useState(false);
@@ -49,10 +61,14 @@ export default function BookPublication() {
     const { data, setData, post, processing, errors, clearErrors } = useForm({
         id: null,
         title: "",
-        isbn: "",
+        soft_isbn: "",
+        hard_isbn: "",
+        published_at: null,
         cover_page: null,
         author: "",
         overview: "",
+        pdf_file: null,
+        book_category_id: null,
     });
 
     const handleOpen = (book = null) => {
@@ -61,9 +77,13 @@ export default function BookPublication() {
             const bookData = {
                 id: book.id,
                 title: book.title,
-                isbn: book.isbn,
+                soft_isbn: book.soft_isbn,
+                hard_isbn: book.hard_isbn,
+                published_at: book.published_at,
                 author: book.author,
                 overview: book.overview,
+                pdf_file: book.pdf_file,
+                book_category_id: book.book_category_id,
             };
             setData(bookData);
             setInitialData(bookData);
@@ -73,10 +93,14 @@ export default function BookPublication() {
             const newData = {
                 id: null,
                 title: "",
-                isbn: "",
+                soft_isbn: "",
+                hard_isbn: "",
+                published_at: null,
                 cover_page: null,
                 author: "",
                 overview: "",
+                pdf_file: null,
+                book_category_id: null,
             };
             setData(newData);
             setInitialData(newData);
@@ -128,9 +152,15 @@ export default function BookPublication() {
             },
         },
         {
-            accessorKey: "isbn",
+            accessorKey: "soft_isbn",
             header: ({ column }) => (
-                <ColumnHeader column={column} title="ISBN" />
+                <ColumnHeader column={column} title="Soft Bound ISBN" />
+            ),
+        },
+        {
+            accessorKey: "hard_isbn",
+            header: ({ column }) => (
+                <ColumnHeader column={column} title="Hard Bound ISBN" />
             ),
         },
         {
@@ -138,11 +168,11 @@ export default function BookPublication() {
             header: "Title",
         },
         {
-            accessorKey: "created_at",
+            accessorKey: "published_at",
             header: "Published at",
             cell: ({ row }) => {
                 const book = row.original;
-                return formatDate(book.created_at);
+                return formatDate(book.published_at);
             },
         },
         {
@@ -159,6 +189,13 @@ export default function BookPublication() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuItem asChild>
+                                <a href={book.pdf_file} target="_blank">
+                                    <FileText />
+                                    View PDF
+                                </a>
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={() => handleOpen(book)}>
                                 <FilePenLine />
                                 Edit
@@ -201,6 +238,17 @@ export default function BookPublication() {
                         </SheetTitle>
                     </SheetHeader>
                     <div className="flex-1 space-y-4 overflow-y-auto px-2 pb-2">
+                        <div className="space-y-1">
+                            <Label>Book Category</Label>
+                            <BookCategoryCombobox
+                                options={categories}
+                                value={data.book_category_id}
+                                setValue={(val) =>
+                                    setData("book_category_id", val)
+                                }
+                            />
+                            <InputError message={errors.book_category_id} />
+                        </div>
                         <div className="space-y-1">
                             <Label>Cover Page</Label>
                             <div className="flex items-center gap-4">
@@ -249,6 +297,59 @@ export default function BookPublication() {
                             <InputError message={errors.cover_page} />
                         </div>
                         <div className="space-y-1">
+                            <Label>PDF File</Label>
+                            <div className="flex items-center space-x-4 rounded-md border p-4">
+                                <img src={Pdf} className="size-8" />
+                                <div className="flex-1 space-y-1">
+                                    {typeof data.pdf_file === "string" ? (
+                                        <>
+                                            <a
+                                                href={data.pdf_file}
+                                                target="_blank"
+                                                className="text-sm text-blue-600 hover:underline"
+                                            >
+                                                View PDF
+                                            </a>
+                                        </>
+                                    ) : data.pdf_file ? (
+                                        <>
+                                            <p className="text-sm font-medium line-clamp-1">
+                                                {data.pdf_file.name}
+                                            </p>
+                                            <p className="text-xs text-muted-foreground">
+                                                PDF
+                                            </p>
+                                        </>
+                                    ) : (
+                                        <p className="text-sm font-medium">
+                                            No file chosen
+                                        </p>
+                                    )}
+                                </div>
+                                <Button
+                                    onClick={() =>
+                                        document
+                                            .getElementById("pdf_file")
+                                            .click()
+                                    }
+                                    size="icon"
+                                    variant="ghost"
+                                >
+                                    <Upload />
+                                </Button>
+                            </div>
+                            <input
+                                accept=".pdf"
+                                id="pdf_file"
+                                type="file"
+                                onChange={(e) =>
+                                    setData("pdf_file", e.target.files[0])
+                                }
+                                hidden
+                            />
+                            <InputError message={errors.pdf_file} />
+                        </div>
+                        <div className="space-y-1">
                             <Label>Title</Label>
                             <Input
                                 value={data.title}
@@ -259,14 +360,34 @@ export default function BookPublication() {
                             <InputError message={errors.title} />
                         </div>
                         <div className="space-y-1">
-                            <Label>ISBN</Label>
+                            <Label>Soft Bound ISBN</Label>
                             <Input
-                                value={data.isbn}
+                                value={data.soft_isbn}
                                 onChange={(e) =>
-                                    setData("isbn", e.target.value)
+                                    setData("soft_isbn", e.target.value)
                                 }
                             />
-                            <InputError message={errors.isbn} />
+                            <InputError message={errors.soft_isbn} />
+                        </div>
+                        <div className="space-y-1">
+                            <Label>Hard Bound ISBN</Label>
+                            <Input
+                                value={data.hard_isbn}
+                                onChange={(e) =>
+                                    setData("hard_isbn", e.target.value)
+                                }
+                            />
+                            <InputError message={errors.hard_isbn} />
+                        </div>
+                        <div className="space-y-1">
+                            <Label>Published at</Label>
+                            <DatePicker
+                                date={data.published_at}
+                                setDate={(date) =>
+                                    setData("published_at", date)
+                                }
+                            />
+                            <InputError message={errors.published_at} />
                         </div>
                         <div className="space-y-1">
                             <Label>Author/s</Label>
@@ -309,7 +430,14 @@ export default function BookPublication() {
                             onClick={editData ? handleUpdate : handleUpload}
                             disabled={processing}
                         >
-                            {editData ? "Update" : "Save"}
+                            {processing && <Loader className="animate-spin" />}
+                            {editData
+                                ? processing
+                                    ? "Updating"
+                                    : "Update"
+                                : processing
+                                ? "Saving"
+                                : "Save"}
                         </Button>
                     </SheetFooter>
                 </SheetContent>

@@ -34,7 +34,6 @@ export default function Welcome() {
                 educational content, supporting research, development, and
                 training initiatives.
             </p>
-            
         </div>
     );
 }

@@ -5,11 +5,13 @@ import {
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
 import { Button } from "./ui/button";
-import { router, usePage } from "@inertiajs/react";
+import { usePage } from "@inertiajs/react";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function WebBanner({ images }) {
     const currentPath = window.location.pathname;
     const user = usePage().props.auth.user;
+    const isMobile = useIsMobile();
 
     return images.length > 1 ? (
         <Carousel
@@ -44,14 +46,15 @@ export default function WebBanner({ images }) {
             />
             {currentPath === "/research-journal" &&
                 (!user || user.role === "author") && (
-                    <div className="absolute right-4 bottom-4">
-                        <Button
-                            onClick={() =>
-                                router.visit("/author/journal/requests")
-                            }
-                        >
-                            Submit Journal
-                        </Button>
+                    <div className="absolute right-2 bottom-2 sm:right-4 sm:bottom-4">
+                        <a href="mailto:ditadsimrj@ditadsinternationalmultidisciplinaryresearchjournal.net">
+                            <Button
+                                size={isMobile ? "sm" : "default"}
+                                variant="outline"
+                            >
+                                Submit Journal via Email
+                            </Button>
+                        </a>
                     </div>
                 )}
         </div>

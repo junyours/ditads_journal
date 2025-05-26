@@ -12,15 +12,16 @@ import Web from "../../../../../public/images/index-services/web-of-science.png"
 import WorldCat from "../../../../../public/images/index-services/WorldCat.png";
 import Zenodo from "../../../../../public/images/index-services/Zenodo.png";
 import Crossref from "../../../../../public/images/index-services/Crossref.png";
+import ISI from "../../../../../public/images/index-services/isi.png";
 
 const images = [
-    { name: Mendeley, link: "https://doaj.org/" },
+    { name: Google, link: "https://scholar.google.com/" },
     { name: ORCID, link: "https://orcid.org/" },
     { name: Zenodo, link: "https://zenodo.org/" },
     { name: Academia, link: "https://www.academia.edu/" },
     { name: Bielefeld, link: "https://www.base-search.net/" },
+    { name: Mendeley, link: "https://doaj.org/" },
     { name: DOAJ, link: "https://doaj.org/" },
-    { name: Google, link: "https://scholar.google.com/" },
     { name: Index, link: "https://journals.indexcopernicus.com/" },
     { name: ISSUU, link: "https://issuu.com/" },
     { name: Scribd, link: "https://www.scribd.com/" },
@@ -31,6 +32,7 @@ const images = [
     },
     { name: WorldCat, link: "https://search.worldcat.org/" },
     { name: Crossref, link: "https://www.crossref.org/" },
+    { name: ISI, link: "https://www.isindexing.com/isi/" },
 ];
 
 export default function IndexAbstract() {

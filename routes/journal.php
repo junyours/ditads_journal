@@ -24,4 +24,5 @@ Route::middleware(['auth', 'author', 'verified'])->group(function () {
 
   Route::get('/author/journal/requests', [AuthorController::class, 'getRequest']);
   Route::post('/author/journal/requests/submit', [AuthorController::class, 'submitJournal']);
+  Route::post('/author/journal/requests/add/school', [AuthorController::class, 'addSchool']);
 });

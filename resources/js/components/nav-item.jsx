@@ -25,6 +25,7 @@ import {
     LayoutDashboard,
     NotebookPen,
     School,
+    SquareLibrary,
     Users,
 } from "lucide-react";
 
@@ -113,6 +114,12 @@ const navAdmin = [
                 title: "Schools",
                 url: "/admin/others/schools",
                 icon: School,
+                collapse: false,
+            },
+            {
+                title: "Book Categories",
+                url: "/admin/others/book-categories",
+                icon: SquareLibrary,
                 collapse: false,
             },
         ],

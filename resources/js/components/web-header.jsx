@@ -38,9 +38,9 @@ export default function WebHeader() {
                         <Link href="/sign-in">
                             <Button variant="outline">Sign in</Button>
                         </Link>
-                        <Link href="/sign-up">
+                        {/* <Link href="/sign-up">
                             <Button>Join us</Button>
-                        </Link>
+                        </Link> */}
                     </div>
                 )}
             </div>

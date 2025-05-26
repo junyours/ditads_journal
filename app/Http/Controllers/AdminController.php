@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\BookCategory;
 use App\Models\BookPublication;
 use App\Models\Magazine;
 use App\Models\ResearchJournal;
@@ -116,11 +117,14 @@ class AdminController extends Controller
 
     public function getBookPublication()
     {
-        $books = BookPublication::select('id', 'title', 'isbn', 'cover_page', 'author', 'overview', 'created_at')
+        $books = BookPublication::select('id', 'title', 'soft_isbn', 'hard_isbn', 'cover_page', 'author', 'overview', 'published_at', 'pdf_file')
             ->get();
 
+        $categories = BookCategory::select('id', 'name')->get();
+
         return Inertia::render('web/admin/book-publication', [
-            'books' => $books
+            'books' => $books,
+            'categories' => $categories
         ]);
     }
 
@@ -128,29 +132,54 @@ class AdminController extends Controller
     {
         $request->validate([
             'title' => ['required'],
-            'isbn' => ['required', 'unique:book_publications'],
+            'soft_isbn' => ['required', 'unique:book_publications'],
+            'hard_isbn' => ['required', 'unique:book_publications'],
             'cover_page' => ['required', 'mimes:jpeg,jpg,png', 'max:3048'],
             'author' => ['required'],
-            'overview' => ['required']
+            'overview' => ['required'],
+            'published_at' => ['required'],
+            'pdf_file' => ['required', 'mimes:pdf'],
+            'book_category_id' => ['required'],
+        ], [
+            'book_category_id.required' => 'The book category field is required.'
         ]);
 
-        $fileUrl = null;
-
         if ($request->hasFile('cover_page')) {
-            $uploadedFile = Cloudinary::uploadApi()->upload(
+            $uploadedCoverPage = Cloudinary::uploadApi()->upload(
                 $request->file('cover_page')->getRealPath(),
-                ['folder' => 'ditads/books/cover_page']
+                [
+                    'folder' => 'ditads/books/test/cover_page'
+                ]
             );
 
-            $fileUrl = $uploadedFile['secure_url'];
+            $cover_page = $uploadedCoverPage['secure_url'];
+        }
+
+        if ($request->hasFile('pdf_file')) {
+            $uploadedPdfFile = Cloudinary::uploadApi()->upload(
+                $request->file('pdf_file')->getRealPath(),
+                [
+                    'folder' => 'ditads/books/pdf_file',
+                    'resource_type' => 'raw',
+                    'format' => 'pdf',
+                ]
+            );
+
+            $pdf_file = $uploadedPdfFile['secure_url'];
         }
 
         BookPublication::create([
             'title' => $request->title,
-            'isbn' => $request->isbn,
-            'cover_page' => $fileUrl,
+            'soft_isbn' => $request->soft_isbn,
+            'hard_isbn' => $request->hard_isbn,
+            'cover_page' => $cover_page,
             'author' => $request->author,
             'overview' => $request->overview,
+            'published_at' => Carbon::parse($request->published_at)
+                ->timezone('Asia/Manila')
+                ->toDateString(),
+            'pdf_file' => $pdf_file,
+            'book_category_id' => $request->book_category_id
         ]);
     }
 
@@ -160,16 +189,26 @@ class AdminController extends Controller
 
         $request->validate([
             'title' => ['required'],
-            'isbn' => ['required', 'unique:book_publications,isbn,' . $request->id],
+            'soft_isbn' => ['required', 'unique:book_publications,soft_isbn,' . $request->id],
+            'hard_isbn' => ['required', 'unique:book_publications,hard_isbn,' . $request->id],
             'author' => ['required'],
-            'overview' => ['required']
+            'overview' => ['required'],
+            'published_at' => ['required'],
+            'book_category_id' => ['required'],
+        ], [
+            'book_category_id.required' => 'The book category field is required.'
         ]);
 
         $book->update([
             'title' => $request->title,
-            'isbn' => $request->isbn,
+            'soft_isbn' => $request->soft_isbn,
+            'hard_isbn' => $request->hard_isbn,
             'author' => $request->author,
             'overview' => $request->overview,
+            'published_at' => Carbon::parse($request->published_at)
+                ->timezone('Asia/Manila')
+                ->toDateString(),
+            'book_category_id' => $request->book_category_id
         ]);
 
         if ($request->hasFile('cover_page')) {
@@ -182,15 +221,37 @@ class AdminController extends Controller
                 (new UploadApi())->destroy('ditads/books/cover_page/' . $publicId);
             }
 
-            $uploadedFile = Cloudinary::uploadApi()->upload(
+            $uploadedCoverPage = Cloudinary::uploadApi()->upload(
                 $request->file('cover_page')->getRealPath(),
                 ['folder' => 'ditads/books/cover_page']
             );
 
-            $fileUrl = $uploadedFile['secure_url'];
+            $cover_page = $uploadedCoverPage['secure_url'];
 
             $book->update([
-                'cover_page' => $fileUrl,
+                'cover_page' => $cover_page,
+            ]);
+        }
+
+        if ($request->hasFile('pdf_file')) {
+            $request->validate([
+                'pdf_file' => ['required', 'mimes:pdf'],
+            ]);
+
+            if ($book->pdf_file) {
+                $publicId = pathinfo(parse_url($book->pdf_file, PHP_URL_PATH), PATHINFO_FILENAME);
+                (new UploadApi())->destroy('ditads/books/pdf_file/' . $publicId);
+            }
+
+            $uploadedPdfFile = Cloudinary::uploadApi()->upload(
+                $request->file('pdf_file')->getRealPath(),
+                ['folder' => 'ditads/books/pdf_file']
+            );
+
+            $pdf_file = $uploadedPdfFile['secure_url'];
+
+            $book->update([
+                'pdf_file' => $pdf_file,
             ]);
         }
     }
@@ -404,7 +465,7 @@ class AdminController extends Controller
     public function addSchool(Request $request)
     {
         $request->validate([
-            'name' => ['required'],
+            'name' => ['required', 'unique:schools'],
         ]);
 
         School::create([
@@ -421,6 +482,22 @@ class AdminController extends Controller
         ]);
 
         $school->update([
+            'name' => $request->name,
+        ]);
+    }
+
+    public function bookCategory()
+    {
+        return Inertia::render('others/book-category');
+    }
+
+    public function AddBookCategory(Request $request)
+    {
+        $request->validate([
+            'name' => ['required', 'unique:book_categories'],
+        ]);
+
+        BookCategory::create([
             'name' => $request->name,
         ]);
     }

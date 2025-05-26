@@ -63,8 +63,7 @@ class AuthorController extends Controller
         $uploadedFile = Cloudinary::uploadApi()->upload(
             $request->file('journal_file')->getRealPath(),
             [
-                // 'folder' => 'ditads/journal/journal_file',
-                'folder' => 'ditads/journal/test/journal_file',
+                'folder' => 'ditads/journal/journal_file',
                 'resource_type' => 'raw',
                 'format' => 'docx',
             ]
@@ -84,5 +83,16 @@ class AuthorController extends Controller
                 ]);
             }
         }
+    }
+
+    public function addSchool(Request $request)
+    {
+        $request->validate([
+            'name' => ['required', 'unique:schools'],
+        ]);
+
+        School::create([
+            'name' => $request->name,
+        ]);
     }
 }

@@ -13,7 +13,7 @@ export default function EditorialBoard({ editors }) {
                 <Card key={index} className="shadow-none">
                     <div className="h-[250px] w-full">
                         <img
-                            src={editor.avatar ? editor.avatar : User}
+                            src={editor.avatar ?? User}
                             alt="avatar"
                             className="object-contain size-full rounded-t-lg"
                         />

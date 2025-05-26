@@ -85,7 +85,7 @@ export default function BookPublication() {
                                 <div className="flex gap-2 items-center text-primary">
                                     <Calendar size={16} />
                                     <span className="text-xs">
-                                        {formatDate(book.created_at)}
+                                        {formatDate(book.published_at)}
                                     </span>
                                 </div>
                                 <div className="h-[200px] w-full">
@@ -96,7 +96,8 @@ export default function BookPublication() {
                                     />
                                 </div>
                                 <span className="text-xs">
-                                    ISBN: {book.isbn}
+                                    Soft/Hard Bound ISBN: {book.soft_isbn} /{" "}
+                                    {book.hard_isbn}
                                 </span>
                             </CardHeader>
                             <CardContent className="space-y-4 px-4">
@@ -131,14 +132,17 @@ export default function BookPublication() {
                         <div className="flex gap-2 items-center text-primary">
                             <Calendar size={16} />
                             <span className="text-xs">
-                                {formatDate(book?.created_at)}
+                                {formatDate(book?.published_at)}
                             </span>
                         </div>
                         <SheetTitle>{book?.title}</SheetTitle>
                         <SheetDescription className="italic">
                             {book?.author}
                         </SheetDescription>
-                        <span>ISBN: {book?.isbn}</span>
+                        <span>
+                            Soft/Hard Bound ISBN:: {book?.soft_isbn} /{" "}
+                            {book?.hard_isbn}
+                        </span>
                     </SheetHeader>
                     <p className="text-justify whitespace-pre-line mt-4">
                         {book?.overview}

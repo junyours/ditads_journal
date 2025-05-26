@@ -1,5 +1,5 @@
 import AppLayout from "@/layouts/app-layout";
-import { router, useForm, usePage } from "@inertiajs/react";
+import { useForm, usePage } from "@inertiajs/react";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -30,13 +30,13 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import Combobox from "@/components/combobox";
 import {
     Accordion,
     AccordionContent,
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
+import SchoolCombobox from "@/components/school-combobox";
 
 export default function Request() {
     const { schools, journals } = usePage().props;
@@ -85,25 +85,6 @@ export default function Request() {
         {
             accessorKey: "request_number",
             header: "Request Number",
-        },
-        {
-            accessorKey: "status",
-            header: "Status",
-            cell: ({ row }) => {
-                const request = row.original;
-                return (
-                    <Badge
-                        variant={
-                            request.status === "pending"
-                                ? "secondary"
-                                : "default"
-                        }
-                        className="capitalize"
-                    >
-                        {request.status}
-                    </Badge>
-                );
-            },
         },
         {
             accessorKey: "created_at",
@@ -212,7 +193,7 @@ export default function Request() {
                                 <InputError message={errors.journal_file} />
                             </div>
                             <div className="space-y-1">
-                                <Combobox
+                                <SchoolCombobox
                                     options={schools}
                                     value={data.school}
                                     setValue={(val) => setData("school", val)}
@@ -279,7 +260,7 @@ export default function Request() {
                                         />
                                     </div>
                                     <div className="space-y-1">
-                                        <Combobox
+                                        <SchoolCombobox
                                             options={schools}
                                             value={coAuthor.school}
                                             setValue={(val) => {
