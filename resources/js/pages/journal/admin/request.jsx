@@ -21,9 +21,9 @@ import {
 } from "@/components/ui/dialog";
 import { useState } from "react";
 import { Card, CardTitle } from "@/components/ui/card";
-import Combobox from "@/components/combobox";
 import { toast } from "sonner";
 import InputError from "@/components/input-error";
+import Combobox from "@/components/combobox";
 
 export default function Request() {
     const { journals, editors } = usePage().props;
