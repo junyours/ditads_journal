@@ -190,7 +190,10 @@ export default function BookPublication() {
                         <DropdownMenuContent align="end">
                             <DropdownMenuLabel>Actions</DropdownMenuLabel>
                             <DropdownMenuItem asChild>
-                                <a href={book.pdf_file} target="_blank">
+                                <a
+                                    href={`/view-book/${book.pdf_file}`}
+                                    target="_blank"
+                                >
                                     <FileText />
                                     View PDF
                                 </a>
@@ -304,7 +307,7 @@ export default function BookPublication() {
                                     {typeof data.pdf_file === "string" ? (
                                         <>
                                             <a
-                                                href={data.pdf_file}
+                                                href={`/view-book/${data.pdf_file}`}
                                                 target="_blank"
                                                 className="text-sm text-blue-600 hover:underline"
                                             >

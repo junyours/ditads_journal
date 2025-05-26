@@ -131,6 +131,20 @@ class WebController extends Controller
         abort(404);
     }
 
+    public function viewBook($path)
+    {
+        $cloudinaryUrl = 'https://res.cloudinary.com/dzzyp9crw/raw/upload/' . $path;
+        $response = Http::get($cloudinaryUrl);
+
+        if ($response->ok()) {
+            return response($response->body(), 200, [
+                'Content-Type' => 'application/pdf',
+            ]);
+        }
+
+        abort(404);
+    }
+
     public function contactUs()
     {
         return Inertia::render('web/contact-us');

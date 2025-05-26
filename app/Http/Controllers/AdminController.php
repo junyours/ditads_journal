@@ -9,12 +9,10 @@ use App\Models\ResearchJournal;
 use App\Models\School;
 use App\Models\User;
 use Carbon\Carbon;
-use Cloudinary\Api\Upload\UploadApi;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Hash;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Str;
 
 class AdminController extends Controller
 {
@@ -94,7 +92,7 @@ class AdminController extends Controller
 
             if ($editor->avatar) {
                 $publicId = pathinfo(parse_url($editor->avatar, PHP_URL_PATH), PATHINFO_FILENAME);
-                (new UploadApi())->destroy('ditads/users/avatar/' . $publicId);
+                Cloudinary::uploadApi()->destroy('ditads/users/avatar/' . $publicId);
             }
 
             $uploadedFile = Cloudinary::uploadApi()->upload(
@@ -165,7 +163,7 @@ class AdminController extends Controller
                 ]
             );
 
-            $pdf_file = $uploadedPdfFile['secure_url'];
+            $pdf_file = 'v' . $uploadedPdfFile['version'] . '/' . $uploadedPdfFile['public_id'];
         }
 
         BookPublication::create([
@@ -218,7 +216,7 @@ class AdminController extends Controller
 
             if ($book->cover_page) {
                 $publicId = pathinfo(parse_url($book->cover_page, PHP_URL_PATH), PATHINFO_FILENAME);
-                (new UploadApi())->destroy('ditads/books/cover_page/' . $publicId);
+                Cloudinary::uploadApi()->destroy('ditads/books/cover_page/' . $publicId);
             }
 
             $uploadedCoverPage = Cloudinary::uploadApi()->upload(
@@ -239,12 +237,7 @@ class AdminController extends Controller
             ]);
 
             if ($book->pdf_file) {
-                $parsedUrl = parse_url($book->pdf_file, PHP_URL_PATH);
-                $segments = explode('/', $parsedUrl);
-                $versionIndex = array_search('upload', $segments) + 1;
-                $publicIdParts = array_slice($segments, $versionIndex + 1);
-                $filenameWithExtension = implode('/', $publicIdParts);
-                $publicId = preg_replace('/\.pdf$/', '', $filenameWithExtension);
+                $publicId = explode('/', $book->pdf_file, 2)[1];
                 Cloudinary::uploadApi()->destroy($publicId, [
                     'resource_type' => 'raw',
                 ]);
@@ -259,7 +252,7 @@ class AdminController extends Controller
                 ]
             );
 
-            $pdf_file = $uploadedPdfFile['secure_url'];
+            $pdf_file = 'v' . $uploadedPdfFile['version'] . '/' . $uploadedPdfFile['public_id'];
 
             $book->update([
                 'pdf_file' => $pdf_file,
@@ -324,7 +317,7 @@ class AdminController extends Controller
 
             if ($magazine->cover_page) {
                 $publicId = pathinfo(parse_url($magazine->cover_page, PHP_URL_PATH), PATHINFO_FILENAME);
-                (new UploadApi())->destroy('ditads/magazines/cover_page/' . $publicId);
+                Cloudinary::uploadApi()->destroy('ditads/magazines/cover_page/' . $publicId);
             }
 
             $uploadedFile = Cloudinary::uploadApi()->upload(
