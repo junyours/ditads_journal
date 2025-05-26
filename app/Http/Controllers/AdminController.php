@@ -240,7 +240,9 @@ class AdminController extends Controller
 
             if ($book->pdf_file) {
                 $publicId = pathinfo(parse_url($book->pdf_file, PHP_URL_PATH), PATHINFO_FILENAME);
-                (new UploadApi())->destroy('ditads/books/pdf_file/' . $publicId);
+                Cloudinary::uploadApi()->destroy($publicId, [
+                    'resource_type' => 'raw',
+                ]);
             }
 
             $uploadedPdfFile = Cloudinary::uploadApi()->upload(
