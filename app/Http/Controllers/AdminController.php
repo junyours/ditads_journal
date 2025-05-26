@@ -482,7 +482,7 @@ class AdminController extends Controller
         $school = School::findOrFail($request->id);
 
         $request->validate([
-            'name' => ['required'],
+            'name' => ['required', 'unique:schools,name,' . $request->id],
         ]);
 
         $school->update([
@@ -492,7 +492,11 @@ class AdminController extends Controller
 
     public function bookCategory()
     {
-        return Inertia::render('others/book-category');
+        $categories = BookCategory::select('id', 'name')->get();
+
+        return Inertia::render('others/book-category', [
+            'categories' => $categories
+        ]);
     }
 
     public function AddBookCategory(Request $request)
@@ -502,6 +506,19 @@ class AdminController extends Controller
         ]);
 
         BookCategory::create([
+            'name' => $request->name,
+        ]);
+    }
+
+    public function UpdateBookCategory(Request $request)
+    {
+        $category = BookCategory::findOrFail($request->id);
+
+        $request->validate([
+            'name' => ['required', 'unique:book_categories,name,' . $request->id],
+        ]);
+
+        $category->update([
             'name' => $request->name,
         ]);
     }

@@ -103,7 +103,7 @@ export default function School() {
                 columns={columns}
                 data={schools}
                 button={{
-                    title: "Upload",
+                    title: "Add",
                     icon: Plus,
                     onClick: () => handleOpen(),
                 }}

@@ -38,6 +38,7 @@ Route::middleware(['auth', 'admin', 'verified'])->group(function () {
 
     Route::get('/admin/others/book-categories', [AdminController::class, 'bookCategory']);
     Route::post('/admin/others/book-categories/add', [AdminController::class, 'AddBookCategory']);
+    Route::post('/admin/others/book-categories/update', [AdminController::class, 'UpdateBookCategory']);
 });
 
 Route::get('/', [WebController::class, 'welcome']);
