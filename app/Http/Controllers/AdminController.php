@@ -117,7 +117,7 @@ class AdminController extends Controller
 
     public function getBookPublication()
     {
-        $books = BookPublication::select('id', 'title', 'soft_isbn', 'hard_isbn', 'cover_page', 'author', 'overview', 'published_at', 'pdf_file')
+        $books = BookPublication::select('id', 'title', 'soft_isbn', 'hard_isbn', 'cover_page', 'author', 'overview', 'published_at', 'pdf_file', 'book_category_id')
             ->get();
 
         $categories = BookCategory::select('id', 'name')->get();
@@ -148,7 +148,7 @@ class AdminController extends Controller
             $uploadedCoverPage = Cloudinary::uploadApi()->upload(
                 $request->file('cover_page')->getRealPath(),
                 [
-                    'folder' => 'ditads/books/test/cover_page'
+                    'folder' => 'ditads/books/cover_page'
                 ]
             );
 
@@ -245,7 +245,11 @@ class AdminController extends Controller
 
             $uploadedPdfFile = Cloudinary::uploadApi()->upload(
                 $request->file('pdf_file')->getRealPath(),
-                ['folder' => 'ditads/books/pdf_file']
+                [
+                    'folder' => 'ditads/books/pdf_file',
+                    'resource_type' => 'raw',
+                    'format' => 'pdf',
+                ]
             );
 
             $pdf_file = $uploadedPdfFile['secure_url'];

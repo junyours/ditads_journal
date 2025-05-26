@@ -2,6 +2,17 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer utilities {
+  .hover-book-flip {
+    transform-origin: left center;
+    transition: transform 0.3s ease;
+  }
+
+  .hover-book-flip:hover {
+    transform: perspective(600px) rotateY(-10deg);
+  }
+}
+
 @layer base {
   :root {
     --background: 0 0% 100%;

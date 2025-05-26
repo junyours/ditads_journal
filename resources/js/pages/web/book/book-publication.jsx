@@ -1,5 +1,5 @@
 import WebLayout from "@/layouts/web-layout";
-import BookPublicationBanner from "../../../../public/images/book-publication-banner.png";
+import BookPublicationBanner from "../../../../../public/images/book-publication-banner.png";
 import { usePage } from "@inertiajs/react";
 import {
     Card,
@@ -80,7 +80,10 @@ export default function BookPublication() {
             <div className="container mx-auto px-4 pb-4">
                 <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                     {books.map((book) => (
-                        <Card key={book.isbn} className="shadow-none">
+                        <Card
+                            key={book.isbn}
+                            className="flex flex-col shadow-none"
+                        >
                             <CardHeader className="p-4">
                                 <div className="flex gap-2 items-center text-primary">
                                     <Calendar size={16} />
@@ -100,7 +103,7 @@ export default function BookPublication() {
                                     {book.hard_isbn}
                                 </span>
                             </CardHeader>
-                            <CardContent className="space-y-4 px-4">
+                            <CardContent className="flex-1 space-y-4 px-4">
                                 <CardTitle className="break-words line-clamp-3">
                                     {book.title}
                                 </CardTitle>
@@ -140,13 +143,28 @@ export default function BookPublication() {
                             {book?.author}
                         </SheetDescription>
                         <span>
-                            Soft/Hard Bound ISBN:: {book?.soft_isbn} /{" "}
+                            Soft/Hard Bound ISBN: {book?.soft_isbn} /{" "}
                             {book?.hard_isbn}
                         </span>
                     </SheetHeader>
-                    <p className="text-justify whitespace-pre-line mt-4">
-                        {book?.overview}
-                    </p>
+                    <div className="space-y-4">
+                        <p className="text-justify whitespace-pre-line mt-4">
+                            {book?.overview}
+                        </p>
+                        <div className="size-fit hover-book-flip">
+                            <img
+                                src={book?.cover_page}
+                                alt="cover_page"
+                                className="object-contain size-48"
+                            />
+                            <div className="w-48 border">
+                                <div className="h-2 w-full bg-primary"></div>
+                                <div className="flex items-center bg-muted p-2">
+                                    <p className="text-xs">{book?.title}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </SheetContent>
             </Sheet>
         </div>
