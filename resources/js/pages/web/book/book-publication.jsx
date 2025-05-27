@@ -129,7 +129,7 @@ export default function BookPublication() {
             <Sheet open={open} onOpenChange={() => handleOpen()}>
                 <SheetContent
                     side="bottom"
-                    className="h-full overflow-y-auto text-sm"
+                    className="h-full overflow-y-auto text-sm max-w-7xl mx-auto"
                 >
                     <SheetHeader>
                         <div className="flex gap-2 items-center text-primary">
