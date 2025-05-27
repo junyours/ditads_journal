@@ -18,6 +18,10 @@ Route::middleware(['auth', 'admin', 'verified'])->group(function () {
     Route::post('/admin/users/editor/add', [AdminController::class, 'addEditor']);
     Route::post('/admin/users/editor/update', [AdminController::class, 'updateEditor']);
 
+    Route::get('/admin/users/consultant', [AdminController::class, 'getConsultant']);
+    Route::post('/admin/users/consultant/add', [AdminController::class, 'addConsultant']);
+    Route::post('/admin/users/consultant/update', [AdminController::class, 'updateConsultant']);
+
     Route::get('/admin/users/author', [AdminController::class, 'getAuthor']);
 
     Route::get('/admin/web/book-publication', [AdminController::class, 'getBookPublication']);
@@ -43,6 +47,7 @@ Route::middleware(['auth', 'admin', 'verified'])->group(function () {
 
 Route::get('/', [WebController::class, 'welcome']);
 Route::get('/about-us', [WebController::class, 'aboutUs']);
+Route::get('/research-consultant', [WebController::class, 'researchConsultant']);
 Route::get('/book-publication', [WebController::class, 'bookPublication']);
 Route::get('/flip-book/{id}', [WebController::class, 'viewFlipBook']);
 Route::get('/magazine', [WebController::class, 'magazine']);

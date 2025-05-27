@@ -20,6 +20,10 @@ const items = [
         url: "/about-us",
     },
     {
+        title: "Research Consultant",
+        url: "/research-consultant",
+    },
+    {
         title: "Book Publication",
         url: "/book-publication",
     },

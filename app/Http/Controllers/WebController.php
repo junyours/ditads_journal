@@ -22,6 +22,17 @@ class WebController extends Controller
         return Inertia::render('web/about-us');
     }
 
+    public function researchConsultant()
+    {
+        $consultants = User::select('name', 'position', 'email', 'department', 'avatar')
+            ->where('role', 'consultant')
+            ->get();
+
+        return Inertia::render('web/research-consultant', [
+            'consultants' => $consultants
+        ]);
+    }
+
     public function bookPublication()
     {
         $books = BookPublication::select('id', 'title', 'soft_isbn', 'hard_isbn', 'cover_page', 'author', 'overview', 'published_at')

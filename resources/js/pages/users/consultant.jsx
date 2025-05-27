@@ -1,0 +1,376 @@
+import { DataTable } from "@/components/table/data-table";
+import { Button } from "@/components/ui/button";
+import AppLayout from "@/layouts/app-layout";
+import { FilePenLine, MoreHorizontal, Plus, User } from "lucide-react";
+import Avatar from "../../../../public/images/user.png";
+import { ColumnHeader } from "@/components/table/column-header";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { useState } from "react";
+import {
+    Sheet,
+    SheetContent,
+    SheetFooter,
+    SheetHeader,
+    SheetTitle,
+} from "@/components/ui/sheet";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { useForm, usePage } from "@inertiajs/react";
+import InputError from "@/components/input-error";
+import { toast } from "sonner";
+import { Textarea } from "@/components/ui/textarea";
+import {
+    AlertDialog,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+
+const positions = ["Research Consultant", "Associate Research Consultant"];
+
+export default function Consultant() {
+    const { consultants } = usePage().props;
+    const [open, setOpen] = useState(false);
+    const [previewAvatar, setPreviewAvatar] = useState(null);
+    const [editData, setEditData] = useState(false);
+    const [initialData, setInitialData] = useState(null);
+    const [showConfirmClose, setShowConfirmClose] = useState(false);
+    const { data, setData, post, processing, errors, clearErrors } = useForm({
+        id: null,
+        name: "",
+        email: "",
+        position: "",
+        department: "",
+        avatar: null,
+    });
+
+    const handleOpen = (consultant = null) => {
+        if (consultant) {
+            setEditData(true);
+            const consultantData = {
+                id: consultant.id,
+                name: consultant.name,
+                email: consultant.email,
+                position: consultant.position,
+                department: consultant.department,
+            };
+            setData(consultantData);
+            setInitialData(consultantData);
+            if (consultant.avatar) {
+                setPreviewAvatar(consultant.avatar);
+            } else {
+                setPreviewAvatar(null);
+            }
+        } else {
+            setEditData(false);
+            const newData = {
+                id: null,
+                name: "",
+                email: "",
+                position: "",
+                department: "",
+            };
+            setData(newData);
+            setInitialData(newData);
+            setPreviewAvatar(null);
+        }
+        setOpen(!open);
+        clearErrors();
+    };
+
+    const hasUnsavedChanges = () => {
+        return JSON.stringify(data) !== JSON.stringify(initialData);
+    };
+
+    const handleAdd = () => {
+        clearErrors();
+        post("/admin/users/consultant/add", {
+            onSuccess: () => {
+                handleOpen();
+                toast.success("Consultant added successfully.");
+            },
+        });
+    };
+
+    const handleUpdate = () => {
+        clearErrors();
+        post("/admin/users/consultant/update", {
+            onSuccess: () => {
+                handleOpen();
+                toast.success("Consultant updated successfully.");
+            },
+        });
+    };
+
+    const columns = [
+        {
+            accessorKey: "avatar",
+            header: "",
+            cell: ({ row }) => {
+                const consultant = row.original;
+                return (
+                    <div className="size-8">
+                        <img
+                            src={consultant.avatar ? consultant.avatar : Avatar}
+                            alt="user"
+                            className="rounded-full size-full object-cover"
+                        />
+                    </div>
+                );
+            },
+        },
+        {
+            accessorKey: "name",
+            header: "Name",
+        },
+        {
+            accessorKey: "position",
+            header: ({ column }) => (
+                <ColumnHeader column={column} title="Position" />
+            ),
+        },
+        {
+            accessorKey: "email",
+            header: ({ column }) => (
+                <ColumnHeader column={column} title="Email" />
+            ),
+        },
+        {
+            id: "actions",
+            cell: ({ row }) => {
+                const consultant = row.original;
+                return (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" className="h-8 w-8 p-0">
+                                <span className="sr-only">Open menu</span>
+                                <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuItem
+                                onClick={() => handleOpen(consultant)}
+                            >
+                                <FilePenLine />
+                                Edit
+                            </DropdownMenuItem>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                );
+            },
+        },
+    ];
+
+    return (
+        <>
+            <DataTable
+                columns={columns}
+                data={consultants}
+                button={{
+                    title: "Add",
+                    icon: Plus,
+                    onClick: () => handleOpen(),
+                }}
+            />
+
+            <Sheet
+                open={open}
+                onOpenChange={(val) => {
+                    if (!processing) {
+                        if (!val && hasUnsavedChanges()) {
+                            setShowConfirmClose(true);
+                        } else {
+                            setOpen(val);
+                        }
+                    }
+                }}
+            >
+                <SheetContent className="flex flex-col">
+                    <SheetHeader>
+                        <SheetTitle>
+                            {editData ? "Edit Consultant" : "Add Consultant"}
+                        </SheetTitle>
+                    </SheetHeader>
+                    <div className="flex-1 space-y-4 overflow-y-auto px-2 pb-2">
+                        <div className="space-y-1">
+                            <Label>Avatar</Label>
+                            <div className="flex items-center gap-4">
+                                <div className="size-20">
+                                    {previewAvatar ? (
+                                        <img
+                                            src={previewAvatar}
+                                            alt="profile-picture"
+                                            className="object-cover size-full"
+                                        />
+                                    ) : (
+                                        <div className="flex items-center justify-center size-full bg-muted">
+                                            <User size={40} />
+                                        </div>
+                                    )}
+                                </div>
+                                <Button
+                                    onClick={() =>
+                                        document
+                                            .getElementById("avatar")
+                                            .click()
+                                    }
+                                    size="sm"
+                                    variant="outline"
+                                >
+                                    {previewAvatar ? "Change" : "Upload"}
+                                </Button>
+                                <input
+                                    accept=".jpg,.jpeg,.png"
+                                    id="avatar"
+                                    type="file"
+                                    onChange={(e) => {
+                                        const file = e.target.files[0];
+                                        setData("avatar", file);
+                                        if (file) {
+                                            const imageUrl =
+                                                URL.createObjectURL(file);
+                                            setPreviewAvatar(imageUrl);
+                                        } else {
+                                            setPreviewAvatar(null);
+                                        }
+                                    }}
+                                    hidden
+                                />
+                            </div>
+                        </div>
+                        <div className="space-y-1">
+                            <Label>Position</Label>
+                            <Select
+                                value={data.position}
+                                onValueChange={(val) =>
+                                    setData("position", val)
+                                }
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectGroup>
+                                        {positions.map((position) => (
+                                            <SelectItem
+                                                key={position}
+                                                value={position}
+                                            >
+                                                {position}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectGroup>
+                                </SelectContent>
+                            </Select>
+                            <InputError message={errors.position} />
+                        </div>
+                        <div className="space-y-1">
+                            <Label>Name</Label>
+                            <Input
+                                value={data.name}
+                                onChange={(e) =>
+                                    setData("name", e.target.value)
+                                }
+                            />
+                            <InputError message={errors.name} />
+                        </div>
+                        <div className="space-y-1">
+                            <Label>Department</Label>
+                            <Textarea
+                                value={data.department}
+                                onChange={(e) =>
+                                    setData("department", e.target.value)
+                                }
+                            />
+                            <InputError message={errors.department} />
+                        </div>
+                        <div className="space-y-1">
+                            <Label>Email</Label>
+                            <Input
+                                type="email"
+                                value={data.email}
+                                onChange={(e) =>
+                                    setData("email", e.target.value)
+                                }
+                            />
+                            <InputError message={errors.email} />
+                        </div>
+                    </div>
+                    <SheetFooter>
+                        <Button
+                            onClick={() => {
+                                if (!processing) {
+                                    if (hasUnsavedChanges()) {
+                                        setShowConfirmClose(true);
+                                    } else {
+                                        setOpen(false);
+                                    }
+                                }
+                            }}
+                            variant="ghost"
+                            disabled={processing}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={editData ? handleUpdate : handleAdd}
+                            disabled={processing}
+                        >
+                            {editData ? "Update" : "Save"}
+                        </Button>
+                    </SheetFooter>
+                </SheetContent>
+            </Sheet>
+
+            <AlertDialog open={showConfirmClose}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Discard changes?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            You have unsaved changes. Are you sure you want to
+                            cancel?
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <Button
+                            variant="ghost"
+                            onClick={() => setShowConfirmClose(false)}
+                        >
+                            No, keep editing
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            onClick={() => {
+                                setShowConfirmClose(false);
+                                setOpen(false);
+                            }}
+                        >
+                            Yes, discard
+                        </Button>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </>
+    );
+}
+
+Consultant.layout = (page) => (
+    <AppLayout children={page} title="List of Consultants" />
+);

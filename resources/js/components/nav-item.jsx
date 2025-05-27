@@ -50,6 +50,10 @@ const navAdmin = [
                         url: "/editor",
                     },
                     {
+                        title: "Consultant",
+                        url: "/consultant",
+                    },
+                    {
                         title: "Author",
                         url: "/author",
                     },

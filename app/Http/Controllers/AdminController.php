@@ -108,6 +108,93 @@ class AdminController extends Controller
         }
     }
 
+    public function getConsultant()
+    {
+        $consultants = User::select('id', 'name', 'position', 'email', 'department', 'avatar')
+            ->where('role', 'consultant')
+            ->get();
+
+        return Inertia::render('users/consultant', [
+            "consultants" => $consultants,
+        ]);
+    }
+
+    public function addConsultant(Request $request)
+    {
+        $request->validate([
+            'email' => ['required', 'email', 'unique:users'],
+            'name' => ['required'],
+            'position' => ['required'],
+            'department' => ['required'],
+        ]);
+
+        // $password = Str::random(8);
+
+        $fileUrl = null;
+
+        if ($request->hasFile('avatar')) {
+            $uploadedFile = Cloudinary::uploadApi()->upload(
+                $request->file('avatar')->getRealPath(),
+                ['folder' => 'ditads/users/avatar']
+            );
+
+            $fileUrl = $uploadedFile['secure_url'];
+        }
+
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'email_verified_at' => now(),
+            'password' => Hash::make('P@ssw0rd'),
+            'is_default' => 1,
+            'role' => 'consultant',
+            'position' => $request->position,
+            'department' => $request->department,
+            'avatar' => $fileUrl,
+        ]);
+    }
+
+    public function updateConsultant(Request $request)
+    {
+        $consultant = User::findOrFail($request->id);
+
+        $request->validate([
+            'email' => ['required', 'email', 'unique:users,email,' . $request->id],
+            'name' => ['required'],
+            'position' => ['required'],
+            'department' => ['required'],
+        ]);
+
+        $consultant->update([
+            'name' => $request->name,
+            'email' => $request->email,
+            'position' => $request->position,
+            'department' => $request->department
+        ]);
+
+        if ($request->hasFile('avatar')) {
+            $request->validate([
+                'avatar' => ['mimes:jpeg,jpg,png', 'max:2048']
+            ]);
+
+            if ($consultant->avatar) {
+                $publicId = pathinfo(parse_url($consultant->avatar, PHP_URL_PATH), PATHINFO_FILENAME);
+                Cloudinary::uploadApi()->destroy('ditads/users/avatar/' . $publicId);
+            }
+
+            $uploadedFile = Cloudinary::uploadApi()->upload(
+                $request->file('avatar')->getRealPath(),
+                ['folder' => 'ditads/users/avatar']
+            );
+
+            $fileUrl = $uploadedFile['secure_url'];
+
+            $consultant->update([
+                'avatar' => $fileUrl,
+            ]);
+        }
+    }
+
     public function getAuthor()
     {
         return Inertia::render('users/author');
