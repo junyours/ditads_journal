@@ -1,18 +1,17 @@
 import React, { useState } from "react";
 import HTMLFlipBook from "react-pageflip";
 import { Document, Page, pdfjs } from "react-pdf";
+import { HashLoader } from "react-spinners";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
-const FlipPage = React.forwardRef(({ number }, ref) => {
+const Pages = React.forwardRef((props, ref) => {
     return (
-        <div className="demoPage p-4 bg-white" ref={ref}>
-            <Page pageNumber={number} width={300} />
+        <div className="demoPage" ref={ref}>
+            <p>{props.children}</p>
         </div>
     );
 });
-
-FlipPage.displayName = "FlipPage";
 
 export default function FlipBook({ pdf_file }) {
     const [numPages, setNumPages] = useState(null);
@@ -22,21 +21,32 @@ export default function FlipBook({ pdf_file }) {
     };
 
     return (
-        <div className="flex justify-center my-6">
-            <Document
-                file={{ url: pdf_file }}
-                onLoadSuccess={onDocumentLoadSuccess}
-                loading={<div>Loading PDF...</div>}
-                error={<div>Failed to load PDF.</div>}
-            >
-                {numPages && (
-                    <HTMLFlipBook width={300} height={500}>
-                        {[...Array(numPages).keys()].map((_, index) => (
-                            <FlipPage key={index} number={index + 1} />
-                        ))}
-                    </HTMLFlipBook>
-                )}
-            </Document>
+        <div className="bg-gray-900 h-screen flex flex-col justify-end items-center md:justify-center scroll-mx-2 overflow-hidden">
+            <HTMLFlipBook width={500} height={700} showCover={true}>
+                {[...Array(numPages).keys()].map((n) => (
+                    <Pages number={`${n + 1}`}>
+                        <Document
+                            file={{ url: pdf_file }}
+                            onLoadSuccess={onDocumentLoadSuccess}
+                            loading={<HashLoader color="green" />}
+                            error={
+                                <div className="text-white">
+                                    Failed to load PDF.
+                                </div>
+                            }
+                        >
+                            <Page
+                                loading={<p>Please wait...</p>}
+                                pageNumber={n + 1}
+                                renderAnnotationLayer={false}
+                                renderTextLayer={false}
+                                width={500}
+                                scale={1}
+                            />
+                        </Document>
+                    </Pages>
+                ))}
+            </HTMLFlipBook>
         </div>
     );
 }

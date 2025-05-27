@@ -44,6 +44,7 @@ Route::middleware(['auth', 'admin', 'verified'])->group(function () {
 Route::get('/', [WebController::class, 'welcome']);
 Route::get('/about-us', [WebController::class, 'aboutUs']);
 Route::get('/book-publication', [WebController::class, 'bookPublication']);
+Route::get('/flip-book/{id}', [WebController::class, 'viewFlipBook']);
 Route::get('/magazine', [WebController::class, 'magazine']);
 Route::get('/research-journal', [WebController::class, 'researchJournal']);
 Route::get('/IMRJ/{path}', [WebController::class, 'viewJournal'])->where('path', '.*');

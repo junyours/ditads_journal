@@ -1,6 +1,6 @@
 import WebLayout from "@/layouts/web-layout";
 import BookPublicationBanner from "../../../../../public/images/book-publication-banner.png";
-import { usePage } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import {
     Card,
     CardContent,
@@ -151,19 +151,21 @@ export default function BookPublication() {
                         <p className="text-justify whitespace-pre-line mt-4">
                             {book?.overview}
                         </p>
-                        <div className="size-fit hover-book-flip">
-                            <img
-                                src={book?.cover_page}
-                                alt="cover_page"
-                                className="object-contain size-48"
-                            />
-                            <div className="w-48 border">
-                                <div className="h-2 w-full bg-primary"></div>
-                                <div className="flex items-center bg-muted p-2">
-                                    <p className="text-xs">{book?.title}</p>
+                        <Link href={`/flip-book/${book?.id}`}>
+                            <div className="size-fit hover-book-flip">
+                                <img
+                                    src={book?.cover_page}
+                                    alt={`cover_${book?.title}`}
+                                    className="object-contain size-48"
+                                />
+                                <div className="w-48 border">
+                                    <div className="h-2 w-full bg-primary"></div>
+                                    <div className="flex items-center bg-muted p-2">
+                                        <p className="text-xs">{book?.title}</p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </Link>
                     </div>
                 </SheetContent>
             </Sheet>

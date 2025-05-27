@@ -32,6 +32,15 @@ class WebController extends Controller
         ]);
     }
 
+    public function viewFlipBook(Request $request)
+    {
+        $book = BookPublication::findOrFail($request->id);
+
+        return Inertia::render('web/book/view-book', [
+            'book' => $book->pdf_file
+        ]);
+    }
+
     public function magazine()
     {
         $editors = User::select('name', 'position', 'email', 'department', 'avatar')
