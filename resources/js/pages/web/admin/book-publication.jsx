@@ -241,7 +241,7 @@ export default function BookPublication() {
                         </SheetTitle>
                     </SheetHeader>
                     <div className="flex-1 space-y-4 overflow-y-auto px-2 pb-2">
-                        <div className="space-y-1">
+                        {/* <div className="space-y-1">
                             <Label>Book Category</Label>
                             <BookCategoryCombobox
                                 options={categories}
@@ -251,7 +251,7 @@ export default function BookPublication() {
                                 }
                             />
                             <InputError message={errors.book_category_id} />
-                        </div>
+                        </div> */}
                         <div className="space-y-1">
                             <Label>Cover Page</Label>
                             <div className="flex items-center gap-4">
@@ -299,7 +299,7 @@ export default function BookPublication() {
                             </div>
                             <InputError message={errors.cover_page} />
                         </div>
-                        <div className="space-y-1">
+                        {/* <div className="space-y-1">
                             <Label>PDF File</Label>
                             <div className="flex items-center space-x-4 rounded-md border p-4">
                                 <img src={Pdf} className="size-8" />
@@ -351,7 +351,7 @@ export default function BookPublication() {
                                 hidden
                             />
                             <InputError message={errors.pdf_file} />
-                        </div>
+                        </div> */}
                         <div className="space-y-1">
                             <Label>Title</Label>
                             <Textarea

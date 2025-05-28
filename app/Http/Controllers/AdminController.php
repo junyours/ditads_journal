@@ -215,6 +215,20 @@ class AdminController extends Controller
 
     public function uploadBookPublication(Request $request)
     {
+        // $request->validate([
+        //     'title' => ['required'],
+        //     'soft_isbn' => ['required', 'unique:book_publications'],
+        //     'hard_isbn' => ['required', 'unique:book_publications'],
+        //     'cover_page' => ['required', 'mimes:jpeg,jpg,png', 'max:3048'],
+        //     'author' => ['required'],
+        //     'overview' => ['required'],
+        //     'published_at' => ['required'],
+        //     'pdf_file' => ['required', 'mimes:pdf'],
+        //     'book_category_id' => ['required'],
+        // ], [
+        //     'book_category_id.required' => 'The book category field is required.'
+        // ]);
+
         $request->validate([
             'title' => ['required'],
             'soft_isbn' => ['required', 'unique:book_publications'],
@@ -222,11 +236,7 @@ class AdminController extends Controller
             'cover_page' => ['required', 'mimes:jpeg,jpg,png', 'max:3048'],
             'author' => ['required'],
             'overview' => ['required'],
-            'published_at' => ['required'],
-            'pdf_file' => ['required', 'mimes:pdf'],
-            'book_category_id' => ['required'],
-        ], [
-            'book_category_id.required' => 'The book category field is required.'
+            'published_at' => ['required']
         ]);
 
         if ($request->hasFile('cover_page')) {
@@ -263,14 +273,26 @@ class AdminController extends Controller
             'published_at' => Carbon::parse($request->published_at)
                 ->timezone('Asia/Manila')
                 ->toDateString(),
-            'pdf_file' => $pdf_file,
-            'book_category_id' => $request->book_category_id
+            // 'pdf_file' => $pdf_file,
+            // 'book_category_id' => $request->book_category_id
         ]);
     }
 
     public function updateBookPublication(Request $request)
     {
         $book = BookPublication::findOrFail($request->id);
+
+        // $request->validate([
+        //     'title' => ['required'],
+        //     'soft_isbn' => ['required', 'unique:book_publications,soft_isbn,' . $request->id],
+        //     'hard_isbn' => ['required', 'unique:book_publications,hard_isbn,' . $request->id],
+        //     'author' => ['required'],
+        //     'overview' => ['required'],
+        //     'published_at' => ['required'],
+        //     'book_category_id' => ['required'],
+        // ], [
+        //     'book_category_id.required' => 'The book category field is required.'
+        // ]);
 
         $request->validate([
             'title' => ['required'],
@@ -279,9 +301,6 @@ class AdminController extends Controller
             'author' => ['required'],
             'overview' => ['required'],
             'published_at' => ['required'],
-            'book_category_id' => ['required'],
-        ], [
-            'book_category_id.required' => 'The book category field is required.'
         ]);
 
         $book->update([
@@ -293,7 +312,7 @@ class AdminController extends Controller
             'published_at' => Carbon::parse($request->published_at)
                 ->timezone('Asia/Manila')
                 ->toDateString(),
-            'book_category_id' => $request->book_category_id
+            // 'book_category_id' => $request->book_category_id
         ]);
 
         if ($request->hasFile('cover_page')) {

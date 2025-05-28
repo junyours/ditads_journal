@@ -151,7 +151,7 @@ export default function BookPublication() {
                         <p className="text-justify whitespace-pre-line mt-4">
                             {book?.overview}
                         </p>
-                        <Link href={`/flip-book/${book?.id}`}>
+                        {/* <Link href={`/flip-book/${book?.id}`}> */}
                             <div className="size-fit hover-book-flip">
                                 <img
                                     src={book?.cover_page}
@@ -165,7 +165,7 @@ export default function BookPublication() {
                                     </div>
                                 </div>
                             </div>
-                        </Link>
+                        {/* </Link> */}
                     </div>
                 </SheetContent>
             </Sheet>
