@@ -43,9 +43,9 @@ import {
 } from "@/components/ui/alert-dialog";
 
 const positions = [
-    "Head of Research Consultant",
-    "Associate Research Consultant",
-    "Research Consultant",
+    "Head of Research Consultants",
+    "Associate Research Consultants",
+    "Research Consultants",
 ];
 
 export default function Consultant() {
