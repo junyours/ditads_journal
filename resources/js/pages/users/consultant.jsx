@@ -42,7 +42,11 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-const positions = ["Research Consultant", "Associate Research Consultant"];
+const positions = [
+    "Head of Research Consultant",
+    "Associate Research Consultant",
+    "Research Consultant",
+];
 
 export default function Consultant() {
     const { consultants } = usePage().props;
