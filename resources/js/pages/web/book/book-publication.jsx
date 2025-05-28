@@ -129,7 +129,7 @@ export default function BookPublication() {
             <Sheet open={open} onOpenChange={() => handleOpen()}>
                 <SheetContent
                     side="bottom"
-                    className="h-full overflow-y-auto text-sm max-w-7xl mx-auto"
+                    className="h-full overflow-y-auto text-sm"
                 >
                     <SheetHeader>
                         <div className="flex gap-2 items-center text-primary">
@@ -152,19 +152,19 @@ export default function BookPublication() {
                             {book?.overview}
                         </p>
                         {/* <Link href={`/flip-book/${book?.id}`}> */}
-                            <div className="size-fit hover-book-flip">
-                                <img
-                                    src={book?.cover_page}
-                                    alt={`cover_${book?.title}`}
-                                    className="object-contain size-48"
-                                />
-                                <div className="w-48 border">
-                                    <div className="h-2 w-full bg-primary"></div>
-                                    <div className="flex items-center bg-muted p-2">
-                                        <p className="text-xs">{book?.title}</p>
-                                    </div>
+                        <div className="size-fit hover-book-flip">
+                            <img
+                                src={book?.cover_page}
+                                alt={`cover_${book?.title}`}
+                                className="object-contain size-48"
+                            />
+                            <div className="w-48 border">
+                                <div className="h-2 w-full bg-primary"></div>
+                                <div className="flex items-center bg-muted p-2">
+                                    <p className="text-xs">{book?.title}</p>
                                 </div>
                             </div>
+                        </div>
                         {/* </Link> */}
                     </div>
                 </SheetContent>

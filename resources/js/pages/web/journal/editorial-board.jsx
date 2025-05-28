@@ -29,7 +29,7 @@ export default function EditorialBoard({ editors }) {
                                     {editor.email}
                                 </a>
                             </div>
-                            <CardTitle className="capitalize">
+                            <CardTitle>
                                 {editor.position}
                             </CardTitle>
                         </div>

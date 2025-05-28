@@ -42,7 +42,7 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-const positions = ["Editor in chief", "Associate editor", "Editorial board"];
+const positions = ["Editor in Chief", "Associate Editor", "Editorial Board"];
 
 export default function Editor() {
     const { editors } = usePage().props;
