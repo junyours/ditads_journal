@@ -38,7 +38,7 @@ export default function ResearchConsultant() {
                                         {consultant.email}
                                     </a>
                                 </div>
-                                <CardTitle className="capitalize">
+                                <CardTitle>
                                     {consultant.position}
                                 </CardTitle>
                             </div>
