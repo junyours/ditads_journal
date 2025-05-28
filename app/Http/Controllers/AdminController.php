@@ -197,7 +197,13 @@ class AdminController extends Controller
 
     public function getAuthor()
     {
-        return Inertia::render('users/author');
+        $authors = User::select('id', 'name', 'email', 'avatar')
+            ->where('role', 'author')
+            ->get();
+
+        return Inertia::render('users/author', [
+            'authors' => $authors
+        ]);
     }
 
     public function getBookPublication()
