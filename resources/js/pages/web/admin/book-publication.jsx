@@ -172,7 +172,7 @@ export default function BookPublication() {
         },
         {
             accessorKey: "published_at",
-            header: "Published at",
+            header: "Published At",
             cell: ({ row }) => {
                 const book = row.original;
                 return formatDate(book.published_at);
@@ -394,7 +394,7 @@ export default function BookPublication() {
                             <InputError message={errors.doi} />
                         </div>
                         <div className="space-y-1">
-                            <Label>Published at</Label>
+                            <Label>Published At</Label>
                             <DatePicker
                                 date={data.published_at}
                                 setDate={(date) =>

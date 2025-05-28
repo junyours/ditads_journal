@@ -237,8 +237,7 @@ class AdminController extends Controller
             'cover_page' => ['required', 'mimes:jpeg,jpg,png', 'max:3048'],
             'author' => ['required'],
             'overview' => ['required'],
-            'published_at' => ['required'],
-            'doi' => ['required'],
+            'published_at' => ['required']
         ]);
 
         if ($request->hasFile('cover_page')) {
@@ -277,7 +276,7 @@ class AdminController extends Controller
                 ->toDateString(),
             // 'pdf_file' => $pdf_file,
             // 'book_category_id' => $request->book_category_id,
-            'doi' => $request->doi,
+            // 'doi' => $request->doi,
         ]);
     }
 
@@ -304,8 +303,7 @@ class AdminController extends Controller
             'hard_isbn' => ['nullable', 'unique:book_publications,hard_isbn,' . $request->id],
             'author' => ['required'],
             'overview' => ['required'],
-            'published_at' => ['required'],
-            'doi' => ['required'],
+            'published_at' => ['required']
         ]);
 
         $book->update([
@@ -318,7 +316,7 @@ class AdminController extends Controller
                 ->timezone('Asia/Manila')
                 ->toDateString(),
             // 'book_category_id' => $request->book_category_id,
-            'doi' => $request->doi,
+            // 'doi' => $request->doi,
         ]);
 
         if ($request->hasFile('cover_page')) {
