@@ -202,7 +202,7 @@ class AdminController extends Controller
 
     public function getBookPublication()
     {
-        $books = BookPublication::select('id', 'title', 'soft_isbn', 'hard_isbn', 'cover_page', 'author', 'overview', 'published_at', 'pdf_file', 'book_category_id')
+        $books = BookPublication::select('id', 'title', 'soft_isbn', 'hard_isbn', 'cover_page', 'author', 'overview', 'published_at', 'pdf_file', 'book_category_id', 'doi')
             ->get();
 
         $categories = BookCategory::select('id', 'name')->get();
@@ -225,6 +225,7 @@ class AdminController extends Controller
         //     'published_at' => ['required'],
         //     'pdf_file' => ['required', 'mimes:pdf'],
         //     'book_category_id' => ['required'],
+        //     'doi' => ['required'],
         // ], [
         //     'book_category_id.required' => 'The book category field is required.'
         // ]);
@@ -236,7 +237,8 @@ class AdminController extends Controller
             'cover_page' => ['required', 'mimes:jpeg,jpg,png', 'max:3048'],
             'author' => ['required'],
             'overview' => ['required'],
-            'published_at' => ['required']
+            'published_at' => ['required'],
+            'doi' => ['required'],
         ]);
 
         if ($request->hasFile('cover_page')) {
@@ -274,7 +276,8 @@ class AdminController extends Controller
                 ->timezone('Asia/Manila')
                 ->toDateString(),
             // 'pdf_file' => $pdf_file,
-            // 'book_category_id' => $request->book_category_id
+            // 'book_category_id' => $request->book_category_id,
+            'doi' => $request->doi,
         ]);
     }
 
@@ -290,6 +293,7 @@ class AdminController extends Controller
         //     'overview' => ['required'],
         //     'published_at' => ['required'],
         //     'book_category_id' => ['required'],
+        //     'doi' => ['required'],
         // ], [
         //     'book_category_id.required' => 'The book category field is required.'
         // ]);
@@ -301,6 +305,7 @@ class AdminController extends Controller
             'author' => ['required'],
             'overview' => ['required'],
             'published_at' => ['required'],
+            'doi' => ['required'],
         ]);
 
         $book->update([
@@ -312,7 +317,8 @@ class AdminController extends Controller
             'published_at' => Carbon::parse($request->published_at)
                 ->timezone('Asia/Manila')
                 ->toDateString(),
-            // 'book_category_id' => $request->book_category_id
+            // 'book_category_id' => $request->book_category_id,
+            'doi' => $request->doi,
         ]);
 
         if ($request->hasFile('cover_page')) {
@@ -452,7 +458,8 @@ class AdminController extends Controller
             'published_at',
             'country',
             'page_number',
-            'tracking_number'
+            'tracking_number',
+            'doi'
         )
             ->get();
 
@@ -473,7 +480,8 @@ class AdminController extends Controller
             'published_at' => ['required'],
             'country' => ['required'],
             'page_number' => ['required'],
-            'tracking_number' => ['required', 'unique:research_journals']
+            'tracking_number' => ['required', 'unique:research_journals'],
+            'doi' => ['required'],
         ]);
 
         if ($request->hasFile('pdf_file')) {
@@ -501,7 +509,8 @@ class AdminController extends Controller
                 ->toDateString(),
             'country' => $request->country,
             'page_number' => $request->page_number,
-            'tracking_number' => $request->tracking_number
+            'tracking_number' => $request->tracking_number,
+            'doi' => $request->doi
         ]);
     }
 
@@ -518,7 +527,8 @@ class AdminController extends Controller
             'published_at' => ['required'],
             'country' => ['required'],
             'page_number' => ['required'],
-            'tracking_number' => ['required', 'unique:research_journals,tracking_number,' . $request->id]
+            'tracking_number' => ['required', 'unique:research_journals,tracking_number,' . $request->id],
+            'doi' => ['required'],
         ]);
 
         if ($request->hasFile('pdf_file')) {
@@ -558,7 +568,8 @@ class AdminController extends Controller
             'country' => $request->country,
             'page_number' => $request->page_number,
             'pdf_file' => $journal->pdf_file,
-            'tracking_number' => $request->tracking_number
+            'tracking_number' => $request->tracking_number,
+            'doi' => $request->doi
         ]);
     }
 

@@ -44,8 +44,8 @@ import {
 
 const positions = [
     "Head of Research Consultants",
-    "Associate Research Consultants",
-    "Research Consultants",
+    "Associate Research Consultant",
+    "Research Consultant",
 ];
 
 export default function Consultant() {

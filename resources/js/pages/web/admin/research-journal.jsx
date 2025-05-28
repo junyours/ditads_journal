@@ -77,6 +77,7 @@ export default function ResearchJournal() {
         country: "",
         page_number: "",
         tracking_number: "",
+        doi: "",
     });
 
     const handleOpen = (journal = null) => {
@@ -94,6 +95,7 @@ export default function ResearchJournal() {
                 country: journal.country,
                 page_number: journal.page_number,
                 tracking_number: journal.tracking_number,
+                doi: journal.doi,
             };
             setData(journalData);
             setInitialData(journalData);
@@ -111,6 +113,7 @@ export default function ResearchJournal() {
                 country: "",
                 page_number: "",
                 tracking_number: "",
+                doi: "",
             };
             setData(newData);
             setInitialData(newData);
@@ -162,7 +165,7 @@ export default function ResearchJournal() {
         },
         {
             accessorKey: "published_at",
-            header: "Published at",
+            header: "Published At",
             cell: ({ row }) => {
                 const journal = row.original;
                 return formatDate(journal.published_at);
@@ -321,7 +324,15 @@ export default function ResearchJournal() {
                             </div>
                         </div>
                         <div className="space-y-1">
-                            <Label>Published at</Label>
+                            <Label>DOI</Label>
+                            <Input
+                                value={data.doi}
+                                onChange={(e) => setData("doi", e.target.value)}
+                            />
+                            <InputError message={errors.doi} />
+                        </div>
+                        <div className="space-y-1">
+                            <Label>Published At</Label>
                             <DatePicker
                                 date={data.published_at}
                                 setDate={(date) =>

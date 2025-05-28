@@ -69,6 +69,7 @@ export default function BookPublication() {
         overview: "",
         pdf_file: null,
         book_category_id: null,
+        doi: "",
     });
 
     const handleOpen = (book = null) => {
@@ -84,6 +85,7 @@ export default function BookPublication() {
                 overview: book.overview,
                 pdf_file: book.pdf_file,
                 book_category_id: book.book_category_id,
+                doi: book.doi,
             };
             setData(bookData);
             setInitialData(bookData);
@@ -101,6 +103,7 @@ export default function BookPublication() {
                 overview: "",
                 pdf_file: null,
                 book_category_id: null,
+                doi: "",
             };
             setData(newData);
             setInitialData(newData);
@@ -381,6 +384,14 @@ export default function BookPublication() {
                                 }
                             />
                             <InputError message={errors.hard_isbn} />
+                        </div>
+                        <div className="space-y-1">
+                            <Label>DOI</Label>
+                            <Input
+                                value={data.doi}
+                                onChange={(e) => setData("doi", e.target.value)}
+                            />
+                            <InputError message={errors.doi} />
                         </div>
                         <div className="space-y-1">
                             <Label>Published at</Label>
