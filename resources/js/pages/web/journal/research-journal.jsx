@@ -171,6 +171,16 @@ export default function ResearchJournal({
                         <p className="font-bold">Page No.:</p>
                         <p>{journal?.page_number}</p>
                     </div>
+                    <div className="sm:flex gap-1">
+                        <p className="font-bold">DOI:</p>
+                        <a
+                            href={journal?.doi}
+                            target="_blank"
+                            className="hover:underline"
+                        >
+                            {journal?.doi}
+                        </a>
+                    </div>
                     <div className="flex flex-col gap-1">
                         <h1 className="font-bold">Abstract:</h1>
                         <p
