@@ -20,6 +20,7 @@ import {
     BookOpenText,
     BookText,
     ChevronRight,
+    CreditCard,
     FileInput,
     FileText,
     LayoutDashboard,
@@ -114,6 +115,12 @@ const navAdmin = [
     {
         name: "Others",
         items: [
+            {
+                title: "Payment Methods",
+                url: "/admin/others/payment-methods",
+                icon: CreditCard,
+                collapse: false,
+            },
             {
                 title: "Schools",
                 url: "/admin/others/schools",

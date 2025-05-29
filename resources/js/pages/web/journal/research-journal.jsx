@@ -74,6 +74,16 @@ export default function ResearchJournal({
                                 <p className="text-xs font-medium">
                                     Page No.: {journal.page_number}
                                 </p>
+                                <p className="text-xs font-medium">
+                                    DOI:{" "}
+                                    <a
+                                        href={journal.doi}
+                                        target="_blank"
+                                        className="hover:underline"
+                                    >
+                                        {journal.doi}
+                                    </a>
+                                </p>
                             </div>
                             <p className="line-clamp-3 text-justify text-muted-foreground">
                                 {journal.abstract}

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\BookCategory;
 use App\Models\BookPublication;
 use App\Models\Magazine;
+use App\Models\PaymentMethod;
 use App\Models\ResearchJournal;
 use App\Models\School;
 use App\Models\User;
@@ -575,6 +576,101 @@ class AdminController extends Controller
             'tracking_number' => $request->tracking_number,
             'doi' => $request->doi
         ]);
+    }
+
+    public function paymentMethod()
+    {
+        $payments = PaymentMethod::select('id', 'name', 'account_name', 'account_number', 'account_email', 'qr_code', 'type', 'status')->get();
+
+        return Inertia::render('others/payment-method', [
+            'payments' => $payments
+        ]);
+    }
+
+    public function AddPaymentMethod(Request $request)
+    {
+        $request->validate([
+            'name' => ['required', 'unique:payment_methods'],
+            'account_name' => ['required'],
+            'account_email' => ['unique:payment_methods'],
+            'qr_code' => $request->have_qr === 'yes' ? ['required', 'mimes:jpeg,jpg,png', 'max:2048'] : ['nullable'],
+        ]);
+
+        if ($request->have_qr === 'yes') {
+            $uploadedCoverPage = Cloudinary::uploadApi()->upload(
+                $request->file('qr_code')->getRealPath(),
+                [
+                    'folder' => 'ditads/payment_methods/qr_code'
+                ]
+            );
+
+            $qr_code = $uploadedCoverPage['secure_url'];
+        }
+
+        PaymentMethod::create([
+            'name' => $request->name,
+            'account_name' => $request->account_name,
+            'account_number' => $request->account_number,
+            'account_email' => $request->account_email,
+            'qr_code' => $qr_code
+        ]);
+    }
+
+    public function UpdatePaymentMethod(Request $request)
+    {
+        $payment = PaymentMethod::findOrFail($request->id);
+
+        $request->validate([
+            'name' => ['required', 'unique:payment_methods,name,' . $request->id],
+            'account_name' => ['required'],
+            'account_email' => ['unique:payment_methods,account_email,' . $request->id],
+        ]);
+
+        $payment->update([
+            'name' => $request->name,
+            'account_name' => $request->account_name,
+            'account_number' => $request->account_number,
+            'account_email' => $request->account_email,
+        ]);
+
+        if ($request->have_qr === 'yes') {
+            $request->validate([
+                'qr_code' => ['required']
+            ]);
+
+            if ($request->hasFile('qr_code')) {
+                $request->validate([
+                    'qr_code' => ['mimes:jpeg,jpg,png']
+                ]);
+
+                if ($payment->qr_code) {
+                    $publicId = pathinfo(parse_url($payment->qr_code, PHP_URL_PATH), PATHINFO_FILENAME);
+                    Cloudinary::uploadApi()->destroy('ditads/payment_methods/qr_code/' . $publicId);
+                }
+
+                $uploadedCoverPage = Cloudinary::uploadApi()->upload(
+                    $request->file('qr_code')->getRealPath(),
+                    [
+                        'folder' => 'ditads/payment_methods/qr_code'
+                    ]
+                );
+
+                $qr_code = $uploadedCoverPage['secure_url'];
+
+                $payment->update([
+                    'qr_code' => $qr_code
+                ]);
+            }
+        } else {
+            if ($payment->qr_code) {
+                $publicId = pathinfo(parse_url($payment->qr_code, PHP_URL_PATH), PATHINFO_FILENAME);
+                Cloudinary::uploadApi()->destroy('ditads/payment_methods/qr_code/' . $publicId);
+
+                $payment->update([
+                    'qr_code' => null,
+                ]);
+            }
+        }
     }
 
     public function getSchool()
