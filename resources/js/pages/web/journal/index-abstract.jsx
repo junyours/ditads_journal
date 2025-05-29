@@ -47,8 +47,8 @@ export default function IndexAbstract() {
                 >
                     <img
                         src={image.name}
-                        alt="indexing"
-                        className="object-contain "
+                        alt={`indexing-${index}`}
+                        className="object-contain"
                     />
                 </a>
             ))}

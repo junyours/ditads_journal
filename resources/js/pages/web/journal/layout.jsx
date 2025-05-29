@@ -16,6 +16,7 @@ import { usePage } from "@inertiajs/react";
 import AboutPublisher from "./about-publisher";
 import IndexAbstract from "./index-abstract";
 import Download from "./download";
+import Certificate from "./certificate";
 
 const banners = [JournalBanner];
 
@@ -42,6 +43,10 @@ export default function JournalLayout() {
         {
             title: "Downloads",
             page: Download,
+        },
+        {
+            title: "Certificates",
+            page: Certificate,
         },
         {
             title: "Review Process",
