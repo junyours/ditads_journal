@@ -209,7 +209,7 @@ class AdminController extends Controller
 
     public function getBookPublication()
     {
-        $books = BookPublication::select('id', 'title', 'soft_isbn', 'hard_isbn', 'cover_page', 'author', 'overview', 'published_at', 'pdf_file', 'book_category_id', 'doi')
+        $books = BookPublication::select('id', 'title', 'soft_isbn', 'hard_isbn', 'cover_page', 'author', 'overview', 'published_at', 'pdf_file', 'book_category_id', 'doi', 'overview_pdf_file')
             ->get();
 
         $categories = BookCategory::select('id', 'name')->get();
@@ -222,29 +222,21 @@ class AdminController extends Controller
 
     public function uploadBookPublication(Request $request)
     {
-        // $request->validate([
-        //     'title' => ['required'],
-        //     'soft_isbn' => ['required', 'unique:book_publications'],
-        //     'hard_isbn' => ['required', 'unique:book_publications'],
-        //     'cover_page' => ['required', 'mimes:jpeg,jpg,png', 'max:3048'],
-        //     'author' => ['required'],
-        //     'overview' => ['required'],
-        //     'published_at' => ['required'],
-        //     'pdf_file' => ['required', 'mimes:pdf'],
-        //     'book_category_id' => ['required'],
-        //     'doi' => ['required'],
-        // ], [
-        //     'book_category_id.required' => 'The book category field is required.'
-        // ]);
-
         $request->validate([
             'title' => ['required'],
             'soft_isbn' => ['required', 'unique:book_publications'],
-            'hard_isbn' => ['nullable', 'unique:book_publications'],
+            'hard_isbn' => ['required', 'unique:book_publications'],
             'cover_page' => ['required', 'mimes:jpeg,jpg,png', 'max:3048'],
             'author' => ['required'],
             'overview' => ['required'],
-            'published_at' => ['required']
+            'published_at' => ['required'],
+            'pdf_file' => ['required', 'mimes:pdf'],
+            'book_category_id' => ['required'],
+            'doi' => ['required'],
+            'overview_pdf_file' => ['required', 'mimes:pdf'],
+        ], [
+            'book_category_id.required' => 'The book category field is required.',
+            'pdf_file.required' => 'The book pdf file field is required.'
         ]);
 
         if ($request->hasFile('cover_page')) {
@@ -271,6 +263,19 @@ class AdminController extends Controller
             $pdf_file = 'v' . $uploadedPdfFile['version'] . '/' . $uploadedPdfFile['public_id'];
         }
 
+        if ($request->hasFile('overview_pdf_file')) {
+            $uploadedPdfFile = Cloudinary::uploadApi()->upload(
+                $request->file('overview_pdf_file')->getRealPath(),
+                [
+                    'folder' => 'ditads/books/overview_pdf_file',
+                    'resource_type' => 'raw',
+                    'format' => 'pdf',
+                ]
+            );
+
+            $overview_pdf_file = 'v' . $uploadedPdfFile['version'] . '/' . $uploadedPdfFile['public_id'];
+        }
+
         BookPublication::create([
             'title' => $request->title,
             'soft_isbn' => $request->soft_isbn,
@@ -281,9 +286,10 @@ class AdminController extends Controller
             'published_at' => Carbon::parse($request->published_at)
                 ->timezone('Asia/Manila')
                 ->toDateString(),
-            // 'pdf_file' => $pdf_file,
-            // 'book_category_id' => $request->book_category_id,
-            // 'doi' => $request->doi,
+            'pdf_file' => $pdf_file,
+            'book_category_id' => $request->book_category_id,
+            'doi' => $request->doi,
+            'overview_pdf_file' => $overview_pdf_file
         ]);
     }
 
@@ -291,26 +297,19 @@ class AdminController extends Controller
     {
         $book = BookPublication::findOrFail($request->id);
 
-        // $request->validate([
-        //     'title' => ['required'],
-        //     'soft_isbn' => ['required', 'unique:book_publications,soft_isbn,' . $request->id],
-        //     'hard_isbn' => ['required', 'unique:book_publications,hard_isbn,' . $request->id],
-        //     'author' => ['required'],
-        //     'overview' => ['required'],
-        //     'published_at' => ['required'],
-        //     'book_category_id' => ['required'],
-        //     'doi' => ['required'],
-        // ], [
-        //     'book_category_id.required' => 'The book category field is required.'
-        // ]);
-
         $request->validate([
             'title' => ['required'],
             'soft_isbn' => ['required', 'unique:book_publications,soft_isbn,' . $request->id],
-            'hard_isbn' => ['nullable', 'unique:book_publications,hard_isbn,' . $request->id],
+            'hard_isbn' => ['required', 'unique:book_publications,hard_isbn,' . $request->id],
             'author' => ['required'],
             'overview' => ['required'],
-            'published_at' => ['required']
+            'published_at' => ['required'],
+            'book_category_id' => ['required'],
+            'doi' => ['required'],
+            'overview_pdf_file' => ['required', 'mimes:pdf'],
+        ], [
+            'book_category_id.required' => 'The book category field is required.',
+            'pdf_file.required' => 'The book pdf file field is required.'
         ]);
 
         $book->update([
@@ -322,8 +321,8 @@ class AdminController extends Controller
             'published_at' => Carbon::parse($request->published_at)
                 ->timezone('Asia/Manila')
                 ->toDateString(),
-            // 'book_category_id' => $request->book_category_id,
-            // 'doi' => $request->doi,
+            'book_category_id' => $request->book_category_id,
+            'doi' => $request->doi,
         ]);
 
         if ($request->hasFile('cover_page')) {
@@ -351,6 +350,8 @@ class AdminController extends Controller
         if ($request->hasFile('pdf_file')) {
             $request->validate([
                 'pdf_file' => ['required', 'mimes:pdf'],
+            ], [
+                'pdf_file.required' => 'The book pdf file field is required.'
             ]);
 
             if ($book->pdf_file) {
@@ -373,6 +374,34 @@ class AdminController extends Controller
 
             $book->update([
                 'pdf_file' => $pdf_file,
+            ]);
+        }
+
+        if ($request->hasFile('overview_pdf_file')) {
+            $request->validate([
+                'overview_pdf_file' => ['required', 'mimes:pdf'],
+            ]);
+
+            if ($book->overview_pdf_file) {
+                $publicId = explode('/', $book->overview_pdf_file, 2)[1];
+                Cloudinary::uploadApi()->destroy($publicId, [
+                    'resource_type' => 'raw',
+                ]);
+            }
+
+            $uploadedPdfFile = Cloudinary::uploadApi()->upload(
+                $request->file('overview_pdf_file')->getRealPath(),
+                [
+                    'folder' => 'ditads/books/overview_pdf_file',
+                    'resource_type' => 'raw',
+                    'format' => 'pdf',
+                ]
+            );
+
+            $overview_pdf_file = 'v' . $uploadedPdfFile['version'] . '/' . $uploadedPdfFile['public_id'];
+
+            $book->update([
+                'overview_pdf_file' => $overview_pdf_file,
             ]);
         }
     }

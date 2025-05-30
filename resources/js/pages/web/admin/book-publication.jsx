@@ -70,6 +70,7 @@ export default function BookPublication() {
         pdf_file: null,
         book_category_id: null,
         doi: "",
+        overview_pdf_file: null,
     });
 
     const handleOpen = (book = null) => {
@@ -86,6 +87,7 @@ export default function BookPublication() {
                 pdf_file: book.pdf_file,
                 book_category_id: book.book_category_id,
                 doi: book.doi,
+                overview_pdf_file: book.overview_pdf_file,
             };
             setData(bookData);
             setInitialData(bookData);
@@ -104,6 +106,7 @@ export default function BookPublication() {
                 pdf_file: null,
                 book_category_id: null,
                 doi: "",
+                overview_pdf_file: null,
             };
             setData(newData);
             setInitialData(newData);
@@ -244,7 +247,7 @@ export default function BookPublication() {
                         </SheetTitle>
                     </SheetHeader>
                     <div className="flex-1 space-y-4 overflow-y-auto px-2 pb-2">
-                        {/* <div className="space-y-1">
+                        <div className="space-y-1">
                             <Label>Book Category</Label>
                             <BookCategoryCombobox
                                 options={categories}
@@ -254,7 +257,7 @@ export default function BookPublication() {
                                 }
                             />
                             <InputError message={errors.book_category_id} />
-                        </div> */}
+                        </div>
                         <div className="space-y-1">
                             <Label>Cover Page</Label>
                             <div className="flex items-center gap-4">
@@ -302,8 +305,8 @@ export default function BookPublication() {
                             </div>
                             <InputError message={errors.cover_page} />
                         </div>
-                        {/* <div className="space-y-1">
-                            <Label>PDF File</Label>
+                        <div className="space-y-1">
+                            <Label>Book PDF File</Label>
                             <div className="flex items-center space-x-4 rounded-md border p-4">
                                 <img src={Pdf} className="size-8" />
                                 <div className="flex-1 space-y-1">
@@ -354,7 +357,64 @@ export default function BookPublication() {
                                 hidden
                             />
                             <InputError message={errors.pdf_file} />
-                        </div> */}
+                        </div>
+                        <div className="space-y-1">
+                            <Label>Overview PDF File</Label>
+                            <div className="flex items-center space-x-4 rounded-md border p-4">
+                                <img src={Pdf} className="size-8" />
+                                <div className="flex-1 space-y-1">
+                                    {typeof data.overview_pdf_file ===
+                                    "string" ? (
+                                        <>
+                                            <a
+                                                href={`/view-book/${data.overview_pdf_file}`}
+                                                target="_blank"
+                                                className="text-sm text-blue-600 hover:underline"
+                                            >
+                                                View PDF
+                                            </a>
+                                        </>
+                                    ) : data.overview_pdf_file ? (
+                                        <>
+                                            <p className="text-sm font-medium line-clamp-1">
+                                                {data.overview_pdf_file.name}
+                                            </p>
+                                            <p className="text-xs text-muted-foreground">
+                                                PDF
+                                            </p>
+                                        </>
+                                    ) : (
+                                        <p className="text-sm font-medium">
+                                            No file chosen
+                                        </p>
+                                    )}
+                                </div>
+                                <Button
+                                    onClick={() =>
+                                        document
+                                            .getElementById("overview_pdf_file")
+                                            .click()
+                                    }
+                                    size="icon"
+                                    variant="ghost"
+                                >
+                                    <Upload />
+                                </Button>
+                            </div>
+                            <input
+                                accept=".pdf"
+                                id="overview_pdf_file"
+                                type="file"
+                                onChange={(e) =>
+                                    setData(
+                                        "overview_pdf_file",
+                                        e.target.files[0]
+                                    )
+                                }
+                                hidden
+                            />
+                            <InputError message={errors.overview_pdf_file} />
+                        </div>
                         <div className="space-y-1">
                             <Label>Title</Label>
                             <Textarea

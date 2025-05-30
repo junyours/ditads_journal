@@ -35,7 +35,7 @@ class WebController extends Controller
 
     public function bookPublication()
     {
-        $books = BookPublication::select('id', 'title', 'soft_isbn', 'hard_isbn', 'cover_page', 'author', 'overview', 'published_at', 'doi')
+        $books = BookPublication::select('id', 'title', 'soft_isbn', 'hard_isbn', 'cover_page', 'author', 'overview', 'published_at', 'doi', 'overview_pdf_file')
             ->get();
 
         return Inertia::render('web/book/book-publication', [

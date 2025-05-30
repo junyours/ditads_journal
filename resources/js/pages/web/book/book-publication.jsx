@@ -25,6 +25,7 @@ import {
     CarouselItem,
 } from "@/components/ui/carousel";
 import AutoScroll from "embla-carousel-auto-scroll";
+import PDF from "../../../../../public/images/pdf.png";
 
 const banners = [BookPublicationBanner];
 
@@ -102,6 +103,16 @@ export default function BookPublication() {
                                     Soft/Hard Bound ISBN: {book.soft_isbn} /{" "}
                                     {book.hard_isbn}
                                 </span>
+                                <span className="text-xs">
+                                    DOI:{" "}
+                                    <a
+                                        href={book.doi}
+                                        target="_blank"
+                                        className="hover:underline"
+                                    >
+                                        {book.doi}
+                                    </a>
+                                </span>
                             </CardHeader>
                             <CardContent className="flex-1 space-y-4 px-4">
                                 <CardTitle className="break-words line-clamp-3">
@@ -119,6 +130,10 @@ export default function BookPublication() {
                                 >
                                     Read more
                                     <MoveRight />
+                                </Button>
+                                <Button size="sm" variant="ghost">
+                                    PDF open access
+                                    <img src={PDF} className="size-4" />
                                 </Button>
                             </CardFooter>
                         </Card>
@@ -145,6 +160,16 @@ export default function BookPublication() {
                         <span>
                             Soft/Hard Bound ISBN: {book?.soft_isbn} /{" "}
                             {book?.hard_isbn}
+                        </span>
+                        <span>
+                            DOI:{" "}
+                            <a
+                                href={book?.doi}
+                                target="_blank"
+                                className="hover:underline"
+                            >
+                                {book?.doi}
+                            </a>
                         </span>
                     </SheetHeader>
                     <div className="space-y-4">
