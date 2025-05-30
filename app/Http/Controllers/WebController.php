@@ -43,9 +43,22 @@ class WebController extends Controller
         ]);
     }
 
-    public function viewFlipBook(Request $request)
+    public function generateBookHash($soft_isbn, $hard_isbn)
     {
-        $book = BookPublication::findOrFail($request->id);
+        $secret = config('app.key');
+        return hash_hmac('sha256', $soft_isbn . '|' . $hard_isbn, $secret);
+    }
+
+    public function viewFlipBook($hash)
+    {
+        $book = BookPublication::get()->first(function ($book) use ($hash) {
+            $generated = $this->generateBookHash($book->soft_isbn, $book->hard_isbn);
+            return hash_equals($generated, $hash);
+        });
+
+        if (!$book) {
+            return abort(404);
+        }
 
         return Inertia::render('web/book/view-book', [
             'book' => $book->pdf_file

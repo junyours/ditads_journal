@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\WebController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/settings/profile', [SettingController::class, 'profile']);
@@ -53,7 +54,14 @@ Route::get('/', [WebController::class, 'welcome']);
 Route::get('/about-us', [WebController::class, 'aboutUs']);
 Route::get('/research-consultant', [WebController::class, 'researchConsultant']);
 Route::get('/book-publication', [WebController::class, 'bookPublication']);
-Route::get('/flip-book/{id}', [WebController::class, 'viewFlipBook']);
+Route::get('/api/book-hash', function (Request $request) {
+    $soft = $request->query('soft_isbn');
+    $hard = $request->query('hard_isbn');
+    $secret = config('app.key');
+    $hash = hash_hmac('sha256', $soft . '|' . $hard, $secret);
+    return response()->json(['hash' => $hash]);
+});
+Route::get('/flip-book/{hash}', [WebController::class, 'viewFlipBook']);
 Route::get('/magazine', [WebController::class, 'magazine']);
 Route::get('/research-journal', [WebController::class, 'researchJournal']);
 Route::get('/IMRJ/{path}', [WebController::class, 'viewJournal'])->where('path', '.*');

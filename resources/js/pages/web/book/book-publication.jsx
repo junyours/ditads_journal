@@ -1,6 +1,6 @@
 import WebLayout from "@/layouts/web-layout";
 import BookPublicationBanner from "../../../../../public/images/book-publication-banner.png";
-import { Link, usePage } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 import {
     Card,
     CardContent,
@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/carousel";
 import AutoScroll from "embla-carousel-auto-scroll";
 import PDF from "../../../../../public/images/pdf.png";
+import axios from "axios";
 
 const banners = [BookPublicationBanner];
 
@@ -176,8 +177,20 @@ export default function BookPublication() {
                         <p className="text-justify whitespace-pre-line mt-4">
                             {book?.overview}
                         </p>
-                        {/* <Link href={`/flip-book/${book?.id}`}> */}
-                        <div className="size-fit hover-book-flip">
+                        <div
+                            // onClick={async () => {
+                            //     const res = await axios.get("/api/book-hash", {
+                            //         params: {
+                            //             soft_isbn: book.soft_isbn,
+                            //             hard_isbn: book.hard_isbn,
+                            //         },
+                            //     });
+
+                            //     const hash = res.data.hash;
+                            //     router.visit(`/flip-book/${hash}`);
+                            // }}
+                            className="size-fit hover-book-flip"
+                        >
                             <img
                                 src={book?.cover_page}
                                 alt={`cover_${book?.title}`}
@@ -190,7 +203,6 @@ export default function BookPublication() {
                                 </div>
                             </div>
                         </div>
-                        {/* </Link> */}
                     </div>
                 </SheetContent>
             </Sheet>
