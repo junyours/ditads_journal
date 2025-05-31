@@ -445,14 +445,14 @@ export default function BookPublication() {
                             />
                             <InputError message={errors.hard_isbn} />
                         </div>
-                        <div className="space-y-1">
+                        {/* <div className="space-y-1">
                             <Label>DOI</Label>
                             <Input
                                 value={data.doi}
                                 onChange={(e) => setData("doi", e.target.value)}
                             />
                             <InputError message={errors.doi} />
-                        </div>
+                        </div> */}
                         <div className="space-y-1">
                             <Label>Published At</Label>
                             <DatePicker

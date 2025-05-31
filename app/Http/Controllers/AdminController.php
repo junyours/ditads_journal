@@ -232,7 +232,7 @@ class AdminController extends Controller
             'published_at' => ['required'],
             'pdf_file' => ['required', 'mimes:pdf'],
             'book_category_id' => ['required'],
-            'doi' => ['required'],
+            // 'doi' => ['required'],
             // 'overview_pdf_file' => ['required', 'mimes:pdf'],
         ], [
             'book_category_id.required' => 'The book category field is required.',
@@ -288,7 +288,7 @@ class AdminController extends Controller
                 ->toDateString(),
             'pdf_file' => $pdf_file,
             'book_category_id' => $request->book_category_id,
-            'doi' => $request->doi,
+            // 'doi' => $request->doi,
             // 'overview_pdf_file' => $overview_pdf_file
         ]);
     }
@@ -305,7 +305,7 @@ class AdminController extends Controller
             'overview' => ['required'],
             'published_at' => ['required'],
             'book_category_id' => ['required'],
-            'doi' => ['required'],
+            // 'doi' => ['required'],
         ], [
             'book_category_id.required' => 'The book category field is required.'
         ]);
@@ -320,7 +320,7 @@ class AdminController extends Controller
                 ->timezone('Asia/Manila')
                 ->toDateString(),
             'book_category_id' => $request->book_category_id,
-            'doi' => $request->doi,
+            // 'doi' => $request->doi,
         ]);
 
         if ($request->hasFile('cover_page')) {
