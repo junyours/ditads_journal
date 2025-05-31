@@ -4,9 +4,5 @@ import { usePage } from "@inertiajs/react";
 export default function ViewBook() {
     const { book } = usePage().props;
 
-    return (
-        <div className="h-screen">
-            <FlipBook pdf_file={`/view-book/${book}`} />
-        </div>
-    );
-} 
+    return <FlipBook pdf_file={`/view-book/${book}`} />;
+}

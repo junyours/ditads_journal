@@ -31,6 +31,7 @@ import axios from "axios";
 const banners = [BookPublicationBanner];
 
 export default function BookPublication() {
+    const user = usePage().props.auth.user;
     const [open, setOpen] = useState(false);
     const { books } = usePage().props;
     const [book, setBook] = useState(null);
@@ -132,10 +133,15 @@ export default function BookPublication() {
                                     Read more
                                     <MoveRight />
                                 </Button>
-                                <Button size="sm" variant="ghost">
-                                    PDF open access
-                                    <img src={PDF} className="size-4" />
-                                </Button>
+                                {/* <a
+                                    href={`/view-book/${book.overview_pdf_file}`}
+                                    target="_blank"
+                                >
+                                    <Button size="sm" variant="ghost">
+                                        PDF open access
+                                        <img src={PDF} className="size-4" />
+                                    </Button>
+                                </a> */}
                             </CardFooter>
                         </Card>
                     ))}
@@ -178,18 +184,23 @@ export default function BookPublication() {
                             {book?.overview}
                         </p>
                         <div
-                            // onClick={async () => {
-                            //     const res = await axios.get("/api/book-hash", {
-                            //         params: {
-                            //             soft_isbn: book.soft_isbn,
-                            //             hard_isbn: book.hard_isbn,
-                            //         },
-                            //     });
+                            onClick={async () => {
+                                if (user?.role === "admin") {
+                                    const res = await axios.get(
+                                        "/api/book-hash",
+                                        {
+                                            params: {
+                                                soft_isbn: book.soft_isbn,
+                                                hard_isbn: book.hard_isbn,
+                                            },
+                                        }
+                                    );
 
-                            //     const hash = res.data.hash;
-                            //     router.visit(`/flip-book/${hash}`);
-                            // }}
-                            className="size-fit hover-book-flip"
+                                    const hash = res.data.hash;
+                                    router.visit(`/flip-book/${hash}`);
+                                }
+                            }}
+                            className="size-fit hover-book-flip cursor-pointer"
                         >
                             <img
                                 src={book?.cover_page}
