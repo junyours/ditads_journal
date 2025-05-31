@@ -210,25 +210,42 @@ export default function BookPublication() {
                                 }
                             }}
                             className={`relative size-fit ${
-                                !loading ? "hover-book-flip cursor-pointer" : ""
+                                user && !loading
+                                    ? "hover-book-flip cursor-pointer"
+                                    : ""
                             }`}
                         >
-                            <img
-                                src={book?.cover_page}
-                                alt={`cover_${book?.title}`}
-                                className="object-contain size-48"
-                            />
-                            <div className="w-48 border">
-                                <div className="h-2 w-full bg-primary"></div>
-                                <div className="flex items-center bg-muted p-2">
-                                    <p className="text-xs">{book?.title}</p>
+                            <div
+                                className={
+                                    user
+                                        ? "bg-transparent"
+                                        : "bg-black opacity-35"
+                                }
+                            >
+                                <img
+                                    src={book?.cover_page}
+                                    alt={`cover_${book?.title}`}
+                                    className="object-contain size-48"
+                                />
+                                <div className="w-48 border">
+                                    <div className="h-2 w-full bg-primary"></div>
+                                    <div className="flex items-center bg-muted p-2">
+                                        <p className="text-xs">{book?.title}</p>
+                                    </div>
                                 </div>
                             </div>
-                            {loading && (
-                                <div className="absolute inset-0 flex items-center justify-center">
-                                    <ClipLoader color="green" />
-                                </div>
-                            )}
+                            <div className="absolute inset-0 flex items-center justify-center">
+                                {loading && <ClipLoader color="green" />}
+                                {!user && (
+                                    <Button
+                                        onClick={() => router.visit("/sign-in")}
+                                        size="sm"
+                                        variant="outline"
+                                    >
+                                        Sign in
+                                    </Button>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </SheetContent>
