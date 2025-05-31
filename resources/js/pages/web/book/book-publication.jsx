@@ -27,6 +27,7 @@ import {
 import AutoScroll from "embla-carousel-auto-scroll";
 import PDF from "../../../../../public/images/pdf.png";
 import axios from "axios";
+import { ClipLoader } from "react-spinners";
 
 const banners = [BookPublicationBanner];
 
@@ -35,6 +36,7 @@ export default function BookPublication() {
     const [open, setOpen] = useState(false);
     const { books } = usePage().props;
     const [book, setBook] = useState(null);
+    const [loading, setLoading] = useState(false);
     const formatDate = (date) =>
         new Date(date).toLocaleDateString("en-US", {
             year: "numeric",
@@ -186,6 +188,7 @@ export default function BookPublication() {
                         <div
                             onClick={async () => {
                                 if (user?.role === "admin") {
+                                    setLoading(true);
                                     const res = await axios.get(
                                         "/api/book-hash",
                                         {
@@ -197,10 +200,14 @@ export default function BookPublication() {
                                     );
 
                                     const hash = res.data.hash;
-                                    router.visit(`/flip-book/${hash}`);
+                                    router.visit(`/flip-book/${hash}`, {
+                                        onFinish: () => {
+                                            setLoading(false);
+                                        },
+                                    });
                                 }
                             }}
-                            className="size-fit hover-book-flip cursor-pointer"
+                            className="relative size-fit hover-book-flip cursor-pointer"
                         >
                             <img
                                 src={book?.cover_page}
@@ -213,6 +220,11 @@ export default function BookPublication() {
                                     <p className="text-xs">{book?.title}</p>
                                 </div>
                             </div>
+                            {loading && (
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                    <ClipLoader color="green" />
+                                </div>
+                            )}
                         </div>
                     </div>
                 </SheetContent>
