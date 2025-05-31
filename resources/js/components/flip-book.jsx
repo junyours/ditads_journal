@@ -25,7 +25,7 @@ export default function FlipBook({ pdf_file }) {
         <div className="bg-gray-900 h-screen flex justify-end items-center md:justify-center overflow-hidden">
             <HTMLFlipBook
                 width={isMobile ? 350 : 500}
-                height={isMobile ? 450 : 650}
+                height={isMobile ? 493 : 708}
                 showCover={true}
             >
                 {[...Array(numPages).keys()].map((n) => (
@@ -49,7 +49,7 @@ export default function FlipBook({ pdf_file }) {
                                 renderAnnotationLayer={false}
                                 renderTextLayer={false}
                                 width={isMobile ? 350 : 500}
-                                height={isMobile ? 450 : 650}
+                                height={isMobile ? 493 : 708}
                                 scale={1}
                             />
                         </Document>
