@@ -188,26 +188,30 @@ export default function BookPublication() {
                         <div
                             onClick={async () => {
                                 if (user?.role === "admin") {
-                                    setLoading(true);
-                                    const res = await axios.get(
-                                        "/api/book-hash",
-                                        {
-                                            params: {
-                                                soft_isbn: book.soft_isbn,
-                                                hard_isbn: book.hard_isbn,
-                                            },
-                                        }
-                                    );
+                                    if (!loading) {
+                                        setLoading(true);
+                                        const res = await axios.get(
+                                            "/api/book-hash",
+                                            {
+                                                params: {
+                                                    soft_isbn: book.soft_isbn,
+                                                    hard_isbn: book.hard_isbn,
+                                                },
+                                            }
+                                        );
 
-                                    const hash = res.data.hash;
-                                    router.visit(`/flip-book/${hash}`, {
-                                        onFinish: () => {
-                                            setLoading(false);
-                                        },
-                                    });
+                                        const hash = res.data.hash;
+                                        router.visit(`/flip-book/${hash}`, {
+                                            onFinish: () => {
+                                                setLoading(false);
+                                            },
+                                        });
+                                    }
                                 }
                             }}
-                            className="relative size-fit hover-book-flip cursor-pointer"
+                            className={`relative size-fit ${
+                                !loading ? "hover-book-flip cursor-pointer" : ""
+                            }`}
                         >
                             <img
                                 src={book?.cover_page}
