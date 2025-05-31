@@ -233,7 +233,7 @@ class AdminController extends Controller
             'pdf_file' => ['required', 'mimes:pdf'],
             'book_category_id' => ['required'],
             'doi' => ['required'],
-            'overview_pdf_file' => ['required', 'mimes:pdf'],
+            // 'overview_pdf_file' => ['required', 'mimes:pdf'],
         ], [
             'book_category_id.required' => 'The book category field is required.',
             'pdf_file.required' => 'The book pdf file field is required.'
@@ -289,7 +289,7 @@ class AdminController extends Controller
             'pdf_file' => $pdf_file,
             'book_category_id' => $request->book_category_id,
             'doi' => $request->doi,
-            'overview_pdf_file' => $overview_pdf_file
+            // 'overview_pdf_file' => $overview_pdf_file
         ]);
     }
 
@@ -306,10 +306,8 @@ class AdminController extends Controller
             'published_at' => ['required'],
             'book_category_id' => ['required'],
             'doi' => ['required'],
-            'overview_pdf_file' => ['required', 'mimes:pdf'],
         ], [
-            'book_category_id.required' => 'The book category field is required.',
-            'pdf_file.required' => 'The book pdf file field is required.'
+            'book_category_id.required' => 'The book category field is required.'
         ]);
 
         $book->update([

@@ -358,7 +358,7 @@ export default function BookPublication() {
                             />
                             <InputError message={errors.pdf_file} />
                         </div>
-                        <div className="space-y-1">
+                        {/* <div className="space-y-1">
                             <Label>Overview PDF File</Label>
                             <div className="flex items-center space-x-4 rounded-md border p-4">
                                 <img src={Pdf} className="size-8" />
@@ -414,7 +414,7 @@ export default function BookPublication() {
                                 hidden
                             />
                             <InputError message={errors.overview_pdf_file} />
-                        </div>
+                        </div> */}
                         <div className="space-y-1">
                             <Label>Title</Label>
                             <Textarea
