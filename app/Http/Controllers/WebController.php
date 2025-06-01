@@ -69,6 +69,7 @@ class WebController extends Controller
     {
         $editors = User::select('name', 'position', 'email', 'department', 'avatar')
             ->where('role', 'editor')
+            ->orderByRaw("FIELD(position, 'Editor in Chief', 'Associate Editor', 'Editorial Board')")
             ->get();
 
         $magazines = Magazine::select('cover_page', 'volume', 'issue')
@@ -99,6 +100,7 @@ class WebController extends Controller
 
         $editors = User::select('name', 'position', 'email', 'department', 'avatar')
             ->where('role', 'editor')
+            ->orderByRaw("FIELD(position, 'Editor in Chief', 'Associate Editor', 'Editorial Board')")
             ->get();
 
         $journals = ResearchJournal::select(
