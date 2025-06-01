@@ -19,14 +19,14 @@ export default function EditorialBoard({ editors }) {
     }));
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-4">
             {groupedEditors.map(
                 ({ position, members }) =>
                     members.length > 0 && (
                         <div key={position}>
-                            <h2 className="text-lg font-semibold mb-4">
+                            <h1 className="text-base font-semibold mb-2">
                                 {position}
-                            </h2>
+                            </h1>
                             <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                                 {members.map((editor, index) => (
                                     <Card key={index} className="shadow-none">
