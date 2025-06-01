@@ -7,6 +7,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import InputError from "@/components/input-error";
 import AuthLayout from "@/layouts/auth-layout";
 import InputPassword from "@/components/input-password";
+import { Loader } from "lucide-react";
 
 export default function Login({ status, canResetPassword }) {
     const { data, setData, post, processing, errors, clearErrors } = useForm({
@@ -70,14 +71,15 @@ export default function Login({ status, canResetPassword }) {
                     </div>
                 </div>
                 <Button className="w-full" disabled={processing}>
-                    Log in
+                    {processing && <Loader className="animate-spin" />}
+                    {processing ? "Logging in" : "Log in"}
                 </Button>
-                <div className="text-muted-foreground text-center text-sm">
+                {/* <div className="text-muted-foreground text-center text-sm">
                     Don't have an account?{" "}
                     <Link href={route("register")} className="hover:underline">
                         Sign up
                     </Link>
-                </div>
+                </div> */}
             </form>
         </AuthLayout>
     );
