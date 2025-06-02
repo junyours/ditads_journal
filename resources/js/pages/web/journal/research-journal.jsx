@@ -4,6 +4,13 @@ import { Sheet, SheetContent, SheetHeader } from "@/components/ui/sheet";
 import { useState } from "react";
 import { MoveRight } from "lucide-react";
 import { router } from "@inertiajs/react";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 
 export default function ResearchJournal({
     journals,
@@ -47,6 +54,29 @@ export default function ResearchJournal({
                         Volume {selectedArchive.volume}, Issue{" "}
                         {selectedArchive.issue}
                     </h1>
+                    <div className="mx-1 lg:hidden">
+                        <Select>
+                            <SelectTrigger className="max-w-[300px]">
+                                <SelectValue placeholder="Select Volume and Issue" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {archives.map((archive, index) => (
+                                    <SelectItem
+                                        key={index}
+                                        onClick={() =>
+                                            handleArchiveClick(
+                                                archive.volume,
+                                                archive.issue
+                                            )
+                                        }
+                                        value={archive.label}
+                                    >
+                                        {archive.label}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
                     {journals.map((journal, index) => (
                         <div key={index} className="space-y-2 sm:px-2">
                             <div className="space-y-1">
