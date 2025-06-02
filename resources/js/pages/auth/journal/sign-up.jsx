@@ -17,7 +17,7 @@ export default function SignUp() {
     const handleRegister = (e) => {
         e.preventDefault();
         clearErrors();
-        post(route("register"));
+        post("/journal/sign-up");
     };
 
     return (
