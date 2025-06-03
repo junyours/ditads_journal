@@ -30,6 +30,7 @@ Route::middleware(['auth', 'admin', 'verified'])->group(function () {
     Route::get('/admin/web/book-publication', [AdminController::class, 'getBookPublication']);
     Route::post('/admin/web/book-publication/upload', [AdminController::class, 'uploadBookPublication']);
     Route::post('/admin/web/book-publication/update', [AdminController::class, 'updateBookPublication']);
+    Route::post('/api/admin/web/book-publication/link/author', [AdminController::class, 'linkAuthorBook']);
 
     Route::get('/admin/web/magazine', [AdminController::class, 'getMagazine']);
     Route::post('/admin/web/magazine/upload', [AdminController::class, 'uploadMagazine']);

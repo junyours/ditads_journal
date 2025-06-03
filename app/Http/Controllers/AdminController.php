@@ -316,7 +316,7 @@ class AdminController extends Controller
             $uploadedCoverPage = Cloudinary::uploadApi()->upload(
                 $request->file('cover_page')->getRealPath(),
                 [
-                    'folder' => 'ditads/books/test/cover_page'
+                    'folder' => 'ditads/books/cover_page'
                 ]
             );
 
@@ -327,7 +327,7 @@ class AdminController extends Controller
             $uploadedPdfFile = Cloudinary::uploadApi()->upload(
                 $request->file('pdf_file')->getRealPath(),
                 [
-                    'folder' => 'ditads/books/test/pdf_file',
+                    'folder' => 'ditads/books/pdf_file',
                     'resource_type' => 'raw',
                     'format' => 'pdf',
                 ]
@@ -340,7 +340,7 @@ class AdminController extends Controller
             $uploadedPdfFile = Cloudinary::uploadApi()->upload(
                 $request->file('overview_pdf_file')->getRealPath(),
                 [
-                    'folder' => 'ditads/books/test/overview_pdf_file',
+                    'folder' => 'ditads/books/overview_pdf_file',
                     'resource_type' => 'raw',
                     'format' => 'pdf',
                 ]
@@ -403,12 +403,12 @@ class AdminController extends Controller
 
             if ($book->cover_page) {
                 $publicId = pathinfo(parse_url($book->cover_page, PHP_URL_PATH), PATHINFO_FILENAME);
-                Cloudinary::uploadApi()->destroy('ditads/books/test/cover_page/' . $publicId);
+                Cloudinary::uploadApi()->destroy('ditads/books/cover_page/' . $publicId);
             }
 
             $uploadedCoverPage = Cloudinary::uploadApi()->upload(
                 $request->file('cover_page')->getRealPath(),
-                ['folder' => 'ditads/books/test/cover_page']
+                ['folder' => 'ditads/books/cover_page']
             );
 
             $cover_page = $uploadedCoverPage['secure_url'];
@@ -435,7 +435,7 @@ class AdminController extends Controller
             $uploadedPdfFile = Cloudinary::uploadApi()->upload(
                 $request->file('pdf_file')->getRealPath(),
                 [
-                    'folder' => 'ditads/books/test/pdf_file',
+                    'folder' => 'ditads/books/pdf_file',
                     'resource_type' => 'raw',
                     'format' => 'pdf',
                 ]
@@ -463,7 +463,7 @@ class AdminController extends Controller
             $uploadedPdfFile = Cloudinary::uploadApi()->upload(
                 $request->file('overview_pdf_file')->getRealPath(),
                 [
-                    'folder' => 'ditads/books/test/overview_pdf_file',
+                    'folder' => 'ditads/books/overview_pdf_file',
                     'resource_type' => 'raw',
                     'format' => 'pdf',
                 ]
@@ -475,6 +475,11 @@ class AdminController extends Controller
                 'overview_pdf_file' => $overview_pdf_file,
             ]);
         }
+    }
+
+    public function linkAuthorBook()
+    {
+        
     }
 
     public function getMagazine()

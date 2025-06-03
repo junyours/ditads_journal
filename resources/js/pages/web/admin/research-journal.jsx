@@ -7,7 +7,13 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ColumnHeader } from "@/components/table/column-header";
-import { FilePenLine, MoreHorizontal, Plus, Upload } from "lucide-react";
+import {
+    FilePenLine,
+    Loader,
+    MoreHorizontal,
+    Plus,
+    Upload,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { DataTable } from "@/components/table/data-table";
@@ -402,7 +408,14 @@ export default function ResearchJournal() {
                             onClick={editData ? handleUpdate : handleUpload}
                             disabled={processing}
                         >
-                            {editData ? "Update" : "Save"}
+                            {processing && <Loader className="animate-spin" />}
+                            {editData
+                                ? processing
+                                    ? "Updating"
+                                    : "Update"
+                                : processing
+                                ? "Saving"
+                                : "Save"}
                         </Button>
                     </SheetFooter>
                 </SheetContent>

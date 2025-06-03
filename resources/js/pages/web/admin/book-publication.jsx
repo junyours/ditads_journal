@@ -224,10 +224,10 @@ export default function BookPublication() {
                                     View PDF
                                 </a>
                             </DropdownMenuItem>
-                            {/* <DropdownMenuItem onClick={() => setIsOpen(true)}>
+                            <DropdownMenuItem onClick={() => setIsOpen(true)}>
                                 <BookUser />
                                 Open access author
-                            </DropdownMenuItem> */}
+                            </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={() => handleOpen(book)}>
                                 <FilePenLine />
