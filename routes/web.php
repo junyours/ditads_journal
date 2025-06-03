@@ -24,6 +24,8 @@ Route::middleware(['auth', 'admin', 'verified'])->group(function () {
     Route::post('/admin/users/consultant/update', [AdminController::class, 'updateConsultant']);
 
     Route::get('/admin/users/author', [AdminController::class, 'getAuthor']);
+    Route::post('/admin/users/author/add', [AdminController::class, 'addAuthor']);
+    Route::post('/admin/users/author/update', [AdminController::class, 'updateAuthor']);
 
     Route::get('/admin/web/book-publication', [AdminController::class, 'getBookPublication']);
     Route::post('/admin/web/book-publication/upload', [AdminController::class, 'uploadBookPublication']);

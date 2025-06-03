@@ -9,6 +9,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import {
     BookText,
+    BookUser,
+    Check,
     FilePenLine,
     FileText,
     Loader,
@@ -44,14 +46,24 @@ import {
 import DatePicker from "@/components/date-picker";
 import Pdf from "../../../../../public/images/pdf.png";
 import BookCategoryCombobox from "@/components/bookcategory-combobox";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+} from "@/components/ui/dialog";
+import Avatar from "../../../../../public/images/user.png";
 
 export default function BookPublication() {
-    const { books, categories } = usePage().props;
+    const { books, categories, authors } = usePage().props;
     const [open, setOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
     const [previewCoverPage, setPreviewCoverPage] = useState(null);
     const [editData, setEditData] = useState(false);
     const [initialData, setInitialData] = useState(null);
     const [showConfirmClose, setShowConfirmClose] = useState(false);
+    const [selectedAuthor, setSelectedAuthor] = useState([]);
     const formatDate = (date) =>
         new Date(date).toLocaleDateString("en-US", {
             year: "numeric",
@@ -118,6 +130,14 @@ export default function BookPublication() {
 
     const hasUnsavedChanges = () => {
         return JSON.stringify(data) !== JSON.stringify(initialData);
+    };
+
+    const handleToggle = (userId) => {
+        setSelectedAuthor((prevIds) =>
+            prevIds.includes(userId)
+                ? prevIds.filter((id) => id !== userId)
+                : [...prevIds, userId]
+        );
     };
 
     const handleUpload = () => {
@@ -204,6 +224,10 @@ export default function BookPublication() {
                                     View PDF
                                 </a>
                             </DropdownMenuItem>
+                            {/* <DropdownMenuItem onClick={() => setIsOpen(true)}>
+                                <BookUser />
+                                Open access author
+                            </DropdownMenuItem> */}
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={() => handleOpen(book)}>
                                 <FilePenLine />
@@ -545,6 +569,49 @@ export default function BookPublication() {
                     </AlertDialogFooter>
                 </AlertDialogContent>
             </AlertDialog>
+
+            <Dialog open={isOpen} onOpenChange={() => setIsOpen(false)}>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Book open access</DialogTitle>
+                        <DialogDescription>
+                            Add author/s for open access book.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <Input placeholder="Search for name" />
+                    <div className="flex flex-col gap-1">
+                        {authors.map((author) => (
+                            <div
+                                key={author.id}
+                                onClick={() => handleToggle(author.id)}
+                                className={`flex items-center justify-between p-1 rounded-lg cursor-pointer ${
+                                    selectedAuthor.includes(author.id)
+                                        ? "bg-muted"
+                                        : "hover:bg-muted"
+                                }`}
+                            >
+                                <div className="flex items-center gap-2">
+                                    <div className="size-8">
+                                        <img
+                                            src={author.avatar ?? Avatar}
+                                            alt="user"
+                                            className="rounded-full size-full object-cover"
+                                        />
+                                    </div>
+                                    <h1 className="text-sm">{author.name}</h1>
+                                </div>
+                                {selectedAuthor.includes(author.id) && (
+                                    <Check
+                                        size={16}
+                                        color="green"
+                                        className="shrink-0 mr-2"
+                                    />
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </DialogContent>
+            </Dialog>
         </>
     );
 }

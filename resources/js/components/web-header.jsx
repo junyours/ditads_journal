@@ -8,6 +8,7 @@ import { useState } from "react";
 export default function WebHeader() {
     const [open, setOpen] = useState(false);
     const user = usePage().props.auth.user;
+    const currentPath = window.location.pathname;
 
     return (
         <header className="h-16 container mx-auto grid grid-cols-3 items-center px-4">
@@ -38,9 +39,16 @@ export default function WebHeader() {
                         <Link href="/sign-in">
                             <Button variant="outline">Sign in</Button>
                         </Link>
-                        {/* <Link href="/sign-up">
-                            <Button>Join us</Button>
-                        </Link> */}
+                        {/* {currentPath === "/book-publication" && (
+                            <Link href="/book/sign-up">
+                                <Button>Sign up</Button>
+                            </Link>
+                        )}
+                        {currentPath === "/research-journal" && (
+                            <Link href="/journal/sign-up">
+                                <Button>Sign up</Button>
+                            </Link>
+                        )} */}
                     </div>
                 )}
             </div>

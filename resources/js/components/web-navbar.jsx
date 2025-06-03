@@ -102,18 +102,34 @@ export default function WebNavbar({ open, onOpenChange }) {
                                             Sign in
                                         </Button>
                                     </Link>
-                                    {/* <Link href="/sign-up">
-                                        <Button
-                                            onClick={() => {
-                                                if (isMobile) {
-                                                    onOpenChange(false);
-                                                }
-                                            }}
-                                            className="w-full"
-                                        >
-                                            Join us
-                                        </Button>
-                                    </Link> */}
+                                    {/* {currentPath === "/book-publication" && (
+                                        <Link href="/book/sign-up">
+                                            <Button
+                                                onClick={() => {
+                                                    if (isMobile) {
+                                                        onOpenChange(false);
+                                                    }
+                                                }}
+                                                className="w-full"
+                                            >
+                                                Sign up
+                                            </Button>
+                                        </Link>
+                                    )}
+                                    {currentPath === "/research-journal" && (
+                                        <Link href="/journal/sign-up">
+                                            <Button
+                                                onClick={() => {
+                                                    if (isMobile) {
+                                                        onOpenChange(false);
+                                                    }
+                                                }}
+                                                className="w-full"
+                                            >
+                                                Sign up
+                                            </Button>
+                                        </Link>
+                                    )} */}
                                 </div>
                             )}
                         </div>
