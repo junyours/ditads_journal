@@ -55,4 +55,9 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
         ];
     }
+
+    public function author_book()
+    {
+        return $this->hasMany(AuthorBook::class, 'author_id');
+    }
 }

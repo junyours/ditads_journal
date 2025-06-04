@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AuthorBook;
 use App\Models\BookCategory;
 use App\Models\BookPublication;
 use App\Models\Magazine;
@@ -283,6 +284,11 @@ class AdminController extends Controller
         $categories = BookCategory::select('id', 'name')->get();
 
         $authors = User::select('id', 'name', 'avatar')
+            ->with([
+                'author_book' => function ($query) {
+                    $query->select('author_id', 'book_publication_id');
+                },
+            ])
             ->where('role', 'author')
             ->get();
 
@@ -477,9 +483,16 @@ class AdminController extends Controller
         }
     }
 
-    public function linkAuthorBook()
+    public function linkAuthorBook(Request $request)
     {
-        
+        AuthorBook::where('book_publication_id', $request->book_id)->delete();
+
+        foreach ($request->author_id as $authorId) {
+            AuthorBook::create(attributes: [
+                'author_id' => $authorId,
+                'book_publication_id' => $request->book_id,
+            ]);
+        }
     }
 
     public function getMagazine()

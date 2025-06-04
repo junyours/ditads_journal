@@ -19,7 +19,7 @@ import {
     Upload,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { DataTable } from "@/components/table/data-table";
 import { ColumnHeader } from "@/components/table/column-header";
 import {
@@ -29,7 +29,7 @@ import {
     SheetHeader,
     SheetTitle,
 } from "@/components/ui/sheet";
-import { useForm, usePage } from "@inertiajs/react";
+import { router, useForm, usePage } from "@inertiajs/react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import InputError from "@/components/input-error";
@@ -63,7 +63,9 @@ export default function BookPublication() {
     const [editData, setEditData] = useState(false);
     const [initialData, setInitialData] = useState(null);
     const [showConfirmClose, setShowConfirmClose] = useState(false);
-    const [selectedAuthor, setSelectedAuthor] = useState([]);
+    const [selectedAuthorsByBook, setSelectedAuthorsByBook] = useState({});
+    const [selectedBook, setSelectedBook] = useState([]);
+    const [searchAuthor, setSearchAuthor] = useState("");
     const formatDate = (date) =>
         new Date(date).toLocaleDateString("en-US", {
             year: "numeric",
@@ -84,6 +86,14 @@ export default function BookPublication() {
         doi: "",
         overview_pdf_file: null,
     });
+
+    const filteredAuthors = useMemo(() => {
+        if (!searchAuthor.trim()) return authors;
+
+        return authors.filter((author) =>
+            author.name.toLowerCase().includes(searchAuthor.toLowerCase())
+        );
+    }, [searchAuthor, authors]);
 
     const handleOpen = (book = null) => {
         if (book) {
@@ -132,12 +142,41 @@ export default function BookPublication() {
         return JSON.stringify(data) !== JSON.stringify(initialData);
     };
 
-    const handleToggle = (userId) => {
-        setSelectedAuthor((prevIds) =>
-            prevIds.includes(userId)
-                ? prevIds.filter((id) => id !== userId)
-                : [...prevIds, userId]
-        );
+    const handleOpenAuthorDialog = (book) => {
+        setSelectedBook(book.id);
+        const linkedAuthors = authors
+            .filter((author) =>
+                author.author_book?.some(
+                    (ab) => ab.book_publication_id === book.id
+                )
+            )
+            .map((author) => author.id);
+
+        setSelectedAuthorsByBook((prev) => ({
+            ...prev,
+            [book.id]: linkedAuthors,
+        }));
+
+        setIsOpen(true);
+    };
+
+    const handleToggle = (authorId) => {
+        setSelectedAuthorsByBook((prev) => {
+            const currentSelected = prev[selectedBook] || [];
+            const updatedSelected = currentSelected.includes(authorId)
+                ? currentSelected.filter((id) => id !== authorId)
+                : [...currentSelected, authorId];
+
+            router.post("/api/admin/web/book-publication/link/author", {
+                book_id: selectedBook,
+                author_id: updatedSelected,
+            });
+
+            return {
+                ...prev,
+                [selectedBook]: updatedSelected,
+            };
+        });
     };
 
     const handleUpload = () => {
@@ -224,10 +263,12 @@ export default function BookPublication() {
                                     View PDF
                                 </a>
                             </DropdownMenuItem>
-                            {/* <DropdownMenuItem onClick={() => setIsOpen(true)}>
+                            <DropdownMenuItem
+                                onClick={() => handleOpenAuthorDialog(book)}
+                            >
                                 <BookUser />
                                 Open access author
-                            </DropdownMenuItem> */}
+                            </DropdownMenuItem>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={() => handleOpen(book)}>
                                 <FilePenLine />
@@ -578,37 +619,56 @@ export default function BookPublication() {
                             Add author/s for open access book.
                         </DialogDescription>
                     </DialogHeader>
-                    <Input placeholder="Search for name" />
-                    <div className="flex flex-col gap-1">
-                        {authors.map((author) => (
-                            <div
-                                key={author.id}
-                                onClick={() => handleToggle(author.id)}
-                                className={`flex items-center justify-between p-1 rounded-lg cursor-pointer ${
-                                    selectedAuthor.includes(author.id)
-                                        ? "bg-muted"
-                                        : "hover:bg-muted"
-                                }`}
-                            >
-                                <div className="flex items-center gap-2">
-                                    <div className="size-8">
-                                        <img
-                                            src={author.avatar ?? Avatar}
-                                            alt="user"
-                                            className="rounded-full size-full object-cover"
-                                        />
+                    <Input
+                        placeholder="Search for name"
+                        value={searchAuthor}
+                        onChange={(e) => setSearchAuthor(e.target.value)}
+                    />
+                    <div className="flex flex-col gap-1 max-h-64 overflow-auto">
+                        {filteredAuthors.map((author) => {
+                            const selectedAuthors =
+                                selectedAuthorsByBook[selectedBook] || [];
+                            const isChecked = selectedAuthors.includes(
+                                author.id
+                            );
+
+                            return (
+                                <div
+                                    key={author.id}
+                                    onClick={() => handleToggle(author.id)}
+                                    className={`flex items-center justify-between p-1 rounded-lg cursor-pointer ${
+                                        isChecked
+                                            ? "bg-muted"
+                                            : "hover:bg-muted"
+                                    }`}
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <div className="size-8">
+                                            <img
+                                                src={author.avatar ?? Avatar}
+                                                alt="user"
+                                                className="rounded-full size-full object-cover"
+                                            />
+                                        </div>
+                                        <h1 className="text-sm">
+                                            {author.name}
+                                        </h1>
                                     </div>
-                                    <h1 className="text-sm">{author.name}</h1>
+                                    {isChecked && (
+                                        <Check
+                                            size={16}
+                                            color="green"
+                                            className="shrink-0 mr-2"
+                                        />
+                                    )}
                                 </div>
-                                {selectedAuthor.includes(author.id) && (
-                                    <Check
-                                        size={16}
-                                        color="green"
-                                        className="shrink-0 mr-2"
-                                    />
-                                )}
-                            </div>
-                        ))}
+                            );
+                        })}
+                        {filteredAuthors.length === 0 && (
+                            <p className="text-center">
+                                No authors found.
+                            </p>
+                        )}
                     </div>
                 </DialogContent>
             </Dialog>
