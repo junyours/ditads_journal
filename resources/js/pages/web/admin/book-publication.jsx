@@ -224,10 +224,10 @@ export default function BookPublication() {
                                     View PDF
                                 </a>
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => setIsOpen(true)}>
+                            {/* <DropdownMenuItem onClick={() => setIsOpen(true)}>
                                 <BookUser />
                                 Open access author
-                            </DropdownMenuItem>
+                            </DropdownMenuItem> */}
                             <DropdownMenuSeparator />
                             <DropdownMenuItem onClick={() => handleOpen(book)}>
                                 <FilePenLine />
@@ -271,7 +271,7 @@ export default function BookPublication() {
                         </SheetTitle>
                     </SheetHeader>
                     <div className="flex-1 space-y-4 overflow-y-auto px-2 pb-2">
-                        <div className="space-y-1">
+                        {/* <div className="space-y-1">
                             <Label>Book Category</Label>
                             <BookCategoryCombobox
                                 options={categories}
@@ -281,7 +281,7 @@ export default function BookPublication() {
                                 }
                             />
                             <InputError message={errors.book_category_id} />
-                        </div>
+                        </div> */}
                         <div className="space-y-1">
                             <Label>Cover Page</Label>
                             <div className="flex items-center gap-4">

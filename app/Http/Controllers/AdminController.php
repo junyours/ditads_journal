@@ -304,11 +304,11 @@ class AdminController extends Controller
             'overview' => ['required'],
             'published_at' => ['required'],
             'pdf_file' => ['required', 'mimes:pdf'],
-            'book_category_id' => ['required'],
+            // 'book_category_id' => ['required'],
             // 'doi' => ['required'],
             // 'overview_pdf_file' => ['required', 'mimes:pdf'],
         ], [
-            'book_category_id.required' => 'The book category field is required.',
+            // 'book_category_id.required' => 'The book category field is required.',
             'pdf_file.required' => 'The book pdf file field is required.'
         ]);
 
@@ -360,7 +360,7 @@ class AdminController extends Controller
                 ->timezone('Asia/Manila')
                 ->toDateString(),
             'pdf_file' => $pdf_file,
-            'book_category_id' => $request->book_category_id,
+            // 'book_category_id' => $request->book_category_id,
             // 'doi' => $request->doi,
             // 'overview_pdf_file' => $overview_pdf_file
         ]);
@@ -377,10 +377,10 @@ class AdminController extends Controller
             'author' => ['required'],
             'overview' => ['required'],
             'published_at' => ['required'],
-            'book_category_id' => ['required'],
+            // 'book_category_id' => ['required'],
             // 'doi' => ['required'],
         ], [
-            'book_category_id.required' => 'The book category field is required.'
+            // 'book_category_id.required' => 'The book category field is required.'
         ]);
 
         $book->update([
@@ -392,7 +392,7 @@ class AdminController extends Controller
             'published_at' => Carbon::parse($request->published_at)
                 ->timezone('Asia/Manila')
                 ->toDateString(),
-            'book_category_id' => $request->book_category_id,
+            // 'book_category_id' => $request->book_category_id,
             // 'doi' => $request->doi,
         ]);
 
