@@ -36,21 +36,30 @@ import {
     SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
+import {
+    AlertDialog,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 export default function PaymentMethod() {
     const { payments } = usePage().props;
     const [open, setOpen] = useState(false);
-    const { data, setData, post, processing, errors, reset, clearErrors } =
-        useForm({
-            name: "",
-            account_name: "",
-            account_number: "",
-            account_email: "",
-            qr_code: null,
-            have_qr: "no",
-        });
+    const { data, setData, post, processing, errors, clearErrors } = useForm({
+        name: "",
+        account_name: "",
+        account_number: "",
+        account_email: "",
+        qr_code: null,
+        have_qr: "no",
+    });
     const [editData, setEditData] = useState(false);
     const [previewQr, setPreviewQr] = useState(null);
+    const [initialData, setInitialData] = useState(null);
+    const [showConfirmClose, setShowConfirmClose] = useState(false);
 
     const handleOpen = (payment = null) => {
         if (payment) {
@@ -65,6 +74,7 @@ export default function PaymentMethod() {
                 have_qr: payment.qr_code ? "yes" : "no",
             };
             setData(paymentData);
+            setInitialData(paymentData);
             if (payment.qr_code) {
                 setPreviewQr(payment.qr_code);
             } else {
@@ -81,10 +91,15 @@ export default function PaymentMethod() {
                 have_qr: "no",
             };
             setData(newData);
+            setInitialData(newData);
             setPreviewQr(null);
         }
         setOpen(!open);
         clearErrors();
+    };
+
+    const hasUnsavedChanges = () => {
+        return JSON.stringify(data) !== JSON.stringify(initialData);
     };
 
     const handleAdd = () => {
@@ -165,9 +180,13 @@ export default function PaymentMethod() {
 
             <Sheet
                 open={open}
-                onOpenChange={() => {
+                onOpenChange={(val) => {
                     if (!processing) {
-                        handleOpen();
+                        if (!val && hasUnsavedChanges()) {
+                            setShowConfirmClose(true);
+                        } else {
+                            setOpen(val);
+                        }
                     }
                 }}
             >
@@ -240,18 +259,18 @@ export default function PaymentMethod() {
                         {data.have_qr === "yes" && (
                             <>
                                 <div className="space-y-1">
-                                    <div className=" flex items-center space-x-4 rounded-md border p-4">
+                                    <div className="flex items-center space-x-4 rounded-md border p-4">
                                         <QrCode className="shrink-0" />
                                         <div className="flex-1">
                                             {data.qr_code ? (
-                                                <p className="text-sm font-medium line-clamp-2 break-words">
+                                                <p className="text-sm font-medium line-clamp-1">
                                                     {data.qr_code.name ||
                                                         data.qr_code
                                                             .split("/")
                                                             .pop()}
                                                 </p>
                                             ) : (
-                                                <p className="text-sm font-medium leading-none">
+                                                <p className="text-sm font-medium">
                                                     No file chosen
                                                 </p>
                                             )}
@@ -301,7 +320,15 @@ export default function PaymentMethod() {
                     </div>
                     <SheetFooter>
                         <Button
-                            onClick={() => handleOpen()}
+                            onClick={() => {
+                                if (!processing) {
+                                    if (hasUnsavedChanges()) {
+                                        setShowConfirmClose(true);
+                                    } else {
+                                        setOpen(false);
+                                    }
+                                }
+                            }}
                             variant="ghost"
                             disabled={processing}
                         >
@@ -316,6 +343,35 @@ export default function PaymentMethod() {
                     </SheetFooter>
                 </SheetContent>
             </Sheet>
+
+            <AlertDialog open={showConfirmClose}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>Discard changes?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            You have unsaved changes. Are you sure you want to
+                            cancel?
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <Button
+                            variant="ghost"
+                            onClick={() => setShowConfirmClose(false)}
+                        >
+                            No, keep editing
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            onClick={() => {
+                                setShowConfirmClose(false);
+                                setOpen(false);
+                            }}
+                        >
+                            Yes, discard
+                        </Button>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
         </>
     );
 }

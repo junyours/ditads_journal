@@ -665,9 +665,7 @@ export default function BookPublication() {
                             );
                         })}
                         {filteredAuthors.length === 0 && (
-                            <p className="text-center">
-                                No authors found.
-                            </p>
+                            <p className="text-center">No authors found.</p>
                         )}
                     </div>
                 </DialogContent>
