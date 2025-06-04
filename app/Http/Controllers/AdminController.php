@@ -298,7 +298,7 @@ class AdminController extends Controller
         $request->validate([
             'title' => ['required'],
             'soft_isbn' => ['required', 'unique:book_publications'],
-            'hard_isbn' => ['unique:book_publications'],
+            'hard_isbn' => ['nullable', 'unique:book_publications'],
             'cover_page' => ['required', 'mimes:jpeg,jpg,png', 'max:3048'],
             'author' => ['required'],
             'overview' => ['required'],
@@ -373,7 +373,7 @@ class AdminController extends Controller
         $request->validate([
             'title' => ['required'],
             'soft_isbn' => ['required', 'unique:book_publications,soft_isbn,' . $request->id],
-            'hard_isbn' => ['unique:book_publications,hard_isbn,' . $request->id],
+            'hard_isbn' => ['nullable', 'unique:book_publications,hard_isbn,' . $request->id],
             'author' => ['required'],
             'overview' => ['required'],
             'published_at' => ['required'],
