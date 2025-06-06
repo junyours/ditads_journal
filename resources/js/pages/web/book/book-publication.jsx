@@ -207,6 +207,30 @@ export default function BookPublication() {
                                             },
                                         });
                                     }
+                                } else if (user?.role === "author") {
+                                    if (book.has_access) {
+                                        if (!loading) {
+                                            setLoading(true);
+                                            const res = await axios.get(
+                                                "/api/book-hash",
+                                                {
+                                                    params: {
+                                                        soft_isbn:
+                                                            book.soft_isbn,
+                                                        hard_isbn:
+                                                            book.hard_isbn,
+                                                    },
+                                                }
+                                            );
+
+                                            const hash = res.data.hash;
+                                            router.visit(`/flip-book/${hash}`, {
+                                                onFinish: () => {
+                                                    setLoading(false);
+                                                },
+                                            });
+                                        }
+                                    }
                                 }
                             }}
                             className={`relative size-fit ${

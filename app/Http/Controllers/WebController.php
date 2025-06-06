@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AuthorBook;
 use App\Models\BookPublication;
 use App\Models\Magazine;
 use App\Models\ResearchJournal;
@@ -33,10 +34,31 @@ class WebController extends Controller
         ]);
     }
 
-    public function bookPublication()
+    public function bookPublication(Request $request)
     {
-        $books = BookPublication::select('id', 'title', 'soft_isbn', 'hard_isbn', 'cover_page', 'author', 'overview', 'published_at', 'doi', 'overview_pdf_file')
-            ->get();
+        $user = $request->user();
+        $authorBookIds = collect();
+
+        if ($user?->role === 'author') {
+            $authorBookIds = AuthorBook::where('author_id', $user->id)
+                ->pluck('book_publication_id');
+        }
+
+        $books = BookPublication::select(
+            'id',
+            'title',
+            'soft_isbn',
+            'hard_isbn',
+            'cover_page',
+            'author',
+            'overview',
+            'published_at',
+            'doi',
+            'overview_pdf_file'
+        )->get()->map(function ($book) use ($authorBookIds) {
+            $book->has_access = $authorBookIds->contains($book->id);
+            return $book;
+        });
 
         return Inertia::render('web/book/book-publication', [
             'books' => $books
