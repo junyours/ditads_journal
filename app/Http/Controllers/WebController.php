@@ -88,7 +88,7 @@ class WebController extends Controller
             abort(404);
         }
 
-        if ($user->role === 'author') {
+        if ($user->role !== 'admin') {
             $hasAccess = AuthorBook::where('author_id', $user->id)
                 ->where('book_publication_id', $book->id)
                 ->exists();
