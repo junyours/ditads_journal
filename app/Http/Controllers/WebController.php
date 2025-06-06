@@ -71,15 +71,31 @@ class WebController extends Controller
         return hash_hmac('sha256', $soft_isbn . '|' . $hard_isbn, $secret);
     }
 
-    public function viewFlipBook($hash)
+    public function viewFlipBook(Request $request, $hash)
     {
+        $user = $request->user();
+
+        if (!$user) {
+            abort(401);
+        }
+
         $book = BookPublication::get()->first(function ($book) use ($hash) {
             $generated = $this->generateBookHash($book->soft_isbn, $book->hard_isbn);
             return hash_equals($generated, $hash);
         });
 
         if (!$book) {
-            return abort(404);
+            abort(404);
+        }
+
+        if ($user->role === 'author') {
+            $hasAccess = AuthorBook::where('author_id', $user->id)
+                ->where('book_publication_id', $book->id)
+                ->exists();
+
+            if (!$hasAccess) {
+                abort(403, 'Unauthorized access to this book');
+            }
         }
 
         return Inertia::render('web/book/view-book', [
