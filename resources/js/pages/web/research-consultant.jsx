@@ -27,7 +27,7 @@ export default function ResearchConsultant() {
     }));
 
     return (
-        <div className="space-y-4">
+        <div className="space-y-4 p-4">
             {groupedConsultants.map(
                 ({ position, members }) =>
                     members.length > 0 && (
