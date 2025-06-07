@@ -27,6 +27,7 @@ class WebController extends Controller
     {
         $consultants = User::select('name', 'position', 'email', 'department', 'avatar')
             ->where('role', 'consultant')
+            ->orderByRaw("FIELD(position, 'Head of Research Consultant', 'Associate Research Consultant', 'Research Consultant')")
             ->get();
 
         return Inertia::render('web/research-consultant', [

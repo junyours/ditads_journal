@@ -43,7 +43,7 @@ import {
 } from "@/components/ui/alert-dialog";
 
 const positions = [
-    "Head of Research Consultants",
+    "Head of Research Consultant",
     "Associate Research Consultant",
     "Research Consultant",
 ];
