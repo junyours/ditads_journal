@@ -234,16 +234,20 @@ export default function BookPublication() {
                                 }
                             }}
                             className={`relative size-fit ${
-                                user && !loading
+                                user?.role === "customer" &&
+                                book?.has_access &&
+                                !loading
                                     ? "hover-book-flip cursor-pointer"
                                     : ""
                             }`}
                         >
                             <div
                                 className={
-                                    user
-                                        ? "bg-transparent"
-                                        : "bg-black opacity-35"
+                                    !user ||
+                                    (user?.role === "customer" &&
+                                        !book?.has_access)
+                                        ? "bg-black opacity-35"
+                                        : "bg-transparent"
                                 }
                             >
                                 <img
@@ -269,6 +273,10 @@ export default function BookPublication() {
                                         Sign in
                                     </Button>
                                 )}
+                                {user?.role === "customer" &&
+                                    !book?.has_access && (
+                                        <Button size="sm">Buy</Button>
+                                    )}
                             </div>
                         </div>
                     </div>

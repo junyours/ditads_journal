@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\Admin::class,
             'editor' => \App\Http\Middleware\Editor::class,
             'author' => \App\Http\Middleware\Author::class,
+            'customer' => \App\Http\Middleware\Customer::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

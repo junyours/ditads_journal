@@ -73,3 +73,4 @@ Route::get('/contact-us', [WebController::class, 'contactUs']);
 
 require __DIR__ . '/auth.php';
 require __DIR__ . '/journal.php';
+require __DIR__ . '/book.php';

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AuthorBook;
 use App\Models\BookPublication;
+use App\Models\CustomerBook;
 use App\Models\Magazine;
 use App\Models\ResearchJournal;
 use App\Models\User;
@@ -38,11 +39,14 @@ class WebController extends Controller
     public function bookPublication(Request $request)
     {
         $user = $request->user();
-        $authorBookIds = collect();
+        $bookIds = collect();
 
         if ($user?->role === 'author') {
-            $authorBookIds = AuthorBook::where('author_id', $user->id)
+            $bookIds = AuthorBook::where('author_id', $user->id)
                 ->pluck('book_publication_id');
+        } else if ($user?->role === 'customer') {
+            $bookIds = CustomerBook::where('customer_id', $user->id)
+                ->pluck(column: 'book_publication_id');
         }
 
         $books = BookPublication::select(
@@ -55,9 +59,11 @@ class WebController extends Controller
             'overview',
             'published_at',
             'doi',
-            'overview_pdf_file'
-        )->get()->map(function ($book) use ($authorBookIds) {
-            $book->has_access = $authorBookIds->contains($book->id);
+            'overview_pdf_file',
+            'hard_price',
+            'soft_price'
+        )->get()->map(function ($book) use ($bookIds) {
+            $book->has_access = $bookIds->contains($book->id);
             return $book;
         });
 

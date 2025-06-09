@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import AuthLayout from "@/layouts/auth-layout";
 import { Link, useForm } from "@inertiajs/react";
+import { Loader } from "lucide-react";
 
 export default function SignUp() {
     const { data, setData, post, processing, errors, clearErrors } = useForm({
@@ -66,7 +67,8 @@ export default function SignUp() {
                     </div>
                 </div>
                 <Button className="w-full" disabled={processing}>
-                    Create account
+                    {processing && <Loader className="animate-spin" />}
+                    {processing ? "Creating" : "Create"}
                 </Button>
                 <div className="text-muted-foreground text-center text-sm">
                     Already have an account?{" "}

@@ -70,7 +70,7 @@ export default function JournalLayout() {
     ];
 
     return (
-        <div className="container mx-auto p-4 space-y-4">
+        <div className="container mx-auto p-4">
             <Accordion type="single" collapsible>
                 {contents.map((content, index) => (
                     <AccordionItem key={index} value={`item-${index}`}>
@@ -81,41 +81,6 @@ export default function JournalLayout() {
                     </AccordionItem>
                 ))}
             </Accordion>
-            <div className="text-center">
-                <a
-                    href="https://ditadsresearchcenter.com/research-journal"
-                    className="hover:underline"
-                >
-                    DIT.ADS International Multidisciplinary Research Journal
-                </a>{" "}
-                © 2025 by{" "}
-                <a
-                    href="https://ditadsresearchcenter.com"
-                    className="hover:underline"
-                >
-                    Digital Institute Training and Development Services
-                </a>{" "}
-                is licensed under{" "}
-                <a
-                    href="https://creativecommons.org/licenses/by-sa/4.0/"
-                    target="_blank"
-                    className="hover:underline"
-                >
-                    Creative Commons Attribution-ShareAlike 4.0 International
-                </a>
-                <img
-                    src="https://mirrors.creativecommons.org/presskit/icons/cc.svg"
-                    className="w-4 h-4 inline-block ml-1"
-                />
-                <img
-                    src="https://mirrors.creativecommons.org/presskit/icons/by.svg"
-                    className="w-4 h-4 inline-block ml-1"
-                />
-                <img
-                    src="https://mirrors.creativecommons.org/presskit/icons/sa.svg"
-                    className="w-4 h-4 inline-block ml-1"
-                />
-            </div>
         </div>
     );
 }

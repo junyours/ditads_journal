@@ -43,8 +43,8 @@ export default function WebHeader() {
                             <Link href="/book/sign-up">
                                 <Button>Sign up</Button>
                             </Link>
-                        )}
-                        {currentPath === "/research-journal" && (
+                        )} */}
+                        {/* {currentPath === "/research-journal" && (
                             <Link href="/journal/sign-up">
                                 <Button>Sign up</Button>
                             </Link>

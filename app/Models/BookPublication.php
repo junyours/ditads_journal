@@ -19,6 +19,8 @@ class BookPublication extends Model
         'published_at',
         'pdf_file',
         'doi',
-        'overview_pdf_file'
+        'overview_pdf_file',
+        'hard_price',
+        'soft_price'
     ];
 }

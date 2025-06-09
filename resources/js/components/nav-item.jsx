@@ -187,6 +187,20 @@ const navAuthor = [
     },
 ];
 
+const navCustomer = [
+    {
+        name: "Main",
+        items: [
+            {
+                title: "Dashboard",
+                url: "/customer/dashboard",
+                icon: LayoutDashboard,
+                collapse: false,
+            },
+        ],
+    },
+];
+
 export function NavItem({ user }) {
     const { setOpenMobile } = useSidebar();
     const isMobile = useIsMobile();
@@ -195,7 +209,8 @@ export function NavItem({ user }) {
     const navGroups =
         (user.role === "admin" && navAdmin) ||
         (user.role === "editor" && navEditor) ||
-        (user.role === "author" && navAuthor);
+        (user.role === "author" && navAuthor) ||
+        (user.role === "customer" && navCustomer);
 
     return navGroups.map((group) => (
         <SidebarGroup key={group.name}>

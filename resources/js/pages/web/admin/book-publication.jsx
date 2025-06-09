@@ -85,6 +85,8 @@ export default function BookPublication() {
         book_category_id: null,
         doi: "",
         overview_pdf_file: null,
+        hard_price: "",
+        soft_price: "",
     });
 
     const filteredAuthors = useMemo(() => {
@@ -110,6 +112,8 @@ export default function BookPublication() {
                 book_category_id: book.book_category_id,
                 doi: book.doi,
                 overview_pdf_file: book.overview_pdf_file,
+                hard_price: book.hard_price,
+                soft_price: book.soft_price,
             };
             setData(bookData);
             setInitialData(bookData);
@@ -129,6 +133,8 @@ export default function BookPublication() {
                 book_category_id: null,
                 doi: "",
                 overview_pdf_file: null,
+                hard_price: "",
+                soft_price: "",
             };
             setData(newData);
             setInitialData(newData);
@@ -480,6 +486,28 @@ export default function BookPublication() {
                             />
                             <InputError message={errors.overview_pdf_file} />
                         </div> */}
+                        <div className="space-y-1">
+                            <Label>Hard Bound Price</Label>
+                            <Input
+                                type="number"
+                                value={data.hard_price}
+                                onChange={(e) =>
+                                    setData("hard_price", e.target.value)
+                                }
+                            />
+                            <InputError message={errors.hard_price} />
+                        </div>
+                        <div className="space-y-1">
+                            <Label>Soft Bound Price</Label>
+                            <Input
+                                type="number"
+                                value={data.soft_price}
+                                onChange={(e) =>
+                                    setData("soft_price", e.target.value)
+                                }
+                            />
+                            <InputError message={errors.soft_price} />
+                        </div>
                         <div className="space-y-1">
                             <Label>Title</Label>
                             <Textarea

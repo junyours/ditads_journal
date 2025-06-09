@@ -18,9 +18,7 @@ class EmailVerificationPromptController extends Controller
         $role = $request->user()->role;
 
         if ($request->user()->hasVerifiedEmail()) {
-            if ($role === "admin" || $role === "editor" || $role === "author") {
-                return redirect("/{$role}/dashboard");
-            }
+            return redirect("/{$role}/dashboard");
         }
 
         return Inertia::render('auth/verify-email', ['status' => session('status')]);

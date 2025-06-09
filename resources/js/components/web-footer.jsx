@@ -108,6 +108,42 @@ export default function WebFooter() {
                         ))}
                     </div>
                 </div>
+                <div className="text-center mt-4">
+                    <a
+                        href="https://ditadsresearchcenter.com/research-journal"
+                        className="hover:underline"
+                    >
+                        DIT.ADS International Multidisciplinary Research Journal
+                    </a>{" "}
+                    © 2025 by{" "}
+                    <a
+                        href="https://ditadsresearchcenter.com"
+                        className="hover:underline"
+                    >
+                        Digital Institute Training and Development Services
+                    </a>{" "}
+                    is licensed under{" "}
+                    <a
+                        href="https://creativecommons.org/licenses/by-sa/4.0/"
+                        target="_blank"
+                        className="hover:underline"
+                    >
+                        Creative Commons Attribution-ShareAlike 4.0
+                        International
+                    </a>
+                    <img
+                        src="https://mirrors.creativecommons.org/presskit/icons/cc.svg"
+                        className="w-4 h-4 inline-block ml-1"
+                    />
+                    <img
+                        src="https://mirrors.creativecommons.org/presskit/icons/by.svg"
+                        className="w-4 h-4 inline-block ml-1"
+                    />
+                    <img
+                        src="https://mirrors.creativecommons.org/presskit/icons/sa.svg"
+                        className="w-4 h-4 inline-block ml-1"
+                    />
+                </div>
                 <hr className="my-6 border-t sm:mx-auto lg:my-8" />
                 <div className="flex justify-center">
                     <span className="text-sm">
