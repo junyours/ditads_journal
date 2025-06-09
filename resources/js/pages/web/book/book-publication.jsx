@@ -234,9 +234,9 @@ export default function BookPublication() {
                                 }
                             }}
                             className={`relative size-fit ${
-                                user?.role === "customer" &&
-                                book?.has_access &&
-                                !loading
+                                (user?.role === "customer" &&
+                                    book?.has_access) ||
+                                (user?.role === "admin" && !loading)
                                     ? "hover-book-flip cursor-pointer"
                                     : ""
                             }`}
