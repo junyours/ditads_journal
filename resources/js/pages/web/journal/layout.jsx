@@ -17,6 +17,7 @@ import AboutPublisher from "./about-publisher";
 import IndexAbstract from "./index-abstract";
 import Download from "./download";
 import Certificate from "./certificate";
+import PlagiarismPolicy from "./plagiarism-policy";
 
 const banners = [JournalBanner];
 
@@ -52,6 +53,10 @@ export default function JournalLayout() {
         {
             title: "Review Process",
             page: ReviewProcess,
+        },
+        {
+            title: "Plagiarism Policy for Manuscript Submission and Publication",
+            page: PlagiarismPolicy,
         },
         {
             title: "Indexing and Abstracting",
