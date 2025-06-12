@@ -12,4 +12,14 @@ class CustomerController extends Controller
     {
         return Inertia::render('book/customer/dashboard');
     }
+
+    public function bookSale()
+    {
+        return Inertia::render('book/customer/sale-book');
+    }
+
+    public function bookPurchase()
+    {
+        return Inertia::render('book/customer/purchase-book');
+    }
 }

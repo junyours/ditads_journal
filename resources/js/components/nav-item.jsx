@@ -17,6 +17,7 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Link } from "@inertiajs/react";
 import {
+    BookHeart,
     BookOpenText,
     BookText,
     ChevronRight,
@@ -195,6 +196,23 @@ const navCustomer = [
                 title: "Dashboard",
                 url: "/customer/dashboard",
                 icon: LayoutDashboard,
+                collapse: false,
+            },
+        ],
+    },
+    {
+        name: "Book",
+        items: [
+            {
+                title: "For Sale Books",
+                url: "/customer/book/sales",
+                icon: BookText,
+                collapse: false,
+            },
+            {
+                title: "Purchase Books",
+                url: "/customer/book/purchase",
+                icon: BookHeart,
                 collapse: false,
             },
         ],
