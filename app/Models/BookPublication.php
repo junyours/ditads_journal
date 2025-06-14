@@ -23,4 +23,9 @@ class BookPublication extends Model
         'hard_price',
         'soft_price'
     ];
+
+    public function customer_book()
+    {
+        return $this->hasMany(CustomerBook::class, 'book_publication_id');
+    }
 }

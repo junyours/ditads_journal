@@ -275,7 +275,7 @@ export default function BookPublication() {
                                 )}
                                 {user?.role === "customer" &&
                                     !book?.has_access && (
-                                        <Button size="sm">Buy</Button>
+                                        <Button size="sm">Buy now</Button>
                                     )}
                             </div>
                         </div>
