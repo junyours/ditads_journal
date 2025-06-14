@@ -27,6 +27,7 @@ import {
     LayoutDashboard,
     NotebookPen,
     School,
+    SendToBack,
     SquareLibrary,
     Users,
 } from "lucide-react";
@@ -214,6 +215,23 @@ const navCustomer = [
                 url: "/customer/book/purchase",
                 icon: BookHeart,
                 collapse: false,
+            },
+        ],
+    },
+    {
+        name: "Transaction",
+        items: [
+            {
+                title: "Book Orders",
+                url: "/customer/transaction/book-orders",
+                icon: SendToBack,
+                collapse: true,
+                subitems: [
+                    {
+                        title: "Hard Bound",
+                        url: "/hard-bound",
+                    },
+                ],
             },
         ],
     },

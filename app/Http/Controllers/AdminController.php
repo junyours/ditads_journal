@@ -742,7 +742,7 @@ class AdminController extends Controller
             'account_name' => $request->account_name,
             'account_number' => $request->account_number,
             'account_email' => $request->account_email,
-            'qr_code' => $qr_code
+            'qr_code' => $qr_code ?? null
         ]);
     }
 

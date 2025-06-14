@@ -15,7 +15,7 @@ class BookTransaction extends Model
         'type',
         'reference_number',
         'receipt_image',
-        'delivery_form',
+        'delivery_address_id',
         'status'
     ];
 }
