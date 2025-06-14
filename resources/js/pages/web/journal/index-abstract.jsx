@@ -13,6 +13,7 @@ import WorldCat from "../../../../../public/images/index-services/WorldCat.png";
 import Zenodo from "../../../../../public/images/index-services/Zenodo.png";
 import Crossref from "../../../../../public/images/index-services/Crossref.png";
 import ISI from "../../../../../public/images/index-services/isi.png";
+import EuroPub from "../../../../../public/images/index-services/Euro-Pub.png";
 
 const images = [
     { name: Google, link: "https://scholar.google.com/" },
@@ -33,6 +34,7 @@ const images = [
     { name: WorldCat, link: "https://search.worldcat.org/" },
     { name: Crossref, link: "https://www.crossref.org/" },
     { name: ISI, link: "https://www.isindexing.com/isi/" },
+    { name: EuroPub, link: "https://europub.co.uk/" },
 ];
 
 export default function IndexAbstract() {
