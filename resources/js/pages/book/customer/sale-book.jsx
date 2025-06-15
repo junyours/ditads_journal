@@ -69,6 +69,8 @@ export default function SaleBook() {
     const [isAddressOpen, setIsAddressOpen] = useState(false);
     const [book, setBook] = useState(null);
     const { data, setData, post, errors, clearErrors, processing } = useForm({
+        book_publication_id: null,
+        amount: "",
         type: "",
         quantity: 1,
         payment_method_id: null,
@@ -104,8 +106,10 @@ export default function SaleBook() {
     const handleIsOpen = (book = null) => {
         if (book) {
             setBook(book);
+            setData("book_publication_id", book.id);
         } else {
             setBook(null);
+            setData("book_publication_id", null);
         }
         setIsOpen(!isOpen);
     };
@@ -115,6 +119,15 @@ export default function SaleBook() {
         post("/customer/add/delivery-address", {
             onSuccess: () => {
                 setIsAddressOpen(false);
+            },
+        });
+    };
+
+    const handlePay = () => {
+        clearErrors();
+        post("/customer/book/pay", {
+            onSuccess: () => {
+                handleIsOpen();
             },
         });
     };
@@ -234,16 +247,17 @@ export default function SaleBook() {
             </Sheet>
 
             <Dialog open={isOpen} onOpenChange={() => handleIsOpen()}>
-                <DialogContent>
+                <DialogContent className="max-h-full overflow-y-auto">
                     <DialogHeader>
                         <DialogTitle>
                             {tab === 1 &&
                                 "Choose the type of book you want to buy"}
-                            {tab === 2 && data.type === "hard_bound"
-                                ? "Hard Bound Book"
-                                : "Soft Bound Book"}
-                            {data.type === "hard_bounf" &&
-                                tab === 3 &&
+                            {tab === 2 &&
+                                (data.type === "hard_bound"
+                                    ? "Hard Bound Book"
+                                    : "Soft Bound Book")}
+                            {tab === 3 &&
+                                data.type === "hard_bound" &&
                                 "Select delivery address"}
                             {tab === 4 && "Select Payment Method"}
                             {tab === 5 && `Pay with ${payment?.name}`}
@@ -277,27 +291,46 @@ export default function SaleBook() {
                                         {formatCurrency(book?.hard_price)}
                                     </span>
                                 </div>
-                                <div
-                                    onClick={() =>
-                                        setData("type", "soft_bound")
-                                    }
-                                    className={`flex flex-col h-40 rounded-lg border p-4 cursor-pointer ${
-                                        data.type === "soft_bound"
-                                            ? "ring-1 ring-primary"
-                                            : ""
-                                    }`}
-                                >
-                                    <RadioGroupItem
-                                        value="soft_bound"
-                                        id="option-two"
-                                    />
-                                    <div className="flex-1 flex flex-col gap-2 items-center justify-center">
-                                        <BookOpen size={40} />
-                                        <h1>Soft Bound</h1>
+                                <div className="relative">
+                                    <div
+                                        onClick={() => {
+                                            if (!book?.has_transaction) {
+                                                setData("type", "soft_bound");
+                                            }
+                                        }}
+                                        className={`flex flex-col h-40 rounded-lg border p-4 cursor-pointer ${
+                                            book?.has_transaction &&
+                                            "bg-muted opacity-30"
+                                        } ${
+                                            data.type === "soft_bound"
+                                                ? "ring-1 ring-primary"
+                                                : ""
+                                        }`}
+                                    >
+                                        <RadioGroupItem
+                                            value="soft_bound"
+                                            id="option-two"
+                                            disabled={book?.has_transaction}
+                                        />
+                                        <div className="flex-1 flex flex-col gap-2 items-center justify-center">
+                                            <BookOpen size={40} />
+                                            <h1>Soft Bound</h1>
+                                        </div>
+                                        <span>
+                                            {formatCurrency(book?.soft_price)}
+                                        </span>
                                     </div>
-                                    <span>
-                                        {formatCurrency(book?.soft_price)}
-                                    </span>
+                                    <div
+                                        className={
+                                            book?.has_transaction
+                                                ? "absolute inset-0 flex items-center justify-center"
+                                                : "hidden"
+                                        }
+                                    >
+                                        <p className="font-semibold">
+                                            One time order only
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </RadioGroup>
@@ -588,7 +621,12 @@ export default function SaleBook() {
                                 >
                                     Back
                                 </Button>
-                                <Button>Pay</Button>
+                                <Button
+                                    onClick={handlePay}
+                                    disabled={processing}
+                                >
+                                    Pay
+                                </Button>
                             </>
                         )}
                     </DialogFooter>

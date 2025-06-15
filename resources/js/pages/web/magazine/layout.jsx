@@ -11,6 +11,11 @@ import ReviewProcess from "./review-process";
 import EditorialBoard from "./editorial-board";
 import Magazine from "./magazine";
 import { usePage } from "@inertiajs/react";
+import AboutMagazine from "./about-magazine";
+import AboutPublisher from "./about-publisher";
+import AboutLogo from "./about-logo";
+import OriginMagazine from "./origin-magazine";
+import ApplicationContent from "./application-content";
 
 const banners = [MagazineBanner];
 
@@ -19,12 +24,32 @@ export default function MagazineLayout() {
 
     const contents = [
         {
+            title: "About the Magazine",
+            page: AboutMagazine,
+        },
+        {
+            title: "About the Logo",
+            page: AboutLogo,
+        },
+        {
+            title: "Origin of the Magazine",
+            page: OriginMagazine,
+        },
+        {
             title: "Aims and Scope",
             page: AimScope,
         },
         {
+            title: "About the Publisher",
+            page: AboutPublisher,
+        },
+        {
             title: "Review Process",
             page: ReviewProcess,
+        },
+        {
+            title: "Application as Content Editors / Reviewers",
+            page: ApplicationContent,
         },
         {
             title: "Editorial Board",

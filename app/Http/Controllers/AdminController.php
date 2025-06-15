@@ -727,14 +727,14 @@ class AdminController extends Controller
         ]);
 
         if ($request->have_qr === 'yes') {
-            $uploadedCoverPage = Cloudinary::uploadApi()->upload(
+            $uploadedQrCode = Cloudinary::uploadApi()->upload(
                 $request->file('qr_code')->getRealPath(),
                 [
                     'folder' => 'ditads/payment_methods/qr_code'
                 ]
             );
 
-            $qr_code = $uploadedCoverPage['secure_url'];
+            $qr_code = $uploadedQrCode['secure_url'];
         }
 
         PaymentMethod::create([
@@ -778,14 +778,14 @@ class AdminController extends Controller
                     Cloudinary::uploadApi()->destroy('ditads/payment_methods/qr_code/' . $publicId);
                 }
 
-                $uploadedCoverPage = Cloudinary::uploadApi()->upload(
+                $uploadedQrCode = Cloudinary::uploadApi()->upload(
                     $request->file('qr_code')->getRealPath(),
                     [
                         'folder' => 'ditads/payment_methods/qr_code'
                     ]
                 );
 
-                $qr_code = $uploadedCoverPage['secure_url'];
+                $qr_code = $uploadedQrCode['secure_url'];
 
                 $payment->update([
                     'qr_code' => $qr_code

@@ -26,11 +26,34 @@ export default function AboutPublisher() {
                 operates with the following official credentials:
             </p>
             <ul>
-                <li><span className="font-semibold">• Business Permit Number:</span> BP-33229</li>
-                <li><span className="font-semibold">• Certificate Number:</span> 2019-25829</li>
-                <li><span className="font-semibold">• DTI Certificate of Business Registration No.:</span> 1033992</li>
-                <li><span className="font-semibold">• Philgeps No.:</span> 201910-17877-1307663177</li>
-                <li><span className="font-semibold">• NBDB No.:</span> 7515</li>
+                <li>
+                    <span className="font-semibold">
+                        • Business Permit Number:
+                    </span>{" "}
+                    BP-33229
+                </li>
+                <li>
+                    <span className="font-semibold">• Certificate Number:</span>{" "}
+                    2019-25829
+                </li>
+                <li>
+                    <span className="font-semibold">
+                        • DTI Certificate of Business Registration No.:
+                    </span>{" "}
+                    1033992
+                </li>
+                <li>
+                    <span className="font-semibold">
+                        • PhilGEPS Registration No.:
+                    </span>{" "}
+                    201910-17877-1307663177
+                </li>
+                <li>
+                    <span className="font-semibold">
+                        • NBDB Accreditation No.:
+                    </span>{" "}
+                    7515
+                </li>
             </ul>
             <br />
             <p>

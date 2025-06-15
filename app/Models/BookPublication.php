@@ -28,4 +28,9 @@ class BookPublication extends Model
     {
         return $this->hasMany(CustomerBook::class, 'book_publication_id');
     }
+
+    public function book_transaction()
+    {
+        return $this->hasOne(BookTransaction::class, 'book_publication_id');
+    }
 }

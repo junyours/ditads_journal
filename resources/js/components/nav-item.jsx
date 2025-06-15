@@ -231,6 +231,10 @@ const navCustomer = [
                         title: "Hard Bound",
                         url: "/hard-bound",
                     },
+                    {
+                        title: "Soft Bound",
+                        url: "/soft-bound",
+                    },
                 ],
             },
         ],
