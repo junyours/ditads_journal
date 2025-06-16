@@ -61,6 +61,30 @@ const items = [
 ];
 
 export default function WebFooter() {
+    const currentPath = window.location.pathname;
+
+    const filteredItems = items.map((item) => {
+        if (item.title === "Contact Us") {
+            return {
+                ...item,
+                subitems: item.subitems.filter((subitem) => {
+                    if (subitem.type === "tel:") return true;
+                    if (
+                        subitem.name ===
+                        "ditadsimrj@ditadsinternationalmultidisciplinaryresearchjournal.net"
+                    ) {
+                        return currentPath.includes("research-journal");
+                    }
+                    if (subitem.type === "mailto:") {
+                        return !currentPath.includes("research-journal");
+                    }
+                    return false;
+                }),
+            };
+        }
+        return item;
+    });
+
     return (
         <footer className="bg-primary">
             <div className="container mx-auto px-4 py-8">
@@ -73,7 +97,7 @@ export default function WebFooter() {
                         </Link>
                     </div>
                     <div className="grid grid-cols-2 gap-8 sm:gap-6 sm:grid-cols-3">
-                        {items.map((item, index) => (
+                        {filteredItems.map((item, index) => (
                             <div key={index} className="space-y-6">
                                 <h2 className="text-sm font-semibold uppercase">
                                     {item.title}
@@ -108,42 +132,45 @@ export default function WebFooter() {
                         ))}
                     </div>
                 </div>
-                <div className="text-center mt-4">
-                    <a
-                        href="https://ditadsresearchcenter.com/research-journal"
-                        className="hover:underline"
-                    >
-                        DIT.ADS International Multidisciplinary Research Journal
-                    </a>{" "}
-                    © 2025 by{" "}
-                    <a
-                        href="https://ditadsresearchcenter.com"
-                        className="hover:underline"
-                    >
-                        Digital Institute Training and Development Services
-                    </a>{" "}
-                    is licensed under{" "}
-                    <a
-                        href="https://creativecommons.org/licenses/by-sa/4.0/"
-                        target="_blank"
-                        className="hover:underline"
-                    >
-                        Creative Commons Attribution-ShareAlike 4.0
-                        International
-                    </a>
-                    <img
-                        src="https://mirrors.creativecommons.org/presskit/icons/cc.svg"
-                        className="w-4 h-4 inline-block ml-1"
-                    />
-                    <img
-                        src="https://mirrors.creativecommons.org/presskit/icons/by.svg"
-                        className="w-4 h-4 inline-block ml-1"
-                    />
-                    <img
-                        src="https://mirrors.creativecommons.org/presskit/icons/sa.svg"
-                        className="w-4 h-4 inline-block ml-1"
-                    />
-                </div>
+                {currentPath === "/research-journal" && (
+                    <div className="text-center mt-4">
+                        <a
+                            href="https://ditadsresearchcenter.com/research-journal"
+                            className="hover:underline"
+                        >
+                            DIT.ADS International Multidisciplinary Research
+                            Journal
+                        </a>{" "}
+                        © 2025 by{" "}
+                        <a
+                            href="https://ditadsresearchcenter.com"
+                            className="hover:underline"
+                        >
+                            Digital Institute Training and Development Services
+                        </a>{" "}
+                        is licensed under{" "}
+                        <a
+                            href="https://creativecommons.org/licenses/by-sa/4.0/"
+                            target="_blank"
+                            className="hover:underline"
+                        >
+                            Creative Commons Attribution-ShareAlike 4.0
+                            International
+                        </a>
+                        <img
+                            src="https://mirrors.creativecommons.org/presskit/icons/cc.svg"
+                            className="w-4 h-4 inline-block ml-1"
+                        />
+                        <img
+                            src="https://mirrors.creativecommons.org/presskit/icons/by.svg"
+                            className="w-4 h-4 inline-block ml-1"
+                        />
+                        <img
+                            src="https://mirrors.creativecommons.org/presskit/icons/sa.svg"
+                            className="w-4 h-4 inline-block ml-1"
+                        />
+                    </div>
+                )}
                 <hr className="my-6 border-t sm:mx-auto lg:my-8" />
                 <div className="flex justify-center">
                     <span className="text-sm">
