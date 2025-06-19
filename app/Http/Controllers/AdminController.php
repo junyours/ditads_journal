@@ -117,10 +117,7 @@ class AdminController extends Controller
                     'type' => 'anyone',
                 ]);
 
-                $meta = Http::withToken($accessToken)
-                    ->get("https://www.googleapis.com/drive/v3/files/{$fileId}?fields=thumbnailLink");
-
-                $avatarUrl = $meta->json()['thumbnailLink'] ?? "https://drive.google.com/uc?id={$fileId}";
+                $avatarUrl = "https://drive.google.com/thumbnail?id={$fileId}";
             }
         }
 
@@ -195,9 +192,7 @@ class AdminController extends Controller
                     'type' => 'anyone',
                 ]);
 
-                $meta = Http::withToken($accessToken)
-                    ->get("https://www.googleapis.com/drive/v3/files/{$fileId}?fields=thumbnailLink");
-                $avatarUrl = $meta->json()['thumbnailLink'] ?? "https://drive.google.com/uc?id={$fileId}";
+                $avatarUrl = "https://drive.google.com/thumbnail?id={$fileId}";
 
                 $editor->update([
                     'avatar' => $avatarUrl,
@@ -259,10 +254,7 @@ class AdminController extends Controller
                     'type' => 'anyone',
                 ]);
 
-                $meta = Http::withToken($accessToken)
-                    ->get("https://www.googleapis.com/drive/v3/files/{$fileId}?fields=thumbnailLink");
-
-                $avatarUrl = $meta->json()['thumbnailLink'] ?? "https://drive.google.com/uc?id={$fileId}";
+                $avatarUrl = "https://drive.google.com/thumbnail?id={$fileId}";
             }
         }
 
@@ -337,10 +329,7 @@ class AdminController extends Controller
                     'type' => 'anyone',
                 ]);
 
-                $meta = Http::withToken($accessToken)
-                    ->get("https://www.googleapis.com/drive/v3/files/{$fileId}?fields=thumbnailLink");
-
-                $avatarUrl = $meta->json()['thumbnailLink'] ?? "https://drive.google.com/uc?id={$fileId}";
+                $avatarUrl = "https://drive.google.com/thumbnail?id={$fileId}";
 
                 $consultant->update([
                     'avatar' => $avatarUrl,
@@ -400,10 +389,7 @@ class AdminController extends Controller
                     'type' => 'anyone',
                 ]);
 
-                $meta = Http::withToken($accessToken)
-                    ->get("https://www.googleapis.com/drive/v3/files/{$fileId}?fields=thumbnailLink");
-
-                $avatarUrl = $meta->json()['thumbnailLink'] ?? "https://drive.google.com/uc?id={$fileId}";
+                $avatarUrl = "https://drive.google.com/thumbnail?id={$fileId}";
             }
         }
 
@@ -472,10 +458,7 @@ class AdminController extends Controller
                     'type' => 'anyone',
                 ]);
 
-                $meta = Http::withToken($accessToken)
-                    ->get("https://www.googleapis.com/drive/v3/files/{$fileId}?fields=thumbnailLink");
-
-                $avatarUrl = $meta->json()['thumbnailLink'] ?? "https://drive.google.com/uc?id={$fileId}";
+                $avatarUrl = "https://drive.google.com/thumbnail?id={$fileId}";
 
                 $author->update([
                     'avatar' => $avatarUrl,

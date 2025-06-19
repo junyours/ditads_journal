@@ -127,7 +127,7 @@ export default function Editor() {
                 return (
                     <div className="size-8">
                         <img
-                            src={editor.avatar ? editor.avatar : Avatar}
+                            src={editor.avatar ?? Avatar}
                             alt="user"
                             className="rounded-full size-full object-cover"
                         />
