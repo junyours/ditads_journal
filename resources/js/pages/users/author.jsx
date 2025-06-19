@@ -182,7 +182,7 @@ export default function Author() {
                 <SheetContent className="flex flex-col">
                     <SheetHeader>
                         <SheetTitle>
-                            {editData ? "Edit Editor" : "Add Editor"}
+                            {editData ? "Edit Author" : "Add Author"}
                         </SheetTitle>
                     </SheetHeader>
                     <div className="flex-1 space-y-4 overflow-y-auto px-2 pb-2">

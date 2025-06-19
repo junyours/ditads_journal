@@ -39,6 +39,26 @@ class AdminController extends Controller
         return $response->json()['access_token'];
     }
 
+    private function getOrCreateFolder($accessToken, $folderName, $parentId)
+    {
+        $response = Http::withToken($accessToken)->get('https://www.googleapis.com/drive/v3/files', [
+            'q' => "name='{$folderName}' and '{$parentId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false",
+            'fields' => 'files(id)',
+        ]);
+
+        if ($response->successful() && count($response['files']) > 0) {
+            return $response['files'][0]['id'];
+        }
+
+        $create = Http::withToken($accessToken)->post('https://www.googleapis.com/drive/v3/files', [
+            'name' => $folderName,
+            'mimeType' => 'application/vnd.google-apps.folder',
+            'parents' => [$parentId],
+        ]);
+
+        return $create->json()['id'];
+    }
+
     public function dashboard()
     {
         return Inertia::render('dashboard');
@@ -66,55 +86,31 @@ class AdminController extends Controller
             'department' => ['required'],
         ]);
 
-        $avatarUrl = null;
-
         if ($request->hasFile('avatar')) {
-            $parentFolderId = config('services.google.folder_id');
+            $ditadsFolderId = config('services.google.folder_id');
 
-            $usersFolderResponse = Http::withToken($accessToken)
-                ->get('https://www.googleapis.com/drive/v3/files', [
-                    'q' => "name='users' and '{$parentFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false",
-                    'fields' => 'files(id, name)',
-                ]);
-
-            if ($usersFolderResponse->successful() && count($usersFolderResponse['files']) > 0) {
-                $usersFolderId = $usersFolderResponse['files'][0]['id'];
-            } else {
-                $createFolderRes = Http::withToken($accessToken)->post('https://www.googleapis.com/drive/v3/files', [
-                    'name' => 'users',
-                    'mimeType' => 'application/vnd.google-apps.folder',
-                    'parents' => [$parentFolderId],
-                ]);
-
-                $usersFolderId = $createFolderRes->json()['id'];
-            }
+            $usersFolderId = $this->getOrCreateFolder($accessToken, 'users', $ditadsFolderId);
+            $avatarsFolderId = $this->getOrCreateFolder($accessToken, 'avatars', $usersFolderId);
 
             $file = $request->file('avatar');
-            $fileName = time() . '_' . $file->getClientOriginalName();
             $mimeType = $file->getMimeType();
 
             $metadata = [
-                'name' => $fileName,
-                'parents' => [$usersFolderId],
+                'name' => 'temp_' . time(),
+                'parents' => [$avatarsFolderId],
             ];
 
             $uploadResponse = Http::withToken($accessToken)
-                ->attach(
-                    'metadata',
-                    json_encode($metadata),
-                    'metadata.json',
-                    ['Content-Type' => 'application/json']
-                )
-                ->attach(
-                    'media',
-                    file_get_contents($file),
-                    $fileName,
-                    ['Content-Type' => $mimeType]
-                )
+                ->attach('metadata', json_encode($metadata), 'metadata.json', ['Content-Type' => 'application/json'])
+                ->attach('media', file_get_contents($file), $file->getClientOriginalName(), ['Content-Type' => $mimeType])
                 ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
 
             if ($uploadResponse->successful()) {
                 $fileId = $uploadResponse->json()['id'];
+
+                Http::withToken($accessToken)->patch("https://www.googleapis.com/drive/v3/files/{$fileId}", [
+                    'name' => $fileId,
+                ]);
 
                 Http::withToken($accessToken)->post("https://www.googleapis.com/drive/v3/files/{$fileId}/permissions", [
                     'role' => 'reader',
@@ -137,8 +133,8 @@ class AdminController extends Controller
             'role' => 'editor',
             'position' => $request->position,
             'department' => $request->department,
-            'avatar' => $avatarUrl,
-            'file_id' => $fileId
+            'avatar' => $avatarUrl ?? null,
+            'file_id' => $fileId ?? null,
         ]);
     }
 
@@ -170,58 +166,37 @@ class AdminController extends Controller
                 Http::withToken($accessToken)->delete("https://www.googleapis.com/drive/v3/files/{$editor->file_id}");
             }
 
-            $parentFolderId = config('services.google.folder_id');
-            $usersFolderId = null;
-
-            $folderCheck = Http::withToken($accessToken)->get('https://www.googleapis.com/drive/v3/files', [
-                'q' => "name='users' and '{$parentFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false",
-                'fields' => 'files(id)',
-            ]);
-
-            if ($folderCheck->successful() && count($folderCheck['files']) > 0) {
-                $usersFolderId = $folderCheck['files'][0]['id'];
-            } else {
-                $createRes = Http::withToken($accessToken)->post('https://www.googleapis.com/drive/v3/files', [
-                    'name' => 'users',
-                    'mimeType' => 'application/vnd.google-apps.folder',
-                    'parents' => [$parentFolderId],
-                ]);
-                $usersFolderId = $createRes->json()['id'];
-            }
+            $ditadsFolderId = config('services.google.folder_id');
+            $usersFolderId = $this->getOrCreateFolder($accessToken, 'users', $ditadsFolderId);
+            $avatarsFolderId = $this->getOrCreateFolder($accessToken, 'avatars', $usersFolderId);
 
             $file = $request->file('avatar');
-            $fileName = time() . '_' . $file->getClientOriginalName();
             $mimeType = $file->getMimeType();
 
             $metadata = [
-                'name' => $fileName,
-                'parents' => [$usersFolderId],
+                'name' => 'temp_' . time(),
+                'parents' => [$avatarsFolderId],
             ];
 
             $uploadRes = Http::withToken($accessToken)
-                ->attach(
-                    'metadata',
-                    json_encode($metadata),
-                    'metadata.json',
-                    ['Content-Type' => 'application/json']
-                )
-                ->attach(
-                    'media',
-                    file_get_contents($file),
-                    $fileName,
-                    ['Content-Type' => $mimeType]
-                )
+                ->attach('metadata', json_encode($metadata), 'metadata.json', ['Content-Type' => 'application/json'])
+                ->attach('media', file_get_contents($file), $file->getClientOriginalName(), ['Content-Type' => $mimeType])
                 ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
 
             if ($uploadRes->successful()) {
                 $fileId = $uploadRes->json()['id'];
+
+                Http::withToken($accessToken)->patch("https://www.googleapis.com/drive/v3/files/{$fileId}", [
+                    'name' => $fileId,
+                ]);
 
                 Http::withToken($accessToken)->post("https://www.googleapis.com/drive/v3/files/{$fileId}/permissions", [
                     'role' => 'reader',
                     'type' => 'anyone',
                 ]);
 
-                $meta = Http::withToken($accessToken)->get("https://www.googleapis.com/drive/v3/files/{$fileId}?fields=thumbnailLink");
+                $meta = Http::withToken($accessToken)
+                    ->get("https://www.googleapis.com/drive/v3/files/{$fileId}?fields=thumbnailLink");
                 $avatarUrl = $meta->json()['thumbnailLink'] ?? "https://drive.google.com/uc?id={$fileId}";
 
                 $editor->update([
@@ -254,57 +229,30 @@ class AdminController extends Controller
             'department' => ['required'],
         ]);
 
-        // $password = Str::random(8);
-
-        $avatarUrl = null;
-
         if ($request->hasFile('avatar')) {
-            $parentFolderId = config('services.google.folder_id');
-
-            $usersFolderResponse = Http::withToken($accessToken)
-                ->get('https://www.googleapis.com/drive/v3/files', [
-                    'q' => "name='users' and '{$parentFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false",
-                    'fields' => 'files(id, name)',
-                ]);
-
-            if ($usersFolderResponse->successful() && count($usersFolderResponse['files']) > 0) {
-                $usersFolderId = $usersFolderResponse['files'][0]['id'];
-            } else {
-                $createFolderRes = Http::withToken($accessToken)->post('https://www.googleapis.com/drive/v3/files', [
-                    'name' => 'users',
-                    'mimeType' => 'application/vnd.google-apps.folder',
-                    'parents' => [$parentFolderId],
-                ]);
-
-                $usersFolderId = $createFolderRes->json()['id'];
-            }
+            $ditadsFolderId = config('services.google.folder_id');
+            $usersFolderId = $this->getOrCreateFolder($accessToken, 'users', $ditadsFolderId);
+            $avatarsFolderId = $this->getOrCreateFolder($accessToken, 'avatars', $usersFolderId);
 
             $file = $request->file('avatar');
-            $fileName = time() . '_' . $file->getClientOriginalName();
             $mimeType = $file->getMimeType();
 
             $metadata = [
-                'name' => $fileName,
-                'parents' => [$usersFolderId],
+                'name' => 'temp_' . time(),
+                'parents' => [$avatarsFolderId],
             ];
 
-            $uploadResponse = Http::withToken($accessToken)
-                ->attach(
-                    'metadata',
-                    json_encode($metadata),
-                    'metadata.json',
-                    ['Content-Type' => 'application/json']
-                )
-                ->attach(
-                    'media',
-                    file_get_contents($file),
-                    $fileName,
-                    ['Content-Type' => $mimeType]
-                )
+            $uploadRes = Http::withToken($accessToken)
+                ->attach('metadata', json_encode($metadata), 'metadata.json', ['Content-Type' => 'application/json'])
+                ->attach('media', file_get_contents($file), $file->getClientOriginalName(), ['Content-Type' => $mimeType])
                 ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
 
-            if ($uploadResponse->successful()) {
-                $fileId = $uploadResponse->json()['id'];
+            if ($uploadRes->successful()) {
+                $fileId = $uploadRes->json()['id'];
+
+                Http::withToken($accessToken)->patch("https://www.googleapis.com/drive/v3/files/{$fileId}", [
+                    'name' => $fileId,
+                ]);
 
                 Http::withToken($accessToken)->post("https://www.googleapis.com/drive/v3/files/{$fileId}/permissions", [
                     'role' => 'reader',
@@ -327,7 +275,8 @@ class AdminController extends Controller
             'role' => 'consultant',
             'position' => $request->position,
             'department' => $request->department,
-            'avatar' => $avatarUrl,
+            'avatar' => $avatarUrl ?? null,
+            'file_id' => $fileId ?? null
         ]);
     }
 
@@ -359,63 +308,43 @@ class AdminController extends Controller
                 Http::withToken($accessToken)->delete("https://www.googleapis.com/drive/v3/files/{$consultant->file_id}");
             }
 
-            $parentFolderId = config('services.google.folder_id');
-            $usersFolderId = null;
-
-            $folderCheck = Http::withToken($accessToken)->get('https://www.googleapis.com/drive/v3/files', [
-                'q' => "name='users' and '{$parentFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false",
-                'fields' => 'files(id)',
-            ]);
-
-            if ($folderCheck->successful() && count($folderCheck['files']) > 0) {
-                $usersFolderId = $folderCheck['files'][0]['id'];
-            } else {
-                $createRes = Http::withToken($accessToken)->post('https://www.googleapis.com/drive/v3/files', [
-                    'name' => 'users',
-                    'mimeType' => 'application/vnd.google-apps.folder',
-                    'parents' => [$parentFolderId],
-                ]);
-                $usersFolderId = $createRes->json()['id'];
-            }
+            $ditadsFolderId = config('services.google.folder_id');
+            $usersFolderId = $this->getOrCreateFolder($accessToken, 'users', $ditadsFolderId);
+            $avatarsFolderId = $this->getOrCreateFolder($accessToken, 'avatars', $usersFolderId);
 
             $file = $request->file('avatar');
-            $fileName = time() . '_' . $file->getClientOriginalName();
             $mimeType = $file->getMimeType();
 
             $metadata = [
-                'name' => $fileName,
-                'parents' => [$usersFolderId],
+                'name' => 'temp_' . time(),
+                'parents' => [$avatarsFolderId],
             ];
 
             $uploadRes = Http::withToken($accessToken)
-                ->attach(
-                    'metadata',
-                    json_encode($metadata),
-                    'metadata.json',
-                    ['Content-Type' => 'application/json']
-                )
-                ->attach(
-                    'media',
-                    file_get_contents($file),
-                    $fileName,
-                    ['Content-Type' => $mimeType]
-                )
+                ->attach('metadata', json_encode($metadata), 'metadata.json', ['Content-Type' => 'application/json'])
+                ->attach('media', file_get_contents($file), $file->getClientOriginalName(), ['Content-Type' => $mimeType])
                 ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
 
             if ($uploadRes->successful()) {
                 $fileId = $uploadRes->json()['id'];
+
+                Http::withToken($accessToken)->patch("https://www.googleapis.com/drive/v3/files/{$fileId}", [
+                    'name' => $fileId,
+                ]);
 
                 Http::withToken($accessToken)->post("https://www.googleapis.com/drive/v3/files/{$fileId}/permissions", [
                     'role' => 'reader',
                     'type' => 'anyone',
                 ]);
 
-                $meta = Http::withToken($accessToken)->get("https://www.googleapis.com/drive/v3/files/{$fileId}?fields=thumbnailLink");
+                $meta = Http::withToken($accessToken)
+                    ->get("https://www.googleapis.com/drive/v3/files/{$fileId}?fields=thumbnailLink");
+
                 $avatarUrl = $meta->json()['thumbnailLink'] ?? "https://drive.google.com/uc?id={$fileId}";
 
                 $consultant->update([
                     'avatar' => $avatarUrl,
-                    'file_id' => $fileId,
+                    'file_id' => $fileId
                 ]);
             }
         }
@@ -441,57 +370,30 @@ class AdminController extends Controller
             'name' => ['required']
         ]);
 
-        // $password = Str::random(8);
-
-        $avatarUrl = null;
-
         if ($request->hasFile('avatar')) {
-            $parentFolderId = config('services.google.folder_id');
-
-            $usersFolderResponse = Http::withToken($accessToken)
-                ->get('https://www.googleapis.com/drive/v3/files', [
-                    'q' => "name='users' and '{$parentFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false",
-                    'fields' => 'files(id, name)',
-                ]);
-
-            if ($usersFolderResponse->successful() && count($usersFolderResponse['files']) > 0) {
-                $usersFolderId = $usersFolderResponse['files'][0]['id'];
-            } else {
-                $createFolderRes = Http::withToken($accessToken)->post('https://www.googleapis.com/drive/v3/files', [
-                    'name' => 'users',
-                    'mimeType' => 'application/vnd.google-apps.folder',
-                    'parents' => [$parentFolderId],
-                ]);
-
-                $usersFolderId = $createFolderRes->json()['id'];
-            }
+            $ditadsFolderId = config('services.google.folder_id');
+            $usersFolderId = $this->getOrCreateFolder($accessToken, 'users', $ditadsFolderId);
+            $avatarsFolderId = $this->getOrCreateFolder($accessToken, 'avatars', $usersFolderId);
 
             $file = $request->file('avatar');
-            $fileName = time() . '_' . $file->getClientOriginalName();
             $mimeType = $file->getMimeType();
 
             $metadata = [
-                'name' => $fileName,
-                'parents' => [$usersFolderId],
+                'name' => 'temp_' . time(),
+                'parents' => [$avatarsFolderId],
             ];
 
-            $uploadResponse = Http::withToken($accessToken)
-                ->attach(
-                    'metadata',
-                    json_encode($metadata),
-                    'metadata.json',
-                    ['Content-Type' => 'application/json']
-                )
-                ->attach(
-                    'media',
-                    file_get_contents($file),
-                    $fileName,
-                    ['Content-Type' => $mimeType]
-                )
+            $uploadRes = Http::withToken($accessToken)
+                ->attach('metadata', json_encode($metadata), 'metadata.json', ['Content-Type' => 'application/json'])
+                ->attach('media', file_get_contents($file), $file->getClientOriginalName(), ['Content-Type' => $mimeType])
                 ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
 
-            if ($uploadResponse->successful()) {
-                $fileId = $uploadResponse->json()['id'];
+            if ($uploadRes->successful()) {
+                $fileId = $uploadRes->json()['id'];
+
+                Http::withToken($accessToken)->patch("https://www.googleapis.com/drive/v3/files/{$fileId}", [
+                    'name' => $fileId,
+                ]);
 
                 Http::withToken($accessToken)->post("https://www.googleapis.com/drive/v3/files/{$fileId}/permissions", [
                     'role' => 'reader',
@@ -512,7 +414,8 @@ class AdminController extends Controller
             'password' => Hash::make('P@ssw0rd'),
             'is_default' => 1,
             'role' => 'author',
-            'avatar' => $avatarUrl,
+            'avatar' => $avatarUrl ?? null,
+            'file_id' => $fileId ?? null
         ]);
     }
 
@@ -540,63 +443,43 @@ class AdminController extends Controller
                 Http::withToken($accessToken)->delete("https://www.googleapis.com/drive/v3/files/{$author->file_id}");
             }
 
-            $parentFolderId = config('services.google.folder_id');
-            $usersFolderId = null;
-
-            $folderCheck = Http::withToken($accessToken)->get('https://www.googleapis.com/drive/v3/files', [
-                'q' => "name='users' and '{$parentFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false",
-                'fields' => 'files(id)',
-            ]);
-
-            if ($folderCheck->successful() && count($folderCheck['files']) > 0) {
-                $usersFolderId = $folderCheck['files'][0]['id'];
-            } else {
-                $createRes = Http::withToken($accessToken)->post('https://www.googleapis.com/drive/v3/files', [
-                    'name' => 'users',
-                    'mimeType' => 'application/vnd.google-apps.folder',
-                    'parents' => [$parentFolderId],
-                ]);
-                $usersFolderId = $createRes->json()['id'];
-            }
+            $ditadsFolderId = config('services.google.folder_id');
+            $usersFolderId = $this->getOrCreateFolder($accessToken, 'users', $ditadsFolderId);
+            $avatarsFolderId = $this->getOrCreateFolder($accessToken, 'avatars', $usersFolderId);
 
             $file = $request->file('avatar');
-            $fileName = time() . '_' . $file->getClientOriginalName();
             $mimeType = $file->getMimeType();
 
             $metadata = [
-                'name' => $fileName,
-                'parents' => [$usersFolderId],
+                'name' => 'temp_' . time(),
+                'parents' => [$avatarsFolderId],
             ];
 
             $uploadRes = Http::withToken($accessToken)
-                ->attach(
-                    'metadata',
-                    json_encode($metadata),
-                    'metadata.json',
-                    ['Content-Type' => 'application/json']
-                )
-                ->attach(
-                    'media',
-                    file_get_contents($file),
-                    $fileName,
-                    ['Content-Type' => $mimeType]
-                )
+                ->attach('metadata', json_encode($metadata), 'metadata.json', ['Content-Type' => 'application/json'])
+                ->attach('media', file_get_contents($file), $file->getClientOriginalName(), ['Content-Type' => $mimeType])
                 ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
 
             if ($uploadRes->successful()) {
                 $fileId = $uploadRes->json()['id'];
+
+                Http::withToken($accessToken)->patch("https://www.googleapis.com/drive/v3/files/{$fileId}", [
+                    'name' => $fileId,
+                ]);
 
                 Http::withToken($accessToken)->post("https://www.googleapis.com/drive/v3/files/{$fileId}/permissions", [
                     'role' => 'reader',
                     'type' => 'anyone',
                 ]);
 
-                $meta = Http::withToken($accessToken)->get("https://www.googleapis.com/drive/v3/files/{$fileId}?fields=thumbnailLink");
+                $meta = Http::withToken($accessToken)
+                    ->get("https://www.googleapis.com/drive/v3/files/{$fileId}?fields=thumbnailLink");
+
                 $avatarUrl = $meta->json()['thumbnailLink'] ?? "https://drive.google.com/uc?id={$fileId}";
 
                 $author->update([
                     'avatar' => $avatarUrl,
-                    'file_id' => $fileId,
+                    'file_id' => $fileId
                 ]);
             }
         }
@@ -627,6 +510,8 @@ class AdminController extends Controller
 
     public function uploadBookPublication(Request $request)
     {
+        $accessToken = $this->token();
+
         $request->validate([
             'title' => ['required'],
             'soft_isbn' => ['required', 'unique:book_publications'],
@@ -649,56 +534,121 @@ class AdminController extends Controller
         ]);
 
         if ($request->hasFile('cover_page')) {
-            $uploadedCoverPage = Cloudinary::uploadApi()->upload(
-                $request->file('cover_page')->getRealPath(),
-                [
-                    'folder' => 'ditads/books/cover_page'
-                ]
-            );
+            $ditadsFolderId = config('services.google.folder_id');
+            $booksFolderId = $this->getOrCreateFolder($accessToken, 'books', $ditadsFolderId);
+            $coverPagesFolderId = $this->getOrCreateFolder($accessToken, 'cover_pages', $booksFolderId);
 
-            $cover_page = $uploadedCoverPage['secure_url'];
+            $file = $request->file('cover_page');
+            $mimeType = $file->getMimeType();
+
+            $metadata = [
+                'name' => 'temp_' . time(),
+                'parents' => [$coverPagesFolderId],
+            ];
+
+            $uploadRes = Http::withToken($accessToken)
+                ->attach('metadata', json_encode($metadata), 'metadata.json', ['Content-Type' => 'application/json'])
+                ->attach('media', file_get_contents($file), $file->getClientOriginalName(), ['Content-Type' => $mimeType])
+                ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
+
+            if ($uploadRes->successful()) {
+                $coverFileId = $uploadRes->json()['id'];
+
+                Http::withToken($accessToken)->patch("https://www.googleapis.com/drive/v3/files/{$coverFileId}", [
+                    'name' => $coverFileId,
+                ]);
+
+                Http::withToken($accessToken)->post("https://www.googleapis.com/drive/v3/files/{$coverFileId}/permissions", [
+                    'role' => 'reader',
+                    'type' => 'anyone',
+                ]);
+
+                $meta = Http::withToken($accessToken)
+                    ->get("https://www.googleapis.com/drive/v3/files/{$coverFileId}?fields=thumbnailLink");
+
+                $coverPageUrl = $meta->json()['thumbnailLink'] ?? "https://drive.google.com/uc?id={$coverFileId}";
+            }
         }
 
         if ($request->hasFile('pdf_file')) {
-            $uploadedPdfFile = Cloudinary::uploadApi()->upload(
-                $request->file('pdf_file')->getRealPath(),
-                [
-                    'folder' => 'ditads/books/pdf_file',
-                    'resource_type' => 'raw',
-                    'format' => 'pdf',
-                ]
-            );
+            $parentFolderId = config('services.google.folder_id');
+            $booksFolderId = $this->getOrCreateFolder($accessToken, 'books', $parentFolderId);
+            $pdfFolderId = $this->getOrCreateFolder($accessToken, 'pdf_files', $booksFolderId);
 
-            $pdf_file = 'v' . $uploadedPdfFile['version'] . '/' . $uploadedPdfFile['public_id'];
+            $file = $request->file('pdf_file');
+            $mimeType = $file->getMimeType();
+
+            $tempMetadata = [
+                'name' => 'temp_upload.pdf',
+                'parents' => [$pdfFolderId],
+            ];
+
+            $uploadRes = Http::withToken($accessToken)
+                ->attach('metadata', json_encode($tempMetadata), 'metadata.json', ['Content-Type' => 'application/json'])
+                ->attach('media', file_get_contents($file), 'temp_upload.pdf', ['Content-Type' => $mimeType])
+                ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
+
+            if ($uploadRes->successful()) {
+                $pdfFileId = $uploadRes->json()['id'];
+
+                Http::withToken($accessToken)->patch("https://www.googleapis.com/drive/v3/files/{$pdfFileId}", [
+                    'name' => "{$pdfFileId}.pdf"
+                ]);
+
+                Http::withToken($accessToken)->post("https://www.googleapis.com/drive/v3/files/{$pdfFileId}/permissions", [
+                    'role' => 'reader',
+                    'type' => 'anyone',
+                ]);
+            }
         }
 
         if ($request->hasFile('overview_pdf_file')) {
-            $uploadedPdfFile = Cloudinary::uploadApi()->upload(
-                $request->file('overview_pdf_file')->getRealPath(),
-                [
-                    'folder' => 'ditads/books/overview_pdf_file',
-                    'resource_type' => 'raw',
-                    'format' => 'pdf',
-                ]
-            );
+            $parentFolderId = config('services.google.folder_id');
+            $booksFolderId = $this->getOrCreateFolder($accessToken, 'books', $parentFolderId);
+            $pdfFolderId = $this->getOrCreateFolder($accessToken, 'overview_pdf_files', $booksFolderId);
 
-            $overview_pdf_file = 'v' . $uploadedPdfFile['version'] . '/' . $uploadedPdfFile['public_id'];
+            $file = $request->file('overview_pdf_file');
+            $mimeType = $file->getMimeType();
+
+            $tempMetadata = [
+                'name' => 'temp_upload.pdf',
+                'parents' => [$pdfFolderId],
+            ];
+
+            $uploadRes = Http::withToken($accessToken)
+                ->attach('metadata', json_encode($tempMetadata), 'metadata.json', ['Content-Type' => 'application/json'])
+                ->attach('media', file_get_contents($file), 'temp_upload.pdf', ['Content-Type' => $mimeType])
+                ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
+
+            if ($uploadRes->successful()) {
+                $overviewPdfFileId = $uploadRes->json()['id'];
+
+                Http::withToken($accessToken)->patch("https://www.googleapis.com/drive/v3/files/{$overviewPdfFileId}", [
+                    'name' => "{$overviewPdfFileId}.pdf"
+                ]);
+
+                Http::withToken($accessToken)->post("https://www.googleapis.com/drive/v3/files/{$overviewPdfFileId}/permissions", [
+                    'role' => 'reader',
+                    'type' => 'anyone',
+                ]);
+            }
         }
 
         BookPublication::create([
             'title' => $request->title,
             'soft_isbn' => $request->soft_isbn,
             'hard_isbn' => $request->hard_isbn,
-            'cover_page' => $cover_page,
+            'cover_page' => $coverPageUrl,
+            'cover_file_id' => $coverFileId,
             'author' => $request->author,
             'overview' => $request->overview,
             'published_at' => Carbon::parse($request->published_at)
                 ->timezone('Asia/Manila')
                 ->toDateString(),
-            'pdf_file' => $pdf_file,
+            'pdf_file' => $pdfFileId,
             // 'book_category_id' => $request->book_category_id,
             // 'doi' => $request->doi,
-            // 'overview_pdf_file' => $overview_pdf_file,
+            // 'overview_pdf_file' => $overviewPdfFileId,
             'hard_price' => $request->hard_price,
             'soft_price' => $request->soft_price,
         ]);
@@ -707,6 +657,7 @@ class AdminController extends Controller
     public function updateBookPublication(Request $request)
     {
         $book = BookPublication::findOrFail($request->id);
+        $accessToken = $this->token();
 
         $request->validate([
             'title' => ['required'],
@@ -745,21 +696,49 @@ class AdminController extends Controller
                 'cover_page' => ['mimes:jpeg,jpg,png', 'max:3048']
             ]);
 
-            if ($book->cover_page) {
-                $publicId = pathinfo(parse_url($book->cover_page, PHP_URL_PATH), PATHINFO_FILENAME);
-                Cloudinary::uploadApi()->destroy('ditads/books/cover_page/' . $publicId);
+            if ($book->cover_file_id) {
+                Http::withToken($accessToken)->delete("https://www.googleapis.com/drive/v3/files/{$book->cover_file_id}");
             }
 
-            $uploadedCoverPage = Cloudinary::uploadApi()->upload(
-                $request->file('cover_page')->getRealPath(),
-                ['folder' => 'ditads/books/cover_page']
-            );
+            $ditadsFolderId = config('services.google.folder_id');
+            $booksFolderId = $this->getOrCreateFolder($accessToken, 'books', $ditadsFolderId);
+            $coverPagesFolderId = $this->getOrCreateFolder($accessToken, 'cover_pages', $booksFolderId);
 
-            $cover_page = $uploadedCoverPage['secure_url'];
+            $file = $request->file('cover_page');
+            $mimeType = $file->getMimeType();
 
-            $book->update([
-                'cover_page' => $cover_page,
-            ]);
+            $metadata = [
+                'name' => 'temp_' . time(),
+                'parents' => [$coverPagesFolderId],
+            ];
+
+            $uploadRes = Http::withToken($accessToken)
+                ->attach('metadata', json_encode($metadata), 'metadata.json', ['Content-Type' => 'application/json'])
+                ->attach('media', file_get_contents($file), $file->getClientOriginalName(), ['Content-Type' => $mimeType])
+                ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
+
+            if ($uploadRes->successful()) {
+                $coverFileId = $uploadRes->json()['id'];
+
+                Http::withToken($accessToken)->patch("https://www.googleapis.com/drive/v3/files/{$coverFileId}", [
+                    'name' => $coverFileId,
+                ]);
+
+                Http::withToken($accessToken)->post("https://www.googleapis.com/drive/v3/files/{$coverFileId}/permissions", [
+                    'role' => 'reader',
+                    'type' => 'anyone',
+                ]);
+
+                $meta = Http::withToken($accessToken)
+                    ->get("https://www.googleapis.com/drive/v3/files/{$coverFileId}?fields=thumbnailLink");
+
+                $coverPageUrl = $meta->json()['thumbnailLink'] ?? "https://drive.google.com/uc?id={$coverFileId}";
+
+                $book->update([
+                    'cover_page' => $coverPageUrl,
+                    'cover_file_id' => $coverFileId
+                ]);
+            }
         }
 
         if ($request->hasFile('pdf_file')) {
@@ -769,27 +748,41 @@ class AdminController extends Controller
                 'pdf_file.required' => 'The book pdf file field is required.'
             ]);
 
-            if ($book->pdf_file) {
-                $publicId = explode('/', $book->pdf_file, 2)[1];
-                Cloudinary::uploadApi()->destroy($publicId, [
-                    'resource_type' => 'raw',
+            $parentFolderId = config('services.google.folder_id');
+            $booksFolderId = $this->getOrCreateFolder($accessToken, 'books', $parentFolderId);
+            $pdfFolderId = $this->getOrCreateFolder($accessToken, 'pdf_files', $booksFolderId);
+
+            $file = $request->file('pdf_file');
+            $mimeType = $file->getMimeType();
+
+            $metadata = [
+                'name' => 'temp_upload.pdf',
+                'parents' => [$pdfFolderId],
+            ];
+
+            $upload = Http::withToken($accessToken)
+                ->attach('metadata', json_encode($metadata), 'metadata.json', ['Content-Type' => 'application/json'])
+                ->attach('media', file_get_contents($file), 'temp_upload.pdf', ['Content-Type' => $mimeType])
+                ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
+
+            if ($upload->successful()) {
+                $newPdfFileId = $upload->json()['id'];
+
+                Http::withToken($accessToken)->patch("https://www.googleapis.com/drive/v3/files/{$newPdfFileId}", [
+                    'name' => "{$newPdfFileId}.pdf"
+                ]);
+
+                Http::withToken($accessToken)->post("https://www.googleapis.com/drive/v3/files/{$newPdfFileId}/permissions", [
+                    'role' => 'reader',
+                    'type' => 'anyone',
+                ]);
+
+                Http::withToken($accessToken)->delete("https://www.googleapis.com/drive/v3/files/{$book->pdf_file}");
+
+                $book->update([
+                    'pdf_file' => $newPdfFileId,
                 ]);
             }
-
-            $uploadedPdfFile = Cloudinary::uploadApi()->upload(
-                $request->file('pdf_file')->getRealPath(),
-                [
-                    'folder' => 'ditads/books/pdf_file',
-                    'resource_type' => 'raw',
-                    'format' => 'pdf',
-                ]
-            );
-
-            $pdf_file = 'v' . $uploadedPdfFile['version'] . '/' . $uploadedPdfFile['public_id'];
-
-            $book->update([
-                'pdf_file' => $pdf_file,
-            ]);
         }
 
         if ($request->hasFile('overview_pdf_file')) {
@@ -797,27 +790,41 @@ class AdminController extends Controller
                 'overview_pdf_file' => ['required', 'mimes:pdf'],
             ]);
 
-            if ($book->overview_pdf_file) {
-                $publicId = explode('/', $book->overview_pdf_file, 2)[1];
-                Cloudinary::uploadApi()->destroy($publicId, [
-                    'resource_type' => 'raw',
+            $parentFolderId = config('services.google.folder_id');
+            $booksFolderId = $this->getOrCreateFolder($accessToken, 'books', $parentFolderId);
+            $overviewPdfFolderId = $this->getOrCreateFolder($accessToken, 'overview_pdf_files', $booksFolderId);
+
+            $file = $request->file('overview_pdf_file');
+            $mimeType = $file->getMimeType();
+
+            $metadata = [
+                'name' => 'temp_upload.pdf',
+                'parents' => [$overviewPdfFolderId],
+            ];
+
+            $upload = Http::withToken($accessToken)
+                ->attach('metadata', json_encode($metadata), 'metadata.json', ['Content-Type' => 'application/json'])
+                ->attach('media', file_get_contents($file), 'temp_upload.pdf', ['Content-Type' => $mimeType])
+                ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
+
+            if ($upload->successful()) {
+                $newOverviewPdfFileId = $upload->json()['id'];
+
+                Http::withToken($accessToken)->patch("https://www.googleapis.com/drive/v3/files/{$newOverviewPdfFileId}", [
+                    'name' => "{$newOverviewPdfFileId}.pdf"
+                ]);
+
+                Http::withToken($accessToken)->post("https://www.googleapis.com/drive/v3/files/{$newOverviewPdfFileId}/permissions", [
+                    'role' => 'reader',
+                    'type' => 'anyone',
+                ]);
+
+                Http::withToken($accessToken)->delete("https://www.googleapis.com/drive/v3/files/{$book->overview_pdf_file}");
+
+                $book->update([
+                    'overview_pdf_file' => $newOverviewPdfFileId,
                 ]);
             }
-
-            $uploadedPdfFile = Cloudinary::uploadApi()->upload(
-                $request->file('overview_pdf_file')->getRealPath(),
-                [
-                    'folder' => 'ditads/books/overview_pdf_file',
-                    'resource_type' => 'raw',
-                    'format' => 'pdf',
-                ]
-            );
-
-            $overview_pdf_file = 'v' . $uploadedPdfFile['version'] . '/' . $uploadedPdfFile['public_id'];
-
-            $book->update([
-                'overview_pdf_file' => $overview_pdf_file,
-            ]);
         }
     }
 
@@ -949,50 +956,28 @@ class AdminController extends Controller
 
         if ($request->hasFile('pdf_file')) {
             $parentFolderId = config('services.google.folder_id');
-            $pdfFolderId = null;
-
-            $folderCheck = Http::withToken($accessToken)->get('https://www.googleapis.com/drive/v3/files', [
-                'q' => "name='pdf_files' and '{$parentFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false",
-                'fields' => 'files(id)',
-            ]);
-
-            if ($folderCheck->successful() && count($folderCheck['files']) > 0) {
-                $pdfFolderId = $folderCheck['files'][0]['id'];
-            } else {
-                $createFolder = Http::withToken($accessToken)->post('https://www.googleapis.com/drive/v3/files', [
-                    'name' => 'pdf_files',
-                    'mimeType' => 'application/vnd.google-apps.folder',
-                    'parents' => [$parentFolderId],
-                ]);
-                $pdfFolderId = $createFolder->json()['id'];
-            }
+            $journalsFolderId = $this->getOrCreateFolder($accessToken, 'journals', $parentFolderId);
+            $pdfFolderId = $this->getOrCreateFolder($accessToken, 'pdf_files', $journalsFolderId);
 
             $file = $request->file('pdf_file');
-            $fileName = time() . '_' . $file->getClientOriginalName();
             $mimeType = $file->getMimeType();
 
-            $metadata = [
-                'name' => $fileName,
+            $tempMetadata = [
+                'name' => 'temp_upload.pdf',
                 'parents' => [$pdfFolderId],
             ];
 
             $uploadRes = Http::withToken($accessToken)
-                ->attach(
-                    'metadata',
-                    json_encode($metadata),
-                    'metadata.json',
-                    ['Content-Type' => 'application/json']
-                )
-                ->attach(
-                    'media',
-                    file_get_contents($file),
-                    $fileName,
-                    ['Content-Type' => $mimeType]
-                )
+                ->attach('metadata', json_encode($tempMetadata), 'metadata.json', ['Content-Type' => 'application/json'])
+                ->attach('media', file_get_contents($file), 'temp_upload.pdf', ['Content-Type' => $mimeType])
                 ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
 
             if ($uploadRes->successful()) {
                 $fileId = $uploadRes->json()['id'];
+
+                Http::withToken($accessToken)->patch("https://www.googleapis.com/drive/v3/files/{$fileId}", [
+                    'name' => "{$fileId}.pdf"
+                ]);
 
                 Http::withToken($accessToken)->post("https://www.googleapis.com/drive/v3/files/{$fileId}/permissions", [
                     'role' => 'reader',
@@ -1008,20 +993,17 @@ class AdminController extends Controller
             'author' => $request->author,
             'abstract' => $request->abstract,
             'pdf_file' => $fileId,
-            'published_at' => Carbon::parse($request->published_at)
-                ->timezone('Asia/Manila')
-                ->toDateString(),
+            'published_at' => Carbon::parse($request->published_at)->timezone('Asia/Manila')->toDateString(),
             'country' => $request->country,
             'page_number' => $request->page_number,
             'tracking_number' => $request->tracking_number,
-            'doi' => $request->doi
+            'doi' => $request->doi,
         ]);
     }
 
     public function updateResearchJournal(Request $request)
     {
         $journal = ResearchJournal::findOrFail($request->id);
-
         $accessToken = $this->token();
 
         $request->validate([
@@ -1037,57 +1019,46 @@ class AdminController extends Controller
             'doi' => ['required'],
         ]);
 
-        $fileId = $journal->pdf_file;
+        $oldFileId = $journal->pdf_file;
+        $newFileId = $oldFileId;
 
         if ($request->hasFile('pdf_file')) {
             $request->validate([
                 'pdf_file' => ['mimes:pdf', 'max:2048'],
             ]);
 
-            if ($fileId) {
-                Http::withToken($accessToken)->delete("https://www.googleapis.com/drive/v3/files/{$fileId}");
-            }
-
             $parentFolderId = config('services.google.folder_id');
-            $pdfFolderId = null;
-
-            $folderCheck = Http::withToken($accessToken)->get('https://www.googleapis.com/drive/v3/files', [
-                'q' => "name='pdf_files' and '{$parentFolderId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false",
-                'fields' => 'files(id)',
-            ]);
-
-            if ($folderCheck->successful() && count($folderCheck['files']) > 0) {
-                $pdfFolderId = $folderCheck['files'][0]['id'];
-            } else {
-                $createFolder = Http::withToken($accessToken)->post('https://www.googleapis.com/drive/v3/files', [
-                    'name' => 'pdf_files',
-                    'mimeType' => 'application/vnd.google-apps.folder',
-                    'parents' => [$parentFolderId],
-                ]);
-                $pdfFolderId = $createFolder->json()['id'];
-            }
+            $journalsFolderId = $this->getOrCreateFolder($accessToken, 'journals', $parentFolderId);
+            $pdfFolderId = $this->getOrCreateFolder($accessToken, 'pdf_files', $journalsFolderId);
 
             $file = $request->file('pdf_file');
-            $fileName = time() . '_' . $file->getClientOriginalName();
             $mimeType = $file->getMimeType();
 
             $metadata = [
-                'name' => $fileName,
+                'name' => 'temp_upload.pdf',
                 'parents' => [$pdfFolderId],
             ];
 
             $upload = Http::withToken($accessToken)
                 ->attach('metadata', json_encode($metadata), 'metadata.json', ['Content-Type' => 'application/json'])
-                ->attach('media', file_get_contents($file), $fileName, ['Content-Type' => $mimeType])
+                ->attach('media', file_get_contents($file), 'temp_upload.pdf', ['Content-Type' => $mimeType])
                 ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
 
             if ($upload->successful()) {
-                $fileId = $upload->json()['id'];
+                $newFileId = $upload->json()['id'];
 
-                Http::withToken($accessToken)->post("https://www.googleapis.com/drive/v3/files/{$fileId}/permissions", [
+                Http::withToken($accessToken)->patch("https://www.googleapis.com/drive/v3/files/{$newFileId}", [
+                    'name' => "{$newFileId}.pdf"
+                ]);
+
+                Http::withToken($accessToken)->post("https://www.googleapis.com/drive/v3/files/{$newFileId}/permissions", [
                     'role' => 'reader',
                     'type' => 'anyone',
                 ]);
+
+                if ($oldFileId && $oldFileId !== $newFileId) {
+                    Http::withToken($accessToken)->delete("https://www.googleapis.com/drive/v3/files/{$oldFileId}");
+                }
             }
         }
 
@@ -1097,14 +1068,12 @@ class AdminController extends Controller
             'title' => $request->title,
             'author' => $request->author,
             'abstract' => $request->abstract,
-            'published_at' => Carbon::parse($request->published_at)
-                ->timezone('Asia/Manila')
-                ->toDateString(),
+            'published_at' => Carbon::parse($request->published_at)->timezone('Asia/Manila')->toDateString(),
             'country' => $request->country,
             'page_number' => $request->page_number,
-            'pdf_file' => $fileId,
+            'pdf_file' => $newFileId,
             'tracking_number' => $request->tracking_number,
-            'doi' => $request->doi
+            'doi' => $request->doi,
         ]);
     }
 

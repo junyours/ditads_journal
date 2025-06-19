@@ -14,6 +14,26 @@ use Inertia\Inertia;
 
 class WebController extends Controller
 {
+    private function token()
+    {
+        $client_id = config('services.google.client_id');
+        $client_secret = config('services.google.client_secret');
+        $refresh_token = config('services.google.refresh_token');
+
+        $response = Http::asForm()->post('https://oauth2.googleapis.com/token', [
+            'client_id' => $client_id,
+            'client_secret' => $client_secret,
+            'refresh_token' => $refresh_token,
+            'grant_type' => 'refresh_token',
+        ]);
+
+        if (!$response->successful()) {
+            throw new \Exception('Failed to get Google access token: ' . $response->body());
+        }
+
+        return $response->json()['access_token'];
+    }
+
     public function welcome()
     {
         return Inertia::render('web/welcome');
@@ -200,11 +220,22 @@ class WebController extends Controller
 
     public function viewJournal($path)
     {
-        $cloudinaryUrl = 'https://res.cloudinary.com/dzzyp9crw/raw/upload/' . $path;
-        $response = Http::get($cloudinaryUrl);
+        $accessToken = $this->token();
 
-        if ($response->ok()) {
-            return response($response->body(), 200, [
+        $cloudinaryResponse = Http::get("https://res.cloudinary.com/dzzyp9crw/raw/upload/{$path}");
+
+        if ($cloudinaryResponse->ok()) {
+            return response($cloudinaryResponse->body(), 200, [
+                'Content-Type' => 'application/pdf',
+            ]);
+        }
+
+        $googleDriveResponse = Http::withToken($accessToken)->get("https://www.googleapis.com/drive/v3/files/{$path}", [
+            'alt' => 'media',
+        ]);
+
+        if ($googleDriveResponse->ok()) {
+            return response($googleDriveResponse->body(), 200, [
                 'Content-Type' => 'application/pdf',
             ]);
         }
@@ -214,51 +245,28 @@ class WebController extends Controller
 
     public function viewBook($path)
     {
-        $cloudinaryUrl = 'https://res.cloudinary.com/dzzyp9crw/raw/upload/' . $path;
-        $response = Http::get($cloudinaryUrl);
+        $accessToken = $this->token();
 
-        if ($response->ok()) {
-            return response($response->body(), 200, [
+        $cloudinaryResponse = Http::get("https://res.cloudinary.com/dzzyp9crw/raw/upload/{$path}");
+
+        if ($cloudinaryResponse->ok()) {
+            return response($cloudinaryResponse->body(), 200, [
+                'Content-Type' => 'application/pdf',
+            ]);
+        }
+
+        $googleDriveResponse = Http::withToken($accessToken)->get("https://www.googleapis.com/drive/v3/files/{$path}", [
+            'alt' => 'media',
+        ]);
+
+        if ($googleDriveResponse->ok()) {
+            return response($googleDriveResponse->body(), 200, [
                 'Content-Type' => 'application/pdf',
             ]);
         }
 
         abort(404);
     }
-
-    // public function viewJournal($path)
-    // {
-    //     $accessToken = $this->token();
-
-    //     $response = Http::withToken($accessToken)->get("https://www.googleapis.com/drive/v3/files/{$path}", [
-    //         'alt' => 'media'
-    //     ]);
-
-    //     if ($response->ok()) {
-    //         return response($response->body(), 200, [
-    //             'Content-Type' => 'application/pdf',
-    //         ]);
-    //     }
-
-    //     abort(404);
-    // }
-
-    // public function viewBook($path)
-    // {
-    //     $accessToken = $this->token();
-
-    //     $response = Http::withToken($accessToken)->get("https://www.googleapis.com/drive/v3/files/{$path}", [
-    //         'alt' => 'media'
-    //     ]);
-
-    //     if ($response->ok()) {
-    //         return response($response->body(), 200, [
-    //             'Content-Type' => 'application/pdf',
-    //         ]);
-    //     }
-
-    //     abort(404);
-    // }
 
     public function contactUs()
     {
