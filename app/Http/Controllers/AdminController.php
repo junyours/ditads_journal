@@ -546,10 +546,7 @@ class AdminController extends Controller
                     'type' => 'anyone',
                 ]);
 
-                $meta = Http::withToken($accessToken)
-                    ->get("https://www.googleapis.com/drive/v3/files/{$coverFileId}?fields=thumbnailLink");
-
-                $coverPageUrl = $meta->json()['thumbnailLink'] ?? "https://drive.google.com/uc?id={$coverFileId}";
+                $coverPageUrl = "https://drive.google.com/thumbnail?id={$coverFileId}";
             }
         }
 
@@ -712,10 +709,7 @@ class AdminController extends Controller
                     'type' => 'anyone',
                 ]);
 
-                $meta = Http::withToken($accessToken)
-                    ->get("https://www.googleapis.com/drive/v3/files/{$coverFileId}?fields=thumbnailLink");
-
-                $coverPageUrl = $meta->json()['thumbnailLink'] ?? "https://drive.google.com/uc?id={$coverFileId}";
+                $coverPageUrl = "https://drive.google.com/thumbnail?id={$coverFileId}";
 
                 $book->update([
                     'cover_page' => $coverPageUrl,
