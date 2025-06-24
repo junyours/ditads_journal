@@ -130,6 +130,28 @@ class WebController extends Controller
         ]);
     }
 
+    public function generateMagazineHash($cover_file_id)
+    {
+        $secret = config('app.key');
+        return hash_hmac('sha256', $cover_file_id, $secret);
+    }
+
+    public function viewFlipMagazine($hash)
+    {
+        $magazine = Magazine::get()->first(function ($magazine) use ($hash) {
+            $generated = $this->generateMagazineHash($magazine->cover_file_id);
+            return hash_equals($generated, $hash);
+        });
+
+        if (!$magazine) {
+            abort(404);
+        }
+
+        return Inertia::render('web/magazine/view-magazine', [
+            'magazine' => $magazine->pdf_file
+        ]);
+    }
+
     public function magazine()
     {
         $editors = User::select('name', 'position', 'email', 'department', 'avatar')
@@ -137,7 +159,7 @@ class WebController extends Controller
             ->orderByRaw("FIELD(position, 'Editor in Chief', 'Associate Editor', 'Editorial Board')")
             ->get();
 
-        $magazines = Magazine::select('cover_page', 'volume', 'issue')
+        $magazines = Magazine::select('cover_page', 'volume', 'issue', 'pdf_file', 'published_at', 'cover_file_id')
             ->get();
 
         return Inertia::render('web/magazine/layout', [
@@ -254,6 +276,23 @@ class WebController extends Controller
                 'Content-Type' => 'application/pdf',
             ]);
         }
+
+        $googleDriveResponse = Http::withToken($accessToken)->get("https://www.googleapis.com/drive/v3/files/{$path}", [
+            'alt' => 'media',
+        ]);
+
+        if ($googleDriveResponse->ok()) {
+            return response($googleDriveResponse->body(), 200, [
+                'Content-Type' => 'application/pdf',
+            ]);
+        }
+
+        abort(404);
+    }
+
+    public function viewMagazine($path)
+    {
+        $accessToken = $this->token();
 
         $googleDriveResponse = Http::withToken($accessToken)->get("https://www.googleapis.com/drive/v3/files/{$path}", [
             'alt' => 'media',

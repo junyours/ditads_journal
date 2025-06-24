@@ -13,5 +13,7 @@ class Magazine extends Model
         'pdf_file',
         'volume',
         'issue',
+        'cover_file_id',
+        'published_at'
     ];
 }

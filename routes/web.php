@@ -64,11 +64,19 @@ Route::get('/api/book-hash', function (Request $request) {
     $hash = hash_hmac('sha256', $soft . '|' . $hard, $secret);
     return response()->json(['hash' => $hash]);
 });
+Route::get('/api/magazine-hash', function (Request $request) {
+    $coverFileId = $request->query('cover_file_id');
+    $secret = config('app.key');
+    $hash = hash_hmac('sha256', $coverFileId, $secret);
+    return response()->json(['hash' => $hash]);
+});
 Route::get('/flip-book/{hash}', [WebController::class, 'viewFlipBook']);
+Route::get('/flip-magazine/{hash}', [WebController::class, 'viewFlipMagazine']);
 Route::get('/magazine', [WebController::class, 'magazine']);
 Route::get('/research-journal', [WebController::class, 'researchJournal']);
 Route::get('/IMRJ/{path}', [WebController::class, 'viewJournal'])->where('path', '.*');
 Route::get('/view-book/{path}', [WebController::class, 'viewBook'])->where('path', '.*');
+Route::get('/view-magazine/{path}', [WebController::class, 'viewMagazine'])->where('path', '.*');
 Route::get('/contact-us', [WebController::class, 'contactUs']);
 
 require __DIR__ . '/auth.php';

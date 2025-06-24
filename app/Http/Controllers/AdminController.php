@@ -819,7 +819,7 @@ class AdminController extends Controller
 
     public function getMagazine()
     {
-        $magazines = Magazine::select('id', 'cover_page', 'volume', 'issue', 'created_at')
+        $magazines = Magazine::select('id', 'cover_page', 'volume', 'issue', 'published_at', 'pdf_file')
             ->get();
 
         return Inertia::render('web/admin/magazine', [
@@ -829,64 +829,202 @@ class AdminController extends Controller
 
     public function uploadMagazine(Request $request)
     {
+        $accessToken = $this->token();
+
         $request->validate([
-            'cover_page' => ['required', 'mimes:jpeg,jpg,png', 'max:3048'],
+            'cover_page' => ['required', 'mimes:jpeg,jpg,png'],
             'volume' => ['required'],
-            'issue' => ['required']
+            'issue' => ['required'],
+            'pdf_file' => ['required', 'mimes:pdf'],
+            'published_at' => ['required'],
         ]);
 
-        $fileUrl = null;
-
         if ($request->hasFile('cover_page')) {
-            $uploadedFile = Cloudinary::uploadApi()->upload(
-                $request->file('cover_page')->getRealPath(),
-                ['folder' => 'ditads/magazines/cover_page']
-            );
+            $ditadsFolderId = config('services.google.folder_id');
+            $magazinesFolderId = $this->getOrCreateFolder($accessToken, 'magazines', $ditadsFolderId);
+            $coverPagesFolderId = $this->getOrCreateFolder($accessToken, 'cover_pages', $magazinesFolderId);
 
-            $fileUrl = $uploadedFile['secure_url'];
+            $file = $request->file('cover_page');
+            $mimeType = $file->getMimeType();
+
+            $metadata = [
+                'name' => 'temp_' . time(),
+                'parents' => [$coverPagesFolderId],
+            ];
+
+            $uploadRes = Http::withToken($accessToken)
+                ->attach('metadata', json_encode($metadata), 'metadata.json', ['Content-Type' => 'application/json'])
+                ->attach('media', file_get_contents($file), $file->getClientOriginalName(), ['Content-Type' => $mimeType])
+                ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
+
+            if ($uploadRes->successful()) {
+                $coverFileId = $uploadRes->json()['id'];
+
+                Http::withToken($accessToken)->patch("https://www.googleapis.com/drive/v3/files/{$coverFileId}", [
+                    'name' => $coverFileId,
+                ]);
+
+                Http::withToken($accessToken)->post("https://www.googleapis.com/drive/v3/files/{$coverFileId}/permissions", [
+                    'role' => 'reader',
+                    'type' => 'anyone',
+                ]);
+
+                $coverPageUrl = "https://drive.google.com/thumbnail?id={$coverFileId}";
+            }
+        }
+
+        if ($request->hasFile('pdf_file')) {
+            $parentFolderId = config('services.google.folder_id');
+            $magazinesFolderId = $this->getOrCreateFolder($accessToken, 'magazines', $parentFolderId);
+            $pdfFolderId = $this->getOrCreateFolder($accessToken, 'pdf_files', $magazinesFolderId);
+
+            $file = $request->file('pdf_file');
+            $mimeType = $file->getMimeType();
+
+            $tempMetadata = [
+                'name' => 'temp_upload.pdf',
+                'parents' => [$pdfFolderId],
+            ];
+
+            $uploadRes = Http::withToken($accessToken)
+                ->attach('metadata', json_encode($tempMetadata), 'metadata.json', ['Content-Type' => 'application/json'])
+                ->attach('media', file_get_contents($file), 'temp_upload.pdf', ['Content-Type' => $mimeType])
+                ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
+
+            if ($uploadRes->successful()) {
+                $fileId = $uploadRes->json()['id'];
+
+                Http::withToken($accessToken)->patch("https://www.googleapis.com/drive/v3/files/{$fileId}", [
+                    'name' => "{$fileId}.pdf"
+                ]);
+
+                Http::withToken($accessToken)->post("https://www.googleapis.com/drive/v3/files/{$fileId}/permissions", [
+                    'role' => 'reader',
+                    'type' => 'anyone',
+                ]);
+            }
         }
 
         Magazine::create([
-            'cover_page' => $fileUrl,
+            'cover_page' => $coverPageUrl,
             'volume' => $request->volume,
             'issue' => $request->issue,
+            'pdf_file' => $fileId,
+            'cover_file_id' => $coverFileId,
+            'published_at' => Carbon::parse($request->published_at)
+                ->timezone('Asia/Manila')
+                ->toDateString(),
         ]);
     }
 
     public function updateMagazine(Request $request)
     {
         $magazine = Magazine::findOrFail($request->id);
+        $accessToken = $this->token();
 
         $request->validate([
             'volume' => ['required'],
-            'issue' => ['required']
+            'issue' => ['required'],
+            'published_at' => ['required'],
         ]);
 
         $magazine->update([
             'volume' => $request->volume,
             'issue' => $request->issue,
+            'published_at' => Carbon::parse($request->published_at)
+                ->timezone('Asia/Manila')
+                ->toDateString(),
         ]);
 
         if ($request->hasFile('cover_page')) {
             $request->validate([
-                'cover_page' => ['mimes:jpeg,jpg,png', 'max:3048']
+                'cover_page' => ['mimes:jpeg,jpg,png']
             ]);
 
-            if ($magazine->cover_page) {
-                $publicId = pathinfo(parse_url($magazine->cover_page, PHP_URL_PATH), PATHINFO_FILENAME);
-                Cloudinary::uploadApi()->destroy('ditads/magazines/cover_page/' . $publicId);
+            if ($magazine->cover_file_id) {
+                Http::withToken($accessToken)->delete("https://www.googleapis.com/drive/v3/files/{$magazine->cover_file_id}");
             }
 
-            $uploadedFile = Cloudinary::uploadApi()->upload(
-                $request->file('cover_page')->getRealPath(),
-                ['folder' => 'ditads/magazines/cover_page']
-            );
+            $ditadsFolderId = config('services.google.folder_id');
+            $magazinesFolderId = $this->getOrCreateFolder($accessToken, 'magazines', $ditadsFolderId);
+            $coverPagesFolderId = $this->getOrCreateFolder($accessToken, 'cover_pages', $magazinesFolderId);
 
-            $fileUrl = $uploadedFile['secure_url'];
+            $file = $request->file('cover_page');
+            $mimeType = $file->getMimeType();
 
-            $magazine->update([
-                'cover_page' => $fileUrl,
+            $metadata = [
+                'name' => 'temp_' . time(),
+                'parents' => [$coverPagesFolderId],
+            ];
+
+            $uploadRes = Http::withToken($accessToken)
+                ->attach('metadata', json_encode($metadata), 'metadata.json', ['Content-Type' => 'application/json'])
+                ->attach('media', file_get_contents($file), $file->getClientOriginalName(), ['Content-Type' => $mimeType])
+                ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
+
+            if ($uploadRes->successful()) {
+                $coverFileId = $uploadRes->json()['id'];
+
+                Http::withToken($accessToken)->patch("https://www.googleapis.com/drive/v3/files/{$coverFileId}", [
+                    'name' => $coverFileId,
+                ]);
+
+                Http::withToken($accessToken)->post("https://www.googleapis.com/drive/v3/files/{$coverFileId}/permissions", [
+                    'role' => 'reader',
+                    'type' => 'anyone',
+                ]);
+
+                $coverPageUrl = "https://drive.google.com/thumbnail?id={$coverFileId}";
+
+                $magazine->update([
+                    'cover_page' => $coverPageUrl,
+                    'cover_file_id' => $coverFileId
+                ]);
+            }
+        }
+
+        if ($request->hasFile('pdf_file')) {
+            $request->validate([
+                'pdf_file' => ['required', 'mimes:pdf'],
+            ], [
+                'pdf_file.required' => 'The magazine pdf file field is required.'
             ]);
+
+            $parentFolderId = config('services.google.folder_id');
+            $magazinesFolderId = $this->getOrCreateFolder($accessToken, 'magazines', $parentFolderId);
+            $pdfFolderId = $this->getOrCreateFolder($accessToken, 'pdf_files', $magazinesFolderId);
+
+            $file = $request->file('pdf_file');
+            $mimeType = $file->getMimeType();
+
+            $metadata = [
+                'name' => 'temp_upload.pdf',
+                'parents' => [$pdfFolderId],
+            ];
+
+            $upload = Http::withToken($accessToken)
+                ->attach('metadata', json_encode($metadata), 'metadata.json', ['Content-Type' => 'application/json'])
+                ->attach('media', file_get_contents($file), 'temp_upload.pdf', ['Content-Type' => $mimeType])
+                ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
+
+            if ($upload->successful()) {
+                $newPdfFileId = $upload->json()['id'];
+
+                Http::withToken($accessToken)->patch("https://www.googleapis.com/drive/v3/files/{$newPdfFileId}", [
+                    'name' => "{$newPdfFileId}.pdf"
+                ]);
+
+                Http::withToken($accessToken)->post("https://www.googleapis.com/drive/v3/files/{$newPdfFileId}/permissions", [
+                    'role' => 'reader',
+                    'type' => 'anyone',
+                ]);
+
+                Http::withToken($accessToken)->delete("https://www.googleapis.com/drive/v3/files/{$magazine->pdf_file}");
+
+                $magazine->update([
+                    'pdf_file' => $newPdfFileId,
+                ]);
+            }
         }
     }
 
