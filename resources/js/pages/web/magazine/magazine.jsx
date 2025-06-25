@@ -31,7 +31,7 @@ export default function Magazine({ magazines }) {
                     className={`relative ${!loading ? "cursor-pointer" : ""}`}
                 >
                     <img
-                        src={magazine.cover_page}
+                        src={`https://lh3.googleusercontent.com/d/${magazine.cover_file_id}`}
                         alt={`magazine-${index}`}
                         className="object-contain size-80"
                     />
