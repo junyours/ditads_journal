@@ -2,8 +2,9 @@ import WebLayout from "@/layouts/web-layout";
 import DitadsBanner from "../../../../public/images/ditads-banner.png";
 import JournalBanner from "../../../../public/images/journal-banner.png";
 import MagazineBanner from "../../../../public/images/magazine-banner.png";
+import JEBMPABanner from "../../../../public/images/jebmpa-banner.png";
 
-const banners = [DitadsBanner, JournalBanner, MagazineBanner];
+const banners = [DitadsBanner, MagazineBanner, JournalBanner, JEBMPABanner];
 
 export default function Welcome() {
     return (

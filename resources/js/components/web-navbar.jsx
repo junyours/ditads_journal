@@ -53,12 +53,12 @@ const items = [
         collapse: true,
         items: [
             {
-                title: "International Multidisciplinary Research Journal",
+                title: "DIT.ADS International Multidisciplinary Research Journal",
                 icon: IMRJ,
                 url: "/research-journal/imrj",
             },
             {
-                title: "Journal of Economics, Business Management, and Public Administration",
+                title: "DIT.ADS Journal of Economics, Business Management, and Public Administration",
                 icon: JEBMPA,
                 url: "/research-journal/jepmpa",
             },
