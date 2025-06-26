@@ -16,6 +16,11 @@ const items = [
                 link: true,
             },
             {
+                name: "ditadsjebmpa@gmail.com",
+                type: "mailto:",
+                link: true,
+            },
+            {
                 name: "09171281320",
                 type: "tel:",
                 link: true,
@@ -69,15 +74,28 @@ export default function WebFooter() {
                 ...item,
                 subitems: item.subitems.filter((subitem) => {
                     if (subitem.type === "tel:") return true;
+
+                    // Only show IMRJ email if on the IMRJ page
                     if (
                         subitem.name ===
                         "ditadsimrj@ditadsinternationalmultidisciplinaryresearchjournal.net"
                     ) {
-                        return currentPath.includes("research-journal");
+                        return currentPath.includes("research-journal/imrj");
                     }
-                    if (subitem.type === "mailto:") {
-                        return !currentPath.includes("research-journal");
+
+                    // Only show JEBMPA email if on the JEPMPA page
+                    if (subitem.name === "ditadsjebmpa@gmail.com") {
+                        return currentPath.includes("research-journal/jepmpa");
                     }
+
+                    // Show default email on all other pages
+                    if (subitem.name === "ditads@infosheet.dev") {
+                        return (
+                            !currentPath.includes("research-journal/imrj") &&
+                            !currentPath.includes("research-journal/jepmpa")
+                        );
+                    }
+
                     return false;
                 }),
             };
@@ -132,10 +150,10 @@ export default function WebFooter() {
                         ))}
                     </div>
                 </div>
-                {currentPath === "/research-journal" && (
+                {currentPath === "/research-journal/imrj" && (
                     <div className="text-center mt-4">
                         <a
-                            href="https://ditadsresearchcenter.com/research-journal"
+                            href="https://ditadsresearchcenter.com/research-journal/imrj"
                             className="hover:underline"
                         >
                             DIT.ADS International Multidisciplinary Research

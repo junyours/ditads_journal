@@ -1,4 +1,4 @@
-import MagazineLogo from "../../../../../public/images/magazine-logo.png"
+import MagazineLogo from "../../../../../public/images/magazine-logo.png";
 
 export default function AboutLogo() {
     return (
@@ -55,7 +55,7 @@ export default function AboutLogo() {
             <p>Encircling the emblem is the complete name:</p>
             <p>
                 <span className="font-semibold">
-                    ZAS DIGITAL INSTITUTE AND DEVELOPMENT SERVICES
+                    ZAS DIGITAL INSTITUTE TRAINING AND DEVELOPMENT SERVICES
                 </span>
                 , in bold black, affirming the institutional authority and
                 commitment behind the magazine. The words “ZAS” and “MAGAZINE”
@@ -76,7 +76,11 @@ export default function AboutLogo() {
                 excellence, inspiration, and service.
             </p>
             <div className="flex justify-center">
-              <img src={MagazineLogo} alt="magazine-logo" className="size-80 object-contain" />
+                <img
+                    src={MagazineLogo}
+                    alt="magazine-logo"
+                    className="size-80 object-contain"
+                />
             </div>
         </div>
     );

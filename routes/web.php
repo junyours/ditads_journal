@@ -73,7 +73,8 @@ Route::get('/api/magazine-hash', function (Request $request) {
 Route::get('/flip-book/{hash}', [WebController::class, 'viewFlipBook']);
 Route::get('/flip-magazine/{hash}', [WebController::class, 'viewFlipMagazine']);
 Route::get('/magazine', [WebController::class, 'magazine']);
-Route::get('/research-journal', [WebController::class, 'researchJournal']);
+Route::get('/research-journal/imrj', [WebController::class, 'IMRJ']);
+Route::get('/research-journal/jepmpa', [WebController::class, 'JEPMPA']);
 Route::get('/IMRJ/{path}', [WebController::class, 'viewJournal'])->where('path', '.*');
 Route::get('/view-book/{path}', [WebController::class, 'viewBook'])->where('path', '.*');
 Route::get('/view-magazine/{path}', [WebController::class, 'viewMagazine'])->where('path', '.*');

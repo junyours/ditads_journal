@@ -168,7 +168,7 @@ class WebController extends Controller
         ]);
     }
 
-    public function researchJournal(Request $request)
+    public function IMRJ(Request $request)
     {
         $volume = $request->query('volume');
         $issue = $request->query('issue');
@@ -231,12 +231,24 @@ class WebController extends Controller
                 ];
             })->values();
 
-        return Inertia::render('web/journal/layout', [
+        return Inertia::render('web/imrj-journal/layout', [
             'editors' => $editors,
             'journals' => $journals,
             'archives' => $archives,
             'activeVolume' => $volume,
             'activeIssue' => $issue,
+        ]);
+    }
+
+    public function JEPMPA()
+    {
+        $editors = User::select('name', 'position', 'email', 'department', 'avatar')
+            ->where('role', 'editor')
+            ->orderByRaw("FIELD(position, 'Editor in Chief', 'Associate Editor', 'Editorial Board')")
+            ->get();
+
+        return Inertia::render('web/jepmpa-journal/layout', [
+            'editors' => $editors,
         ]);
     }
 
