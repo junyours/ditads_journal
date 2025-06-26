@@ -28,7 +28,7 @@ export default function Magazine({ magazines }) {
                     variant="ghost"
                     className="justify-start text-wrap w-full"
                 >
-                    Volume 1, Issue 1 (January - March 2025)
+                    Volume 1, Issue 1 (April - June 2025)
                 </Button>
             </div>
         </div>
