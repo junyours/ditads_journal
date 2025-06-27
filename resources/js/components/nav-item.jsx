@@ -110,7 +110,17 @@ const navAdmin = [
                 title: "Research Journal",
                 url: "/admin/web/research-journal",
                 icon: FileText,
-                collapse: false,
+                collapse: true,
+                subitems: [
+                    {
+                        title: "IMRJ",
+                        url: "/imrj",
+                    },
+                    {
+                        title: "JEBMPA",
+                        url: "/jebmpa",
+                    },
+                ],
             },
         ],
     },

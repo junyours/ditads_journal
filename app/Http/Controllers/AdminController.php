@@ -1028,7 +1028,7 @@ class AdminController extends Controller
         }
     }
 
-    public function getResearchJournal()
+    public function getIMRJ()
     {
         $journals = ResearchJournal::select(
             'id',
@@ -1046,9 +1046,14 @@ class AdminController extends Controller
         )
             ->get();
 
-        return Inertia::render('web/admin/research-journal', [
+        return Inertia::render('web/admin/research-journal/imrj', [
             'journals' => $journals
         ]);
+    }
+
+    public function getJEBMPA()
+    {
+        return Inertia::render('web/admin/research-journal/jebmpa');
     }
 
     public function uploadResearchJournal(Request $request)

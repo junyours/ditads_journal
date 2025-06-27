@@ -37,7 +37,7 @@ export default function ResearchJournal({
     const handleArchiveClick = (volume, issue) => {
         setSelectedArchive({ volume, issue });
         router.get(
-            "/research-journal",
+            "/research-journal/imrj",
             { volume, issue },
             {
                 preserveScroll: true,

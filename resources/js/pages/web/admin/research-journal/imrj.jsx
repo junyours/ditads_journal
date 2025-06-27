@@ -29,10 +29,10 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import InputError from "@/components/input-error";
 import { Textarea } from "@/components/ui/textarea";
-import Pdf from "../../../../../public/images/pdf.png";
+import Pdf from "../../../../../../public/images/pdf.png";
 import { toast } from "sonner";
 import DatePicker from "@/components/date-picker";
-import countries from "../../../../../public/files/countries.json";
+import countries from "../../../../../../public/files/countries.json";
 import {
     AlertDialog,
     AlertDialogContent,
@@ -59,7 +59,7 @@ if (currentMonth >= 4 && currentMonth <= 6) {
     calculatedIssue = 4;
 }
 
-export default function ResearchJournal() {
+export default function IMRJ() {
     const { journals } = usePage().props;
     const [open, setOpen] = useState(false);
     const [editData, setEditData] = useState(false);
@@ -134,7 +134,7 @@ export default function ResearchJournal() {
 
     const handleUpload = () => {
         clearErrors();
-        post("/admin/web/research-journal/upload", {
+        post("/admin/web/research-journal/imrj/upload", {
             onSuccess: () => {
                 handleOpen();
                 toast.success("Journal uploaded successfully.");
@@ -144,7 +144,7 @@ export default function ResearchJournal() {
 
     const handleUpdate = () => {
         clearErrors();
-        post("/admin/web/research-journal/update", {
+        post("/admin/web/research-journal/imrj/update", {
             onSuccess: () => {
                 handleOpen();
                 toast.success("Journal updated successfully.");
@@ -453,6 +453,9 @@ export default function ResearchJournal() {
     );
 }
 
-ResearchJournal.layout = (page) => (
-    <AppLayout children={page} title="List of Research Journals" />
+IMRJ.layout = (page) => (
+    <AppLayout
+        children={page}
+        title="List of DIT.ADS International Multidisciplinary Research Journal"
+    />
 );

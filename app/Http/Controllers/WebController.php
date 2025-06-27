@@ -240,14 +240,14 @@ class WebController extends Controller
         ]);
     }
 
-    public function JEPMPA()
+    public function JEBMPA()
     {
         $editors = User::select('name', 'position', 'email', 'department', 'avatar')
             ->where('role', 'editor')
             ->orderByRaw("FIELD(position, 'Editor in Chief', 'Associate Editor', 'Editorial Board')")
             ->get();
 
-        return Inertia::render('web/jepmpa-journal/layout', [
+        return Inertia::render('web/jebmpa-journal/layout', [
             'editors' => $editors,
         ]);
     }

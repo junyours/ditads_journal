@@ -36,9 +36,10 @@ Route::middleware(['auth', 'admin', 'verified'])->group(function () {
     Route::post('/admin/web/magazine/upload', [AdminController::class, 'uploadMagazine']);
     Route::post('/admin/web/magazine/update', [AdminController::class, 'updateMagazine']);
 
-    Route::get('/admin/web/research-journal', [AdminController::class, 'getResearchJournal']);
-    Route::post('/admin/web/research-journal/upload', [AdminController::class, 'uploadResearchJournal']);
-    Route::post('/admin/web/research-journal/update', [AdminController::class, 'updateResearchJournal']);
+    Route::get('/admin/web/research-journal/imrj', [AdminController::class, 'getIMRJ']);
+    Route::post('/admin/web/research-journal/imrj/upload', [AdminController::class, 'uploadResearchJournal']);
+    Route::post('/admin/web/research-journal/imrj/update', [AdminController::class, 'updateResearchJournal']);
+    Route::get('/admin/web/research-journal/jebmpa', [AdminController::class, 'getJEBMPA']);
 
     Route::get('/admin/others/payment-methods', [AdminController::class, 'paymentMethod']);
     Route::post('/admin/others/payment-methods/add', [AdminController::class, 'AddPaymentMethod']);
@@ -74,7 +75,7 @@ Route::get('/flip-book/{hash}', [WebController::class, 'viewFlipBook']);
 Route::get('/flip-magazine/{hash}', [WebController::class, 'viewFlipMagazine']);
 Route::get('/magazine', [WebController::class, 'magazine']);
 Route::get('/research-journal/imrj', [WebController::class, 'IMRJ']);
-Route::get('/research-journal/jepmpa', [WebController::class, 'JEPMPA']);
+Route::get('/research-journal/jebmpa', [WebController::class, 'JEBMPA']);
 Route::get('/IMRJ/{path}', [WebController::class, 'viewJournal'])->where('path', '.*');
 Route::get('/view-book/{path}', [WebController::class, 'viewBook'])->where('path', '.*');
 Route::get('/view-magazine/{path}', [WebController::class, 'viewMagazine'])->where('path', '.*');

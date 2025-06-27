@@ -60,7 +60,7 @@ const items = [
             {
                 title: "DIT.ADS Journal of Economics, Business Management, and Public Administration",
                 icon: JEBMPA,
-                url: "/research-journal/jepmpa",
+                url: "/research-journal/jebmpa",
             },
         ],
     },
