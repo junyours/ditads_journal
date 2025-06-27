@@ -1042,7 +1042,8 @@ class AdminController extends Controller
             'country',
             'page_number',
             'tracking_number',
-            'doi'
+            'doi',
+            'type'
         )
             ->get();
 
@@ -1118,6 +1119,7 @@ class AdminController extends Controller
             'page_number' => $request->page_number,
             'tracking_number' => $request->tracking_number,
             'doi' => $request->doi,
+            'type' => $request->type
         ]);
     }
 
@@ -1194,6 +1196,7 @@ class AdminController extends Controller
             'pdf_file' => $newFileId,
             'tracking_number' => $request->tracking_number,
             'doi' => $request->doi,
+            'type' => 'imrj'
         ]);
     }
 

@@ -84,6 +84,7 @@ export default function IMRJ() {
         page_number: "",
         tracking_number: "",
         doi: "",
+        type: "imrj"
     });
 
     const handleOpen = (journal = null) => {
@@ -102,6 +103,7 @@ export default function IMRJ() {
                 page_number: journal.page_number,
                 tracking_number: journal.tracking_number,
                 doi: journal.doi,
+                type: journal.type
             };
             setData(journalData);
             setInitialData(journalData);
@@ -120,6 +122,7 @@ export default function IMRJ() {
                 page_number: "",
                 tracking_number: "",
                 doi: "",
+                type: "imrj"
             };
             setData(newData);
             setInitialData(newData);

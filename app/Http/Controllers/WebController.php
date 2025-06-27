@@ -259,8 +259,10 @@ class WebController extends Controller
             'published_at',
             'country',
             'page_number',
-            'doi'
+            'doi',
+            'type'
         )
+            ->where('type', 'imrj')
             ->where('volume', $volume)
             ->where('issue', $issue)
             ->latest('published_at')
