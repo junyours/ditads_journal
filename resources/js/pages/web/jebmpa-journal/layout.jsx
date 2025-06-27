@@ -21,7 +21,8 @@ import ResearchJournal from "./research-journal";
 const banners = [JournalBanner];
 
 export default function JournalLayout() {
-    const { editors } = usePage().props;
+    const { editors, journals, archives, activeVolume, activeIssue } =
+        usePage().props;
 
     const contents = [
         {
@@ -64,6 +65,7 @@ export default function JournalLayout() {
         {
             title: "Research Journal",
             page: ResearchJournal,
+            props: { journals, archives, activeVolume, activeIssue },
         },
     ];
 

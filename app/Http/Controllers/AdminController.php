@@ -1055,7 +1055,27 @@ class AdminController extends Controller
 
     public function getJEBMPA()
     {
-        return Inertia::render('web/admin/research-journal/jebmpa');
+        $journals = ResearchJournal::select(
+            'id',
+            'volume',
+            'issue',
+            'title',
+            'author',
+            'abstract',
+            'pdf_file',
+            'published_at',
+            'country',
+            'page_number',
+            'tracking_number',
+            'doi',
+            'type'
+        )
+            ->where('type', 'jebmpa')
+            ->get();
+
+        return Inertia::render('web/admin/research-journal/jebmpa', [
+            'journals' => $journals
+        ]);
     }
 
     public function uploadResearchJournal(Request $request)

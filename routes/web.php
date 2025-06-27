@@ -37,9 +37,9 @@ Route::middleware(['auth', 'admin', 'verified'])->group(function () {
     Route::post('/admin/web/magazine/update', [AdminController::class, 'updateMagazine']);
 
     Route::get('/admin/web/research-journal/imrj', [AdminController::class, 'getIMRJ']);
-    Route::post('/admin/web/research-journal/imrj/upload', [AdminController::class, 'uploadResearchJournal']);
-    Route::post('/admin/web/research-journal/imrj/update', [AdminController::class, 'updateResearchJournal']);
     Route::get('/admin/web/research-journal/jebmpa', [AdminController::class, 'getJEBMPA']);
+    Route::post('/admin/web/research-journal/upload', [AdminController::class, 'uploadResearchJournal']);
+    Route::post('/admin/web/research-journal/update', [AdminController::class, 'updateResearchJournal']);
 
     Route::get('/admin/others/payment-methods', [AdminController::class, 'paymentMethod']);
     Route::post('/admin/others/payment-methods/add', [AdminController::class, 'AddPaymentMethod']);

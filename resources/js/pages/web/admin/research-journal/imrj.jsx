@@ -137,7 +137,7 @@ export default function IMRJ() {
 
     const handleUpload = () => {
         clearErrors();
-        post("/admin/web/research-journal/imrj/upload", {
+        post("/admin/web/research-journal/upload", {
             onSuccess: () => {
                 handleOpen();
                 toast.success("Journal uploaded successfully.");
@@ -147,7 +147,7 @@ export default function IMRJ() {
 
     const handleUpdate = () => {
         clearErrors();
-        post("/admin/web/research-journal/imrj/update", {
+        post("/admin/web/research-journal/update", {
             onSuccess: () => {
                 handleOpen();
                 toast.success("Journal updated successfully.");
