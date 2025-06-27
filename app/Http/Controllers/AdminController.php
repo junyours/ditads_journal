@@ -1045,6 +1045,7 @@ class AdminController extends Controller
             'doi',
             'type'
         )
+            ->where('type', 'imrj')
             ->get();
 
         return Inertia::render('web/admin/research-journal/imrj', [
@@ -1195,8 +1196,7 @@ class AdminController extends Controller
             'page_number' => $request->page_number,
             'pdf_file' => $newFileId,
             'tracking_number' => $request->tracking_number,
-            'doi' => $request->doi,
-            'type' => 'imrj'
+            'doi' => $request->doi
         ]);
     }
 
