@@ -215,37 +215,34 @@ export default function WebNavbar({ open, onOpenChange }) {
                                         {item.title}
                                     </NavigationMenuTrigger>
                                     <NavigationMenuContent>
-                                        <ul className="grid w-[350px] gap-4 p-4">
+                                        <div className="grid w-[350px] gap-4 p-4">
                                             {item.items.map((subItem) => (
-                                                <li
-                                                    key={subItem.title}
-                                                    className="text-sm flex items-center gap-2 hover:bg-muted p-2 rounded-lg"
+                                                <NavigationMenuLink
+                                                    asChild
+                                                    className={`flex items-center gap-2 text-sm hover:bg-muted p-2 rounded-lg ${
+                                                        currentPath ===
+                                                        subItem.url
+                                                            ? "text-primary hover:text-primary focus:text-primary"
+                                                            : ""
+                                                    }`}
                                                 >
-                                                    <div className="shrink-0 size-10">
-                                                        <img
-                                                            src={subItem.icon}
-                                                            alt={subItem.title}
-                                                            className="object-contain rounded-lg"
-                                                        />
-                                                    </div>
-                                                    <NavigationMenuLink
-                                                        asChild
-                                                        className={
-                                                            currentPath ===
-                                                            subItem.url
-                                                                ? "text-primary hover:text-primary focus:text-primary"
-                                                                : ""
-                                                        }
-                                                    >
-                                                        <Link
-                                                            href={subItem.url}
-                                                        >
-                                                            {subItem.title}
-                                                        </Link>
-                                                    </NavigationMenuLink>
-                                                </li>
+                                                    <Link href={subItem.url}>
+                                                        <div className="shrink-0 size-10">
+                                                            <img
+                                                                src={
+                                                                    subItem.icon
+                                                                }
+                                                                alt={
+                                                                    subItem.title
+                                                                }
+                                                                className="object-contain rounded-lg"
+                                                            />
+                                                        </div>
+                                                        {subItem.title}
+                                                    </Link>
+                                                </NavigationMenuLink>
                                             ))}
-                                        </ul>
+                                        </div>
                                     </NavigationMenuContent>
                                 </NavigationMenuItem>
                             </NavigationMenuList>

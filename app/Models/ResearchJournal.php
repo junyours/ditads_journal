@@ -19,6 +19,7 @@ class ResearchJournal extends Model
         'pdf_file',
         'published_at',
         'tracking_number',
-        'doi'
+        'doi',
+        'type'
     ];
 }
