@@ -44,10 +44,10 @@ export default function JournalLayout() {
             title: "Research Ethics",
             page: ResearchEthics,
         },
-        {
-            title: "Downloads",
-            page: Download,
-        },
+        // {
+        //     title: "Downloads",
+        //     page: Download,
+        // },
         {
             title: "Review Process",
             page: ReviewProcess,
