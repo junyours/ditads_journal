@@ -20,7 +20,8 @@ import ApplicationContent from "./application-content";
 const banners = [MagazineBanner];
 
 export default function MagazineLayout() {
-    const { editors, magazines } = usePage().props;
+    const { editors, magazines, archives, activeVolume, activeIssue } =
+        usePage().props;
 
     const contents = [
         {
@@ -57,9 +58,9 @@ export default function MagazineLayout() {
             props: { editors },
         },
         {
-            title: "Magazine",
+            title: "Published Magazine",
             page: Magazine,
-            props: { magazines },
+            props: { magazines, archives, activeVolume, activeIssue },
         },
     ];
 

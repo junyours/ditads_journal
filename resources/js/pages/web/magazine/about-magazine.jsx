@@ -2,12 +2,12 @@ export default function AboutMagazine() {
     return (
         <div className="text-justify">
             <p>
-                zDitads. Magazine: Mindset | Mastery | Momentum is the official
-                international multidisciplinary magazine of the Zas Digital
-                Institute Training and Development Services (DITADS) –
-                Philippines. It serves as a platform for advancing human and
-                societal development through the power of storytelling, expert
-                insight, and creative expression.
+                Zas Digital Institute Training and Development Services -
+                Magazine is the official international multidisciplinary
+                magazine of the Zas Digital Institute Training and Development
+                Services (DITADS) – Philippines. It serves as a platform for
+                advancing human and societal development through the power of
+                storytelling, expert insight, and creative expression.
             </p>
             <br />
             <p>

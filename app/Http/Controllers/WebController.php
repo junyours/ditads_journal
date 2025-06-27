@@ -152,19 +152,78 @@ class WebController extends Controller
         ]);
     }
 
-    public function magazine()
+    public function magazine(Request $request)
     {
+        $volume = $request->query('volume');
+        $issue = $request->query('issue');
+
+        if (!$volume || !$issue) {
+            $latest = Magazine::orderByDesc('published_at')->first();
+
+            if ($latest) {
+                $volume = $latest->volume;
+
+                $month = date('n', strtotime($latest->published_at));
+
+                if ($month >= 4 && $month <= 6) {
+                    $issue = 1;
+                } elseif ($month >= 7 && $month <= 9) {
+                    $issue = 2;
+                } elseif ($month >= 10 && $month <= 12) {
+                    $issue = 3;
+                } else {
+                    $issue = 4;
+                }
+            }
+        }
+
         $editors = User::select('name', 'position', 'email', 'department', 'avatar')
             ->where('role', 'editor')
             ->orderByRaw("FIELD(position, 'Editor in Chief', 'Associate Editor', 'Editorial Board')")
             ->get();
 
         $magazines = Magazine::select('cover_page', 'volume', 'issue', 'pdf_file', 'published_at', 'cover_file_id')
+            ->where('volume', $volume)
+            ->where('issue', $issue)
+            ->latest('published_at')
             ->get();
+
+        $archives = Magazine::select('volume', 'issue', 'published_at')
+            ->orderByDesc('volume')
+            ->orderByDesc('issue')
+            ->distinct()
+            ->get()
+            ->groupBy(function ($item) {
+                return "Volume {$item->volume}, Issue {$item->issue}";
+            })->map(function ($group) {
+                $first = $group->first();
+                $month = date('n', strtotime($first->published_at));
+                $year = date('Y', strtotime($first->published_at));
+
+                if ($month >= 4 && $month <= 6) {
+                    $range = "April - June";
+                } elseif ($month >= 7 && $month <= 9) {
+                    $range = "July - September";
+                } elseif ($month >= 10 && $month <= 12) {
+                    $range = "October - December";
+                } else {
+                    $range = "January - March";
+                    $year += 1;
+                }
+
+                return [
+                    'volume' => $first->volume,
+                    'issue' => $first->issue,
+                    'label' => "Volume {$first->volume}, Issue {$first->issue} ({$range} {$year})"
+                ];
+            })->values();
 
         return Inertia::render('web/magazine/layout', [
             'editors' => $editors,
-            'magazines' => $magazines
+            'magazines' => $magazines,
+            'archives' => $archives,
+            'activeVolume' => $volume,
+            'activeIssue' => $issue,
         ]);
     }
 

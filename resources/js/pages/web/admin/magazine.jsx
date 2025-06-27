@@ -43,18 +43,24 @@ import {
 
 const baseYear = 2025;
 const now = new Date();
-const currentYear = now.getFullYear();
+let currentYear = now.getFullYear();
 const currentMonth = now.getMonth() + 1;
 
-const calculatedVolume = currentYear - baseYear + 1;
+let calculatedVolume;
+let calculatedIssue;
 
-let calculatedIssue = 1;
 if (currentMonth >= 4 && currentMonth <= 6) {
-    calculatedIssue = 2;
+    calculatedIssue = 1;
+    calculatedVolume = currentYear - baseYear + 1;
 } else if (currentMonth >= 7 && currentMonth <= 9) {
-    calculatedIssue = 3;
+    calculatedIssue = 2;
+    calculatedVolume = currentYear - baseYear + 1;
 } else if (currentMonth >= 10 && currentMonth <= 12) {
+    calculatedIssue = 3;
+    calculatedVolume = currentYear - baseYear + 1;
+} else {
     calculatedIssue = 4;
+    calculatedVolume = currentYear - 1 - baseYear + 1;
 }
 
 export default function Magazine() {
