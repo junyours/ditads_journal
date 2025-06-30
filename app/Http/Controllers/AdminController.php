@@ -1086,14 +1086,14 @@ class AdminController extends Controller
             'volume' => ['required'],
             'issue' => ['required'],
             'title' => ['required'],
-            // 'author' => ['required'],
-            // 'abstract' => ['required'],
+            'author' => ['required'],
+            'abstract' => ['required'],
             'pdf_file' => ['required', 'mimes:pdf', 'max:2048'],
-            // 'published_at' => ['required'],
+            'published_at' => ['required'],
             'country' => ['required'],
             'page_number' => ['required'],
-            // 'tracking_number' => ['required', 'unique:research_journals'],
-            // 'doi' => ['required'],
+            'tracking_number' => ['required', 'unique:research_journals'],
+            'doi' => ['required'],
         ]);
 
         if ($request->hasFile('pdf_file')) {
