@@ -391,7 +391,7 @@ class WebController extends Controller
         ]);
     }
 
-    public function viewJournal($path)
+    public function viewIMRJ($path)
     {
         $accessToken = $this->token();
 
@@ -402,6 +402,23 @@ class WebController extends Controller
                 'Content-Type' => 'application/pdf',
             ]);
         }
+
+        $googleDriveResponse = Http::withToken($accessToken)->get("https://www.googleapis.com/drive/v3/files/{$path}", [
+            'alt' => 'media',
+        ]);
+
+        if ($googleDriveResponse->ok()) {
+            return response($googleDriveResponse->body(), 200, [
+                'Content-Type' => 'application/pdf',
+            ]);
+        }
+
+        abort(404);
+    }
+
+    public function viewJEBMPA($path)
+    {
+        $accessToken = $this->token();
 
         $googleDriveResponse = Http::withToken($accessToken)->get("https://www.googleapis.com/drive/v3/files/{$path}", [
             'alt' => 'media',

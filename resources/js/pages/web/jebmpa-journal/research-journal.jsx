@@ -128,7 +128,7 @@ export default function ResearchJournal({
                                     <MoveRight />
                                 </Button>
                                 <a
-                                    href={`/IMRJ/${journal.pdf_file}`}
+                                    href={`/JEBMPA/${journal.pdf_file}`}
                                     target="_blank"
                                 >
                                     <Button size="sm" variant="ghost">
