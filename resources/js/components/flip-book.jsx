@@ -1,61 +1,55 @@
 import { useIsMobile } from "@/hooks/use-mobile";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import HTMLFlipBook from "react-pageflip";
 import { Document, Page, pdfjs } from "react-pdf";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
-const Pages = React.forwardRef((props, ref) => {
-    return (
-        <div ref={ref}>
-            <p>{props.children}</p>
-        </div>
-    );
-});
+const Pages = React.memo(
+    React.forwardRef(({ children }, ref) => <div ref={ref}>{children}</div>)
+);
 
 export default function FlipBook({ pdf_file }) {
     const [numPages, setNumPages] = useState(null);
     const isMobile = useIsMobile();
+
+    const memoizedFile = useMemo(() => ({ url: pdf_file }), [pdf_file]);
 
     const onDocumentLoadSuccess = ({ numPages }) => {
         setNumPages(numPages);
     };
 
     return (
-        <div className="bg-gray-900 h-screen flex justify-end items-center md:justify-center overflow-hidden">
-            <HTMLFlipBook
-                width={isMobile ? 350 : 500}
-                height={isMobile ? 493 : 708}
-                showCover={true}
+        <div className="bg-gray-900 min-h-screen flex p-4">
+            <Document
+                file={memoizedFile}
+                onLoadSuccess={onDocumentLoadSuccess}
+                loading={
+                    <p className="text-white">Loading PDF, please wait...</p>
+                }
+                error={<p className="text-white">Failed to load PDF file.</p>}
+                className="flex-1 flex justify-center items-center"
             >
-                {[...Array(numPages).keys()].map((n) => (
-                    <Pages number={`${n + 1}`}>
-                        <Document
-                            file={{ url: pdf_file }}
-                            onLoadSuccess={onDocumentLoadSuccess}
-                            loading={
-                                <p className="text-white">
-                                    Loading please wait...
-                                </p>
-                            }
-                            error={
-                                <p className="text-white">
-                                    Failed to load book.
-                                </p>
-                            }
-                        >
-                            <Page
-                                pageNumber={n + 1}
-                                renderAnnotationLayer={false}
-                                renderTextLayer={false}
-                                width={isMobile ? 350 : 500}
-                                height={isMobile ? 493 : 708}
-                                scale={1}
-                            />
-                        </Document>
-                    </Pages>
-                ))}
-            </HTMLFlipBook>
+                {numPages && (
+                    <HTMLFlipBook
+                        width={isMobile ? 350 : 500}
+                        height={isMobile ? 493 : 708}
+                        showCover={true}
+                    >
+                        {[...Array(numPages).keys()].map((n) => (
+                            <Pages key={n}>
+                                <Page
+                                    pageNumber={n + 1}
+                                    width={isMobile ? 350 : 500}
+                                    height={isMobile ? 493 : 708}
+                                    renderAnnotationLayer={false}
+                                    renderTextLayer={false}
+                                />
+                            </Pages>
+                        ))}
+                    </HTMLFlipBook>
+                )}
+            </Document>
         </div>
     );
 }

@@ -201,11 +201,11 @@ export default function BookPublication() {
                                         );
 
                                         const hash = res.data.hash;
-                                        router.visit(`/flip-book/${hash}`, {
-                                            onFinish: () => {
-                                                setLoading(false);
-                                            },
-                                        });
+                                        window.open(
+                                            `/flip-book/${hash}`,
+                                            "_blank"
+                                        );
+                                        setLoading(false);
                                     }
                                 } else if (user?.role === "author") {
                                     if (book.has_access) {
@@ -224,11 +224,11 @@ export default function BookPublication() {
                                             );
 
                                             const hash = res.data.hash;
-                                            router.visit(`/flip-book/${hash}`, {
-                                                onFinish: () => {
-                                                    setLoading(false);
-                                                },
-                                            });
+                                            window.open(
+                                                `/flip-book/${hash}`,
+                                                "_blank"
+                                            );
+                                            setLoading(false);
                                         }
                                     }
                                 }
