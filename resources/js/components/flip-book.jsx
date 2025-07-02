@@ -2,6 +2,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import React, { useMemo, useState } from "react";
 import HTMLFlipBook from "react-pageflip";
 import { Document, Page, pdfjs } from "react-pdf";
+import { HashLoader } from "react-spinners";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
@@ -25,9 +26,14 @@ export default function FlipBook({ pdf_file }) {
                 file={memoizedFile}
                 onLoadSuccess={onDocumentLoadSuccess}
                 loading={
-                    <p className="text-white">Loading PDF, please wait...</p>
+                    <div className="flex flex-col items-center gap-4">
+                        <HashLoader color="green" />
+                        <p className="text-white">
+                            Loading book, please wait...
+                        </p>
+                    </div>
                 }
-                error={<p className="text-white">Failed to load PDF file.</p>}
+                error={<p className="text-white">Failed to load book.</p>}
                 className="flex-1 flex justify-center items-center"
             >
                 {numPages && (
