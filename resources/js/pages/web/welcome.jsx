@@ -1,5 +1,5 @@
 import WebLayout from "@/layouts/web-layout";
-import DitadsBanner from "../../../../public/images/ditads-banner.png";
+import DitadsBanner from "../../../../public/images/ditads-banner.svg";
 import JournalBanner from "../../../../public/images/journal-banner.png";
 import MagazineBanner from "../../../../public/images/magazine-banner.png";
 import JEBMPABanner from "../../../../public/images/jebmpa-banner.png";
