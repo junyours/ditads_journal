@@ -12,6 +12,7 @@ use App\Models\School;
 use App\Models\User;
 use Carbon\Carbon;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
+use DB;
 use Hash;
 use Http;
 use Illuminate\Http\Request;
@@ -61,7 +62,31 @@ class AdminController extends Controller
 
     public function dashboard()
     {
-        return Inertia::render('dashboard');
+        $journals = ResearchJournal::select(
+            DB::raw("DATE(published_at) as date"),
+            DB::raw("type"),
+            DB::raw("COUNT(*) as count")
+        )
+            ->groupBy(DB::raw("DATE(published_at)"), "type")
+            ->orderBy("date")
+            ->get()
+            ->groupBy('date');
+
+        $chartData = [];
+
+        foreach ($journals as $date => $items) {
+            $entry = ['date' => $date, 'imrj' => 0, 'jebmpa' => 0];
+
+            foreach ($items as $journal) {
+                $entry[$journal->type] = $journal->count;
+            }
+
+            $chartData[] = $entry;
+        }
+
+        return Inertia::render('dashboard', [
+            'chartData' => $chartData,
+        ]);
     }
 
     public function getEditor()
