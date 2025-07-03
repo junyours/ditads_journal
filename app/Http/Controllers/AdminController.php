@@ -530,7 +530,7 @@ class AdminController extends Controller
             'published_at' => ['required'],
             'pdf_file' => ['required', 'mimes:pdf'],
             // 'book_category_id' => ['required'],
-            // 'doi' => ['required'],
+            'doi' => ['required'],
             // 'overview_pdf_file' => ['required', 'mimes:pdf'],
             'hard_price' => ['required'],
             'soft_price' => ['required'],
@@ -652,7 +652,7 @@ class AdminController extends Controller
                 ->toDateString(),
             'pdf_file' => $pdfFileId,
             // 'book_category_id' => $request->book_category_id,
-            // 'doi' => $request->doi,
+            'doi' => $request->doi,
             // 'overview_pdf_file' => $overviewPdfFileId,
             'hard_price' => $request->hard_price,
             'soft_price' => $request->soft_price,
@@ -672,7 +672,7 @@ class AdminController extends Controller
             'overview' => ['required'],
             'published_at' => ['required'],
             // 'book_category_id' => ['required'],
-            // 'doi' => ['required'],
+            'doi' => ['required'],
             'hard_price' => ['required'],
             'soft_price' => ['required'],
         ], [
@@ -691,7 +691,7 @@ class AdminController extends Controller
                 ->timezone('Asia/Manila')
                 ->toDateString(),
             // 'book_category_id' => $request->book_category_id,
-            // 'doi' => $request->doi,
+            'doi' => $request->doi,
             'hard_price' => $request->hard_price,
             'soft_price' => $request->soft_price,
         ]);
