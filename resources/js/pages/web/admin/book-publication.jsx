@@ -192,6 +192,8 @@ export default function BookPublication() {
                 handleOpen();
                 toast.success("Book uploaded successfully.");
             },
+            preserveState: true,
+            preserveScroll: true,
         });
     };
 
@@ -202,6 +204,8 @@ export default function BookPublication() {
                 handleOpen();
                 toast.success("Book updated successfully.");
             },
+            preserveState: true,
+            preserveScroll: true,
         });
     };
 
