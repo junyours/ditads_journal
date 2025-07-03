@@ -1,7 +1,7 @@
-import { useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { usePage } from "@inertiajs/react";
 import AppLayout from "@/layouts/app-layout";
-import { AreaChart, Area, CartesianGrid, XAxis, YAxis } from "recharts";
+import { AreaChart, Area, CartesianGrid, XAxis } from "recharts";
 import {
     Card,
     CardHeader,
@@ -91,16 +91,12 @@ export default function Dashboard() {
                     </CardDescription>
                 </div>
                 <Select value={selectedYear} onValueChange={setSelectedYear}>
-                    <SelectTrigger className="hidden w-[160px] rounded-lg sm:ml-auto sm:flex">
+                    <SelectTrigger className="w-[160px]">
                         <SelectValue placeholder="Select Year" />
                     </SelectTrigger>
-                    <SelectContent className="rounded-xl">
+                    <SelectContent>
                         {years.map((year) => (
-                            <SelectItem
-                                key={year}
-                                value={String(year)}
-                                className="rounded-lg"
-                            >
+                            <SelectItem key={year} value={String(year)}>
                                 {year}
                             </SelectItem>
                         ))}
@@ -113,48 +109,22 @@ export default function Dashboard() {
                     config={chartConfig}
                     className="aspect-auto h-[250px] w-full"
                 >
-                    <AreaChart
-                        data={monthlyData}
-                        margin={{ top: 10, right: 20, bottom: 20, left: 0 }}
-                    >
-                        <defs>
-                            <linearGradient
-                                id="fillIMRJ"
-                                x1="0"
-                                y1="0"
-                                x2="0"
-                                y2="1"
-                            >
-                                <stop
-                                    offset="5%"
-                                    stopColor="#CDB797"
-                                    stopOpacity={0.8}
-                                />
-                                <stop
-                                    offset="95%"
-                                    stopColor="#CDB797"
-                                    stopOpacity={0.1}
-                                />
-                            </linearGradient>
-                            <linearGradient
-                                id="fillJEBMPA"
-                                x1="0"
-                                y1="0"
-                                x2="0"
-                                y2="1"
-                            >
-                                <stop
-                                    offset="5%"
-                                    stopColor="#96AEA6"
-                                    stopOpacity={0.8}
-                                />
-                                <stop
-                                    offset="95%"
-                                    stopColor="#96AEA6"
-                                    stopOpacity={0.1}
-                                />
-                            </linearGradient>
-                        </defs>
+                    <AreaChart data={monthlyData}>
+                        <linearGradient
+                            id="fillIMRJ"
+                            x1="0"
+                            y1="0"
+                            x2="0"
+                            y2="1"
+                        ></linearGradient>
+                        <linearGradient
+                            id="fillJEBMPA"
+                            x1="0"
+                            y1="0"
+                            x2="0"
+                            y2="1"
+                        ></linearGradient>
+
                         <CartesianGrid vertical={false} />
                         <XAxis
                             dataKey="month"
@@ -163,11 +133,6 @@ export default function Dashboard() {
                             tickMargin={10}
                             minTickGap={0}
                             padding={{ left: 5, right: 5 }}
-                        />
-                        <YAxis
-                            tickLine={false}
-                            axisLine={false}
-                            domain={[0, "auto"]}
                         />
                         <ChartTooltip
                             cursor={false}
@@ -181,14 +146,14 @@ export default function Dashboard() {
                         <Area
                             dataKey="imrj"
                             type="natural"
-                            fill="url(#fillIMRJ)"
+                            fill="#CDB797"
                             stroke="#CDB797"
                             stackId="a"
                         />
                         <Area
                             dataKey="jebmpa"
                             type="natural"
-                            fill="url(#fillJEBMPA)"
+                            fill="#96AEA6"
                             stroke="#96AEA6"
                             stackId="a"
                         />
