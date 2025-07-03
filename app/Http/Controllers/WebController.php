@@ -81,7 +81,8 @@ class WebController extends Controller
             'doi',
             'overview_pdf_file',
             'hard_price',
-            'soft_price'
+            'soft_price',
+            'pdf_file'
         )->get()->map(function ($book) use ($bookIds) {
             $book->has_access = $bookIds->contains($book->id);
             return $book;
@@ -433,8 +434,14 @@ class WebController extends Controller
         abort(404);
     }
 
-    public function viewBook($path)
+    public function viewBook(Request $request, $path)
     {
+        $user = $request->user();
+
+        if (!$user) {
+            abort(401);
+        }
+
         $accessToken = $this->token();
 
         $cloudinaryResponse = Http::get("https://res.cloudinary.com/dzzyp9crw/raw/upload/{$path}");
