@@ -87,6 +87,8 @@ class WebController extends Controller
             'pdf_file'
         );
 
+        $covers = (clone $booksQuery)->select('cover_page')->get();
+
         if ($search) {
             $booksQuery->where(function ($query) use ($search) {
                 $query->where('title', 'like', "%{$search}%")
@@ -107,6 +109,7 @@ class WebController extends Controller
 
         return Inertia::render('web/book/book-publication', [
             'books' => $books,
+            'covers' => $covers,
             'search' => $search
         ]);
     }

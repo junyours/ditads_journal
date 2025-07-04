@@ -43,7 +43,7 @@ const banners = [BookPublicationBanner];
 export default function BookPublication() {
     const user = usePage().props.auth.user;
     const [open, setOpen] = useState(false);
-    const { books, search: initialSearch } = usePage().props;
+    const { books, covers, search: initialSearch } = usePage().props;
     const [book, setBook] = useState(null);
     const [loading, setLoading] = useState(false);
     const formatDate = (date) =>
@@ -89,15 +89,15 @@ export default function BookPublication() {
                     ]}
                 >
                     <CarouselContent>
-                        {books.data.map((book, index) => (
+                        {covers.map((cover, index) => (
                             <CarouselItem
                                 key={index}
                                 className="sm:basis-1/2 lg:basis-1/3"
                             >
                                 <div className="h-[200px]">
                                     <img
-                                        src={book.cover_page}
-                                        alt="cover_page"
+                                        src={cover.cover_page}
+                                        alt={`cover_page-${index}`}
                                         className="object-contain size-full"
                                     />
                                 </div>
@@ -120,59 +120,60 @@ export default function BookPublication() {
                 </form>
 
                 <div className="container mx-auto px-4 pb-4">
-                    <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {books.data.map((book, index) => (
-                            <Card
-                                key={index}
-                                className="flex flex-col shadow-none"
-                            >
-                                <CardHeader className="p-4">
-                                    <div className="flex gap-2 items-center text-primary">
-                                        <Calendar size={16} />
+                    {books.data.length > 0 ? (
+                        <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            {books.data.map((book, index) => (
+                                <Card
+                                    key={index}
+                                    className="flex flex-col shadow-none"
+                                >
+                                    <CardHeader className="p-4">
+                                        <div className="flex gap-2 items-center text-primary">
+                                            <Calendar size={16} />
+                                            <span className="text-xs">
+                                                {formatDate(book.published_at)}
+                                            </span>
+                                        </div>
+                                        <div className="h-[200px] w-full">
+                                            <img
+                                                src={book.cover_page}
+                                                alt="cover_page"
+                                                className="object-contain size-full"
+                                            />
+                                        </div>
                                         <span className="text-xs">
-                                            {formatDate(book.published_at)}
+                                            Soft/Hard Bound ISBN:{" "}
+                                            {book.soft_isbn} / {book.hard_isbn}
                                         </span>
-                                    </div>
-                                    <div className="h-[200px] w-full">
-                                        <img
-                                            src={book.cover_page}
-                                            alt="cover_page"
-                                            className="object-contain size-full"
-                                        />
-                                    </div>
-                                    <span className="text-xs">
-                                        Soft/Hard Bound ISBN: {book.soft_isbn} /{" "}
-                                        {book.hard_isbn}
-                                    </span>
-                                    <span className="text-xs">
-                                        DOI:{" "}
-                                        <a
-                                            href={book.doi}
-                                            target="_blank"
-                                            className="hover:underline"
+                                        <span className="text-xs">
+                                            DOI:{" "}
+                                            <a
+                                                href={book.doi}
+                                                target="_blank"
+                                                className="hover:underline"
+                                            >
+                                                {book.doi}
+                                            </a>
+                                        </span>
+                                    </CardHeader>
+                                    <CardContent className="flex-1 space-y-4 px-4">
+                                        <CardTitle className="break-words line-clamp-3">
+                                            {book.title}
+                                        </CardTitle>
+                                        <CardDescription className="italic text-xs break-words line-clamp-2">
+                                            {book.author}
+                                        </CardDescription>
+                                    </CardContent>
+                                    <CardFooter className="px-4 pb-4">
+                                        <Button
+                                            onClick={() => handleOpen(book)}
+                                            variant="ghost"
+                                            size="sm"
                                         >
-                                            {book.doi}
-                                        </a>
-                                    </span>
-                                </CardHeader>
-                                <CardContent className="flex-1 space-y-4 px-4">
-                                    <CardTitle className="break-words line-clamp-3">
-                                        {book.title}
-                                    </CardTitle>
-                                    <CardDescription className="italic text-xs break-words line-clamp-2">
-                                        {book.author}
-                                    </CardDescription>
-                                </CardContent>
-                                <CardFooter className="px-4 pb-4">
-                                    <Button
-                                        onClick={() => handleOpen(book)}
-                                        variant="ghost"
-                                        size="sm"
-                                    >
-                                        Read more
-                                        <MoveRight />
-                                    </Button>
-                                    {/* <a
+                                            Read more
+                                            <MoveRight />
+                                        </Button>
+                                        {/* <a
                                     href={`/view-book/${book.overview_pdf_file}`}
                                     target="_blank"
                                 >
@@ -181,10 +182,17 @@ export default function BookPublication() {
                                         <img src={PDF} className="size-4" />
                                     </Button>
                                 </a> */}
-                                </CardFooter>
-                            </Card>
-                        ))}
-                    </div>
+                                    </CardFooter>
+                                </Card>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="text-center py-10 text-muted-foreground italic">
+                            {initialSearch
+                                ? `No books found for "${initialSearch}".`
+                                : "No books available."}
+                        </div>
+                    )}
                 </div>
 
                 <Sheet open={open} onOpenChange={() => handleOpen()}>
