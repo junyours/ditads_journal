@@ -69,7 +69,9 @@ class WebController extends Controller
                 ->pluck(column: 'book_publication_id');
         }
 
-        $books = BookPublication::select(
+        $search = $request->input('search');
+
+        $booksQuery = BookPublication::select(
             'id',
             'title',
             'soft_isbn',
@@ -83,13 +85,29 @@ class WebController extends Controller
             'hard_price',
             'soft_price',
             'pdf_file'
-        )->get()->map(function ($book) use ($bookIds) {
-            $book->has_access = $bookIds->contains($book->id);
-            return $book;
-        });
+        );
+
+        if ($search) {
+            $booksQuery->where(function ($query) use ($search) {
+                $query->where('title', 'like', "%{$search}%")
+                    ->orWhere('author', 'like', "%{$search}%")
+                    ->orWhere('soft_isbn', 'like', "%{$search}%")
+                    ->orWhere('hard_isbn', 'like', "%{$search}%");
+            });
+        }
+
+        $books = $booksQuery
+            ->orderBy('published_at', 'desc')
+            ->paginate(100)
+            ->through(function ($book) use ($bookIds) {
+                $book->has_access = $bookIds->contains($book->id);
+                return $book;
+            })
+            ->withQueryString();
 
         return Inertia::render('web/book/book-publication', [
-            'books' => $books
+            'books' => $books,
+            'search' => $search
         ]);
     }
 

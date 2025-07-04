@@ -36,13 +36,14 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 
 const banners = [BookPublicationBanner];
 
 export default function BookPublication() {
     const user = usePage().props.auth.user;
     const [open, setOpen] = useState(false);
-    const { books } = usePage().props;
+    const { books, search: initialSearch } = usePage().props;
     const [book, setBook] = useState(null);
     const [loading, setLoading] = useState(false);
     const formatDate = (date) =>
@@ -52,6 +53,7 @@ export default function BookPublication() {
             day: "numeric",
         });
     const [isOpen, setIsOpen] = useState(false);
+    const [search, setSearch] = useState(initialSearch || "");
 
     const handleOpen = (book = null) => {
         if (book) {
@@ -60,6 +62,18 @@ export default function BookPublication() {
             setBook(null);
         }
         setOpen(!open);
+    };
+
+    const handleSearch = (e) => {
+        e.preventDefault();
+        router.get(
+            "/book-publication",
+            { search },
+            {
+                preserveState: true,
+                preserveScroll: true,
+            }
+        );
     };
 
     return (
@@ -75,9 +89,9 @@ export default function BookPublication() {
                     ]}
                 >
                     <CarouselContent>
-                        {books.map((book, index) => (
+                        {books.data.map((book, index) => (
                             <CarouselItem
-                                key={`${book.isbn}-${index}`}
+                                key={index}
                                 className="sm:basis-1/2 lg:basis-1/3"
                             >
                                 <div className="h-[200px]">
@@ -92,11 +106,24 @@ export default function BookPublication() {
                     </CarouselContent>
                 </Carousel>
 
+                <form
+                    onSubmit={handleSearch}
+                    className="flex items-center justify-end gap-2 px-4"
+                >
+                    <Input
+                        value={search}
+                        onChange={(e) => setSearch(e.target.value)}
+                        placeholder="Search for isbn, title, authors..."
+                        className="sm:max-w-72"
+                    />
+                    <Button type="submit">Search</Button>
+                </form>
+
                 <div className="container mx-auto px-4 pb-4">
                     <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                        {books.map((book) => (
+                        {books.data.map((book, index) => (
                             <Card
-                                key={book.isbn}
+                                key={index}
                                 className="flex flex-col shadow-none"
                             >
                                 <CardHeader className="p-4">
