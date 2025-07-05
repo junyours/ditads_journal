@@ -173,15 +173,18 @@ export default function BookPublication() {
                                             Read more
                                             <MoveRight />
                                         </Button>
-                                        {/* <a
-                                    href={`/view-book/${book.overview_pdf_file}`}
-                                    target="_blank"
-                                >
-                                    <Button size="sm" variant="ghost">
-                                        PDF open access
-                                        <img src={PDF} className="size-4" />
-                                    </Button>
-                                </a> */}
+                                        <a
+                                            href={`/view-book/${book.pdf_file}`}
+                                            target="_blank"
+                                        >
+                                            <Button size="sm" variant="ghost">
+                                                Open as PDF
+                                                <img
+                                                    src={PDF}
+                                                    className="size-4"
+                                                />
+                                            </Button>
+                                        </a>
                                     </CardFooter>
                                 </Card>
                             ))}
@@ -223,6 +226,16 @@ export default function BookPublication() {
                                     className="hover:underline"
                                 >
                                     {book?.doi}
+                                </a>
+                            </span>
+                            <span>
+                                PDF:{" "}
+                                <a
+                                    href={`/view-book/${book?.pdf_file}`}
+                                    target="_blank"
+                                    className="hover:underline"
+                                >
+                                    Open as PDF
                                 </a>
                             </span>
                         </SheetHeader>
