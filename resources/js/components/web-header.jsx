@@ -31,8 +31,18 @@ export default function WebHeader() {
             </div>
             <div className="hidden md:flex justify-end">
                 {user ? (
-                    <Link href={`/${user.role}/dashboard`}>
-                        <Button>Dashboard</Button>
+                    <Link
+                        href={
+                            user.role === "customer"
+                                ? "/books"
+                                : `/${user.role}/dashboard`
+                        }
+                    >
+                        <Button>
+                            {user.role === "customer"
+                                ? "Start Shopping"
+                                : "Dashboard"}
+                        </Button>
                     </Link>
                 ) : (
                     <div className="flex items-center gap-2">

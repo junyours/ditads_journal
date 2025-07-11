@@ -12,4 +12,9 @@ class AuthorBook extends Model
         'author_id',
         'book_publication_id'
     ];
+
+    public function book_publication()
+    {
+        return $this->BelongsTo(BookPublication::class, 'book_publication_id');
+    }
 }

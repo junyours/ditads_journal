@@ -495,7 +495,7 @@ class AdminController extends Controller
 
     public function getBookPublication()
     {
-        $books = BookPublication::select('id', 'title', 'soft_isbn', 'hard_isbn', 'cover_page', 'author', 'overview', 'published_at', 'pdf_file', 'book_category_id', 'doi', 'overview_pdf_file', 'hard_price', 'soft_price')
+        $books = BookPublication::select('id', 'title', 'soft_isbn', 'hard_isbn', 'cover_page', 'author', 'overview', 'published_at', 'pdf_file', 'book_category_id', 'doi', 'overview_pdf_file', 'hard_price')
             ->get();
 
         $categories = BookCategory::select('id', 'name')->get();
@@ -533,12 +533,12 @@ class AdminController extends Controller
             'doi' => ['required'],
             // 'overview_pdf_file' => ['required', 'mimes:pdf'],
             'hard_price' => ['required'],
-            'soft_price' => ['required'],
+            // 'soft_price' => ['required'],
         ], [
             // 'book_category_id.required' => 'The book category field is required.',
             'pdf_file.required' => 'The book pdf file field is required.',
-            'hard_price.required' => 'The hard bound price field is required.',
-            'soft_price.required' => 'The soft bound price field is required.'
+            'hard_price.required' => 'The price field is required.',
+            // 'soft_price.required' => 'The soft bound price field is required.'
         ]);
 
         if ($request->hasFile('cover_page')) {
@@ -655,7 +655,7 @@ class AdminController extends Controller
             'doi' => $request->doi,
             // 'overview_pdf_file' => $overviewPdfFileId,
             'hard_price' => $request->hard_price,
-            'soft_price' => $request->soft_price,
+            // 'soft_price' => $request->soft_price,
         ]);
     }
 
@@ -674,11 +674,11 @@ class AdminController extends Controller
             // 'book_category_id' => ['required'],
             'doi' => ['required'],
             'hard_price' => ['required'],
-            'soft_price' => ['required'],
+            // 'soft_price' => ['required'],
         ], [
             // 'book_category_id.required' => 'The book category field is required.',
-            'hard_price.required' => 'The hard bound price field is required.',
-            'soft_price.required' => 'The soft bound price field is required.'
+            'hard_price.required' => 'The price field is required.',
+            // 'soft_price.required' => 'The soft bound price field is required.'
         ]);
 
         $book->update([
@@ -693,7 +693,7 @@ class AdminController extends Controller
             // 'book_category_id' => $request->book_category_id,
             'doi' => $request->doi,
             'hard_price' => $request->hard_price,
-            'soft_price' => $request->soft_price,
+            // 'soft_price' => $request->soft_price,
         ]);
 
         if ($request->hasFile('cover_page')) {
@@ -1113,7 +1113,7 @@ class AdminController extends Controller
             'title' => ['required'],
             'author' => ['required'],
             'abstract' => ['required'],
-            'pdf_file' => ['required', 'mimes:pdf', 'max:2048'],
+            'pdf_file' => ['required', 'mimes:pdf'],
             'published_at' => ['required'],
             'country' => ['required'],
             'page_number' => ['required'],
@@ -1192,7 +1192,7 @@ class AdminController extends Controller
 
         if ($request->hasFile('pdf_file')) {
             $request->validate([
-                'pdf_file' => ['mimes:pdf', 'max:2048'],
+                'pdf_file' => ['mimes:pdf'],
             ]);
 
             $parentFolderId = config('services.google.folder_id');

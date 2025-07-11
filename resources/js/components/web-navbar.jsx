@@ -144,7 +144,13 @@ export default function WebNavbar({ open, onOpenChange }) {
                             )}
                             {user ? (
                                 <div className="grid">
-                                    <Link href={`/${user.role}/dashboard`}>
+                                    <Link
+                                        href={
+                                            user.role === "customer"
+                                                ? "/books"
+                                                : `/${user.role}/dashboard`
+                                        }
+                                    >
                                         <Button
                                             onClick={() => {
                                                 if (isMobile) {
@@ -153,7 +159,9 @@ export default function WebNavbar({ open, onOpenChange }) {
                                             }}
                                             className="w-full"
                                         >
-                                            Dashboard
+                                            {user.role === "customer"
+                                                ? "Start Shopping"
+                                                : "Dashboard"}
                                         </Button>
                                     </Link>
                                 </div>

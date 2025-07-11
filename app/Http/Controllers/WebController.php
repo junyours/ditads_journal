@@ -84,10 +84,11 @@ class WebController extends Controller
             'overview_pdf_file',
             'hard_price',
             'soft_price',
-            'pdf_file'
+            'pdf_file',
+            'cover_file_id'
         );
 
-        $covers = (clone $booksQuery)->select('cover_page')->get();
+        $covers = (clone $booksQuery)->select('cover_file_id')->get();
 
         if ($search) {
             $booksQuery->where(function ($query) use ($search) {
@@ -461,6 +462,21 @@ class WebController extends Controller
 
         if (!$user) {
             abort(401);
+        }
+
+        if ($user->role !== 'admin') {
+            $hasAccess = AuthorBook::where('author_id', $user->id)
+                ->whereHas(
+                    'book_publication',
+                    function ($query) use ($path) {
+                        $query->where('pdf_file', $path);
+                    }
+                )
+                ->exists();
+
+            if (!$hasAccess) {
+                abort(403, 'Unauthorized access to this book');
+            }
         }
 
         $accessToken = $this->token();

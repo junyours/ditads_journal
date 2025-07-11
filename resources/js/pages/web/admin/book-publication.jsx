@@ -86,7 +86,7 @@ export default function BookPublication() {
         doi: "",
         overview_pdf_file: null,
         hard_price: "",
-        soft_price: "",
+        // soft_price: "",
     });
 
     const filteredAuthors = useMemo(() => {
@@ -113,7 +113,7 @@ export default function BookPublication() {
                 doi: book.doi,
                 overview_pdf_file: book.overview_pdf_file,
                 hard_price: book.hard_price,
-                soft_price: book.soft_price,
+                // soft_price: book.soft_price,
             };
             setData(bookData);
             setInitialData(bookData);
@@ -134,7 +134,7 @@ export default function BookPublication() {
                 doi: "",
                 overview_pdf_file: null,
                 hard_price: "",
-                soft_price: "",
+                // soft_price: "",
             };
             setData(newData);
             setInitialData(newData);
@@ -491,7 +491,7 @@ export default function BookPublication() {
                             <InputError message={errors.overview_pdf_file} />
                         </div> */}
                         <div className="space-y-1">
-                            <Label>Hard Bound Price</Label>
+                            <Label>Price</Label>
                             <Input
                                 type="number"
                                 value={data.hard_price}
@@ -501,7 +501,7 @@ export default function BookPublication() {
                             />
                             <InputError message={errors.hard_price} />
                         </div>
-                        <div className="space-y-1">
+                        {/* <div className="space-y-1">
                             <Label>Soft Bound Price</Label>
                             <Input
                                 type="number"
@@ -511,7 +511,7 @@ export default function BookPublication() {
                                 }
                             />
                             <InputError message={errors.soft_price} />
-                        </div>
+                        </div> */}
                         <div className="space-y-1">
                             <Label>Title</Label>
                             <Textarea

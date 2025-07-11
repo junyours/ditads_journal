@@ -33,6 +33,12 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $role = $request->user()->role;
+
+        if ($role === "customer") {
+            return redirect("/books");
+        }
+
         return redirect("/{$request->user()->role}/dashboard");
     }
 

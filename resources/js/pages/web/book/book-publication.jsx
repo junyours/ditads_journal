@@ -96,7 +96,11 @@ export default function BookPublication() {
                             >
                                 <div className="h-[200px]">
                                     <img
-                                        src={cover.cover_page}
+                                        src={
+                                            cover.cover_file_id
+                                                ? `https://lh3.googleusercontent.com/d/${cover.cover_file_id}`
+                                                : cover.cover_page
+                                        }
                                         alt={`cover_page-${index}`}
                                         className="object-contain size-full"
                                     />
@@ -136,8 +140,12 @@ export default function BookPublication() {
                                         </div>
                                         <div className="h-[200px] w-full">
                                             <img
-                                                src={book.cover_page}
-                                                alt="cover_page"
+                                                src={
+                                                    book.cover_file_id
+                                                        ? `https://lh3.googleusercontent.com/d/${book.cover_file_id}`
+                                                        : book.cover_page
+                                                }
+                                                alt={`cover_page-${index}`}
                                                 className="object-contain size-full"
                                             />
                                         </div>
@@ -248,7 +256,10 @@ export default function BookPublication() {
                                     if (!loading) {
                                         if (user?.role === "admin") {
                                             setIsOpen(true);
-                                        } else if (user?.role === "customer") {
+                                        } else if (
+                                            user?.role === "customer" &&
+                                            book?.has_access
+                                        ) {
                                             setIsOpen(true);
                                         }
                                     }
@@ -271,7 +282,11 @@ export default function BookPublication() {
                                     }
                                 >
                                     <img
-                                        src={book?.cover_page}
+                                        src={
+                                            book?.cover_file_id
+                                                ? `https://lh3.googleusercontent.com/d/${book?.cover_file_id}`
+                                                : book?.cover_page
+                                        }
                                         alt={`cover_${book?.title}`}
                                         className="object-contain size-48"
                                     />
@@ -299,7 +314,16 @@ export default function BookPublication() {
                                     )}
                                     {user?.role === "customer" &&
                                         !book?.has_access && (
-                                            <Button size="sm">Buy now</Button>
+                                            <Button
+                                                onClick={() =>
+                                                    router.visit(
+                                                        `/customer/book/sales/buy/${book?.id}`
+                                                    )
+                                                }
+                                                size="sm"
+                                            >
+                                                Buy now
+                                            </Button>
                                         )}
                                 </div>
                             </div>

@@ -13,9 +13,62 @@ use Inertia\Inertia;
 
 class CustomerController extends Controller
 {
-    public function dashboard()
+    public function book()
     {
-        return Inertia::render('book/customer/dashboard');
+        $books = BookPublication::select(
+            'id',
+            'title',
+            'cover_page',
+            'cover_file_id',
+            'author',
+            'overview',
+            'hard_price',
+            'published_at'
+        )
+            ->orderBy('published_at', 'desc')
+            ->get();
+
+        return Inertia::render('book/customer/book', [
+            'books' => $books
+        ]);
+    }
+
+    public function bookDetail($title, $author, $cover_file_id)
+    {
+        $book = BookPublication::select(
+            'id',
+            'title',
+            'soft_isbn',
+            'hard_isbn',
+            'cover_page',
+            'cover_file_id',
+            'author',
+            'overview',
+            'hard_price',
+            'published_at'
+        )
+            ->where('title', $title)
+            ->where('author', $author)
+            ->where('cover_file_id', $cover_file_id)
+            ->first();
+
+        if (!$book) {
+            abort(404);
+        }
+
+        return Inertia::render('book/customer/book-detail', [
+            'book' => $book
+        ]);
+    }
+
+    public function cart()
+    {
+        return Inertia::render('book/customer/cart');
+    }
+
+    public function checkout()
+    {
+        return Inertia::render('book/customer/checkout');
     }
 
     public function bookSale(Request $request)
@@ -49,6 +102,13 @@ class CustomerController extends Controller
             'payments' => $payments,
             'addresses' => $addresses
         ]);
+    }
+
+    public function buyBook($book_id)
+    {
+        BookPublication::findOrFail($book_id);
+
+        return Inertia::render('book/customer/buy-book');
     }
 
     public function addDeliveryAddress(Request $request)
