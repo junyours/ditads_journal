@@ -94,7 +94,7 @@ export default function JournalLayout() {
                     <img src={SDG} alt="sdg-logo" className="object-contain" />
                 </div>
                 <p className="text-justify p-4 text-sm">
-                    Sustainability Commitment Statement All journals published
+                    <span className="font-semibold">Sustainability Commitment Statement</span>: All journals published
                     under DIT.ADS International Multidisciplinary Research
                     Journal (DIT.ADS IMRJ) are fully aligned with the 17
                     Sustainable Development Goals (SDGs) of the United Nations.
