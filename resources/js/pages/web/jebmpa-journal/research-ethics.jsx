@@ -2,11 +2,11 @@ export default function ResearchEthics() {
     return (
         <div className="text-justify">
             <p>
-                The DIT.ADS Journal of Economics, Business Management, and
-                Public Administration adheres to the highest standards of
-                research ethics to maintain the integrity and credibility of
-                published works. Authors, reviewers, and editors are expected to
-                follow the ethical guidelines outlined below:
+                The DIT.ADS JEBMPA - DIT.ADS Journal of Economics, Business
+                Management, and Public Administration adheres to the highest
+                standards of research ethics to maintain the integrity and
+                credibility of published works. Authors, reviewers, and editors
+                are expected to follow the ethical guidelines outlined below:
             </p>
             <br />
             <h1 className="font-semibold">1. AI in Research</h1>

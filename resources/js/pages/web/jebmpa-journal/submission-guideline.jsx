@@ -25,11 +25,12 @@ export default function SubmissionGuideline() {
             <br />
             <p>
                 The purpose of this policy is to ensure academic integrity and
-                maintain the quality of work published by DIT.ADS Journal of
-                Economics, Business Management, and Public Administration.
-                Plagiarism is strictly prohibited and will not be tolerated.
-                This policy outlines the procedures for checking manuscripts for
-                plagiarism and the consequences for any violations.
+                maintain the quality of work published by DIT.ADS JEBMPA -
+                DIT.ADS Journal of Economics, Business Management, and Public
+                Administration. Plagiarism is strictly prohibited and will not
+                be tolerated. This policy outlines the procedures for checking
+                manuscripts for plagiarism and the consequences for any
+                violations.
             </p>
             <br />
             <h1 className="font-semibold">Definition of Plagiarism</h1>
@@ -140,12 +141,12 @@ export default function SubmissionGuideline() {
             </p>
             <br />
             <p>
-                Thank you for choosing DIT.ADS Journal of Economics, Business
-                Management, and Public Administration for your manuscript
-                submission. Below are the detailed instructions regarding the
-                process from submission to publication. Please read carefully to
-                ensure your manuscript meets our requirements and to understand
-                the timeline for review and publication.
+                Thank you for choosing DIT.ADS JEBMPA - DIT.ADS Journal of
+                Economics, Business Management, and Public Administration for
+                your manuscript submission. Below are the detailed instructions
+                regarding the process from submission to publication. Please
+                read carefully to ensure your manuscript meets our requirements
+                and to understand the timeline for review and publication.
             </p>
             <br />
             <p className="font-semibold">1. Manuscript Submission:</p>

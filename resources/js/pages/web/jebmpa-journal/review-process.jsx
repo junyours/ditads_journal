@@ -2,13 +2,13 @@ export default function ReviewProcess() {
     return (
         <div className="text-justify">
             <p>
-                The DIT.ADS Journal of Economics, Business Management, and
-                Public Administration follows a strict double-blind review
-                process, ensuring that the identities of both authors and
-                reviewers remain confidential throughout the evaluation.
-                Submissions that do not meet the basic standards will be
-                promptly rejected, and the authors will be notified of the
-                decision.
+                The DIT.ADS JEBMPA - DIT.ADS Journal of Economics, Business
+                Management, and Public Administration follows a strict
+                double-blind review process, ensuring that the identities of
+                both authors and reviewers remain confidential throughout the
+                evaluation. Submissions that do not meet the basic standards
+                will be promptly rejected, and the authors will be notified of
+                the decision.
             </p>
             <br />
             <p>
