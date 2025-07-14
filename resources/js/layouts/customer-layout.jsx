@@ -2,7 +2,8 @@ import DitadsLogo from "@/components/ditads-logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link, router } from "@inertiajs/react";
-import { Heart, Search, ShoppingCart } from "lucide-react";
+import { Search, ShoppingCart } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export default function CustomerLayout({ children }) {
     return (
@@ -43,16 +44,21 @@ export default function CustomerLayout({ children }) {
                                 <Search />
                             </Button>
                         </div>
-                        <Button size="icon" variant="outline">
-                            <Heart />
-                        </Button>
-                        <Button
-                            onClick={() => router.visit("/cart")}
-                            size="icon"
-                            variant="outline"
-                        >
-                            <ShoppingCart />
-                        </Button>
+                        <div className="relative">
+                            <Button
+                                onClick={() => router.visit("/cart")}
+                                size="icon"
+                                variant="outline"
+                            >
+                                <ShoppingCart />
+                            </Button>
+                            <Badge
+                                className="absolute -top-2 -right-2 h-5 min-w-5 rounded-full px-1 tabular-nums"
+                                variant="destructive"
+                            >
+                                99
+                            </Badge>
+                        </div>
                     </div>
                 </div>
             </header>

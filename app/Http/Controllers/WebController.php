@@ -88,7 +88,7 @@ class WebController extends Controller
             'cover_file_id'
         );
 
-        $covers = (clone $booksQuery)->select('cover_file_id')->get();
+        $covers = (clone $booksQuery)->select('cover_file_id', 'cover_page')->get();
 
         if ($search) {
             $booksQuery->where(function ($query) use ($search) {

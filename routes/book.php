@@ -8,6 +8,8 @@ Route::middleware(['auth', 'customer', 'verified'])->group(function () {
   Route::get('/books', [CustomerController::class, 'book']);
   Route::get('/book/{title}/{author}/{cover_file_id}', [CustomerController::class, 'bookDetail']);
   Route::get('/cart', [CustomerController::class, 'cart']);
+  Route::post('/cart/add', [CustomerController::class, 'addCart']);
+  Route::post('/cart/remove/{cart_id}', [CustomerController::class, 'removeCart']);
   Route::get('/checkout', [CustomerController::class, 'checkout']);
 
   Route::get('/customer/book/sales', [CustomerController::class, 'bookSale']);

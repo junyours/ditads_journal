@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import CustomerLayout from "@/layouts/customer-layout";
-import { Link, usePage } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 import { Heart } from "lucide-react";
 import { useState } from "react";
 
@@ -11,6 +11,21 @@ export default function Book() {
             style: "currency",
             currency: "PHP",
         }).format(parseFloat(amount));
+    const [loading, setLoading] = useState(false);
+
+    const handleAddCart = (bookId) => {
+        setLoading(true);
+        router.post(
+            "/cart/add",
+            { bookId },
+            {
+                preserveScroll: true,
+                onFinish: () => {
+                    setLoading(false);
+                },
+            }
+        );
+    };
 
     return (
         <div className="flex">
@@ -50,9 +65,11 @@ export default function Book() {
                                 <Button
                                     onClick={(e) => {
                                         e.preventDefault();
+                                        handleAddCart(book.id);
                                     }}
                                     variant="outline"
                                     className="min-w-52"
+                                    disabled={loading}
                                 >
                                     Add to Cart
                                 </Button>

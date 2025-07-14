@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Book;
 
 use App\Http\Controllers\Controller;
+use App\Models\BookCart;
 use App\Models\BookPublication;
 use App\Models\BookTransaction;
 use App\Models\DeliveryAddress;
@@ -61,9 +62,42 @@ class CustomerController extends Controller
         ]);
     }
 
-    public function cart()
+    public function cart(Request $request)
     {
-        return Inertia::render('book/customer/cart');
+        $customer_id = $request->user()->id;
+
+        $carts = BookCart::where('customer_id', $customer_id)
+            ->with('book_publication')
+            ->get();
+
+        return Inertia::render('book/customer/cart', [
+            'carts' => $carts
+        ]);
+    }
+
+    public function addCart(Request $request)
+    {
+        $customer_id = $request->user()->id;
+
+        $existing = BookCart::where('customer_id', $customer_id)
+            ->where('book_publication_id', $request->bookId)
+            ->first();
+
+        if ($existing) {
+            $existing->increment('quantity');
+        } else {
+            BookCart::create([
+                'customer_id' => $customer_id,
+                'book_publication_id' => $request->bookId,
+                'quantity' => 1
+            ]);
+        }
+    }
+
+    public function removeCart($cart_id)
+    {
+        BookCart::findOrFail($cart_id)
+            ->delete();
     }
 
     public function checkout()
