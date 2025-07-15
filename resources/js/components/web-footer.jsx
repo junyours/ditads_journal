@@ -83,16 +83,16 @@ export default function WebFooter() {
                         return currentPath.includes("research-journal/imrj");
                     }
 
-                    // Only show JEBMPA email if on the JEPMPA page
+                    // Only show JEBMPA email if on the JEBMPA page
                     if (subitem.name === "ditadsjebmpa@gmail.com") {
-                        return currentPath.includes("research-journal/jepmpa");
+                        return currentPath.includes("research-journal/jebmpa");
                     }
 
                     // Show default email on all other pages
                     if (subitem.name === "ditads@infosheet.dev") {
                         return (
                             !currentPath.includes("research-journal/imrj") &&
-                            !currentPath.includes("research-journal/jepmpa")
+                            !currentPath.includes("research-journal/jebmpa")
                         );
                     }
 
