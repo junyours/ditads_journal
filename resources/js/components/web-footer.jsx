@@ -16,7 +16,7 @@ const items = [
                 link: true,
             },
             {
-                name: "ditadsjebmpa@gmail.com",
+                name: "editorinchief@ditadsjebmpa.com",
                 type: "mailto:",
                 link: true,
             },
