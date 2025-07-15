@@ -84,7 +84,7 @@ export default function WebFooter() {
                     }
 
                     // Only show JEBMPA email if on the JEBMPA page
-                    if (subitem.name === "ditadsjebmpa@gmail.com") {
+                    if (subitem.name === "editorinchief@ditadsjebmpa.com") {
                         return currentPath.includes("research-journal/jebmpa");
                     }
 
