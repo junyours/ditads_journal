@@ -90,22 +90,25 @@ export default function JournalLayout() {
                 </Accordion>
             </div>
             <div className="h-fit w-full border sm:flex lg:max-w-96 lg:flex-col">
-                <div>
+                <div className="flex items-center justify-center">
                     <img src={SDG} alt="sdg-logo" className="object-contain" />
                 </div>
                 <p className="text-justify p-4 text-sm">
-                    <span className="font-semibold">Sustainability Commitment Statement</span>: All journals published
-                    under DIT.ADS International Multidisciplinary Research
-                    Journal (DIT.ADS IMRJ) are fully aligned with the 17
-                    Sustainable Development Goals (SDGs) of the United Nations.
-                    We actively encourage and prioritize research that
-                    contributes to addressing global challenges such as poverty
-                    eradication, quality education, climate action, clean
-                    energy, sustainable communities, responsible consumption,
-                    and partnerships for the goals. By embedding the SDGs into
-                    our publication framework, we ensure that our journals serve
-                    as platforms for knowledge that transforms society, promotes
-                    inclusive growth, and advances global sustainability.
+                    <span className="font-semibold">
+                        Sustainability Commitment Statement
+                    </span>
+                    : All journals published under DIT.ADS International
+                    Multidisciplinary Research Journal (DIT.ADS IMRJ) are fully
+                    aligned with the 17 Sustainable Development Goals (SDGs) of
+                    the United Nations. We actively encourage and prioritize
+                    research that contributes to addressing global challenges
+                    such as poverty eradication, quality education, climate
+                    action, clean energy, sustainable communities, responsible
+                    consumption, and partnerships for the goals. By embedding
+                    the SDGs into our publication framework, we ensure that our
+                    journals serve as platforms for knowledge that transforms
+                    society, promotes inclusive growth, and advances global
+                    sustainability.
                 </p>
             </div>
         </div>
