@@ -62,12 +62,18 @@ class CustomerController extends Controller
         ]);
     }
 
+    public function profile()
+    {
+        return Inertia::render('book/customer/account/profile');
+    }
+
     public function cart(Request $request)
     {
         $customer_id = $request->user()->id;
 
         $carts = BookCart::where('customer_id', $customer_id)
             ->with('book_publication')
+            ->latest()
             ->get();
 
         return Inertia::render('book/customer/cart', [
@@ -94,15 +100,111 @@ class CustomerController extends Controller
         }
     }
 
+    public function quantityIncrement(Request $request)
+    {
+        $cart = BookCart::findOrFail($request->cart_id);
+        $cart->update([
+            'quantity' => $cart->quantity + 1,
+        ]);
+    }
+
+    public function quantityDecrement(Request $request)
+    {
+        $cart = BookCart::findOrFail($request->cart_id);
+
+        if ($cart->quantity > 1) {
+            $cart->update([
+                'quantity' => $cart->quantity - 1,
+            ]);
+        }
+    }
+
     public function removeCart($cart_id)
     {
         BookCart::findOrFail($cart_id)
             ->delete();
     }
 
-    public function checkout()
+    public function checkout(Request $request)
     {
-        return Inertia::render('book/customer/checkout');
+        $customer_id = $request->user()->id;
+
+        $items = BookCart::where('customer_id', $customer_id)
+            ->with('book_publication')
+            ->latest()
+            ->get();
+
+        $addresses = DeliveryAddress::where('customer_id', $customer_id)
+            ->get();
+
+        return Inertia::render('book/customer/checkout', [
+            'items' => $items,
+            'addresses' => $addresses
+        ]);
+    }
+
+    public function addDeliveryAddress(Request $request)
+    {
+        $request->validate([
+            'complete_address' => ['required'],
+            'contact_number' => ['required'],
+            'name' => ['required'],
+            'postal_code' => ['required']
+        ]);
+
+        $customer_id = $request->user()->id;
+
+        DeliveryAddress::create([
+            'customer_id' => $customer_id,
+            'complete_address' => $request->complete_address,
+            'contact_number' => $request->contact_number,
+            'name' => $request->name,
+            'postal_code' => $request->postal_code
+        ]);
+    }
+
+    public function updateDeliveryAddress(Request $request)
+    {
+        $address = DeliveryAddress::findOrFail($request->id);
+
+        $request->validate([
+            'complete_address' => ['required'],
+            'contact_number' => ['required'],
+            'name' => ['required'],
+            'postal_code' => ['required']
+        ]);
+
+        $address->update([
+            'complete_address' => $request->complete_address,
+            'contact_number' => $request->contact_number,
+            'name' => $request->name,
+            'postal_code' => $request->postal_code
+        ]);
+    }
+
+    public function deleteDeliveryAddress($address_id)
+    {
+        DeliveryAddress::findOrFail($address_id)
+            ->delete();
+    }
+
+    public function validateCardInfo(Request $request)
+    {
+        $request->validate([
+            'card_number' => ['required', 'digits_between:13,19'],
+            'card_exp_month' => ['required', 'digits:2'],
+            'card_exp_year' => ['required', 'digits:4'],
+            'card_cvn' => ['required', 'digits_between:3,4'],
+            'card_holder_first_name' => ['required'],
+            'card_holder_last_name' => ['required'],
+            'card_holder_email' => ['required', 'email'],
+            'card_holder_phone_number' => ['required'],
+        ], [
+            'card_holder_first_name.required' => 'The first name field is required.',
+            'card_holder_last_name.required' => 'The last name field is required.',
+            'card_holder_email.required' => 'The email field is required.',
+            'card_holder_phone_number.required' => 'The phone number field is required.'
+        ]);
     }
 
     public function bookSale(Request $request)
@@ -143,20 +245,6 @@ class CustomerController extends Controller
         BookPublication::findOrFail($book_id);
 
         return Inertia::render('book/customer/buy-book');
-    }
-
-    public function addDeliveryAddress(Request $request)
-    {
-        $request->validate([
-            'complete_address' => ['required'],
-            'contact_number' => ['required']
-        ]);
-
-        DeliveryAddress::create([
-            'customer_id' => $request->user()->id,
-            'complete_address' => $request->complete_address,
-            'contact_number' => $request->contact_number
-        ]);
     }
 
     public function payBook(Request $request)

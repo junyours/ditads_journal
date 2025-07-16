@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import CustomerLayout from "@/layouts/customer-layout";
 import { Link, router, usePage } from "@inertiajs/react";
-import { Heart } from "lucide-react";
 import { useState } from "react";
 
 export default function Book() {
@@ -11,33 +10,33 @@ export default function Book() {
             style: "currency",
             currency: "PHP",
         }).format(parseFloat(amount));
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(null);
 
-    const handleAddCart = (bookId) => {
-        setLoading(true);
+    const handleAddCart = (bookId, index) => {
+        setLoading(index);
         router.post(
             "/cart/add",
             { bookId },
             {
                 preserveScroll: true,
                 onFinish: () => {
-                    setLoading(false);
+                    setLoading(null);
                 },
             }
         );
     };
 
     return (
-        <div className="flex">
-            <div className="w-full max-w-80 bg-red-500"></div>
+        <div className="flex p-4">
+            <div className="w-full max-w-80"></div>
             <div className="flex-1 pl-4 space-y-4">
-                {books.map((book) => (
+                {books.map((book, index) => (
                     <Link
                         key={book.id}
                         href={`/book/${book.title}/${book.author}/${book.cover_file_id}`}
-                        className="flex gap-2"
+                        className="flex gap-4 bg-background rounded-lg border p-4"
                     >
-                        <div className="bg-muted border max-h-60 max-w-60">
+                        <div className="max-h-60 max-w-60">
                             <img
                                 src={`https://lh3.googleusercontent.com/d/${book.cover_file_id}`}
                                 alt="cover_page"
@@ -65,23 +64,14 @@ export default function Book() {
                                 <Button
                                     onClick={(e) => {
                                         e.preventDefault();
-                                        handleAddCart(book.id);
+                                        handleAddCart(book.id, index);
                                     }}
-                                    variant="outline"
                                     className="min-w-52"
-                                    disabled={loading}
+                                    disabled={loading === index}
                                 >
-                                    Add to Cart
-                                </Button>
-                                <Button
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                    }}
-                                    size="icon"
-                                    variant="ghost"
-                                    className="shrink-0"
-                                >
-                                    <Heart />
+                                    {loading === index
+                                        ? "Adding..."
+                                        : "Add to Cart"}
                                 </Button>
                             </div>
                         </div>

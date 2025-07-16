@@ -11,6 +11,8 @@ class DeliveryAddress extends Model
     protected $fillable = [
         'customer_id',
         'complete_address',
-        'contact_number'
+        'contact_number',
+        'name',
+        'postal_code'
     ];
 }

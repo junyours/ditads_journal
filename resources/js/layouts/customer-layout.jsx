@@ -1,14 +1,26 @@
 import DitadsLogo from "@/components/ditads-logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link, router } from "@inertiajs/react";
+import { Link, router, usePage } from "@inertiajs/react";
 import { Search, ShoppingCart } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import User from "../../../public/images/user.png";
 
 export default function CustomerLayout({ children }) {
+    const user = usePage().props.auth.user;
+
     return (
-        <>
-            <div className="h-12 border-b bg-muted px-4 grid grid-cols-2 items-center gap-2">
+        <div className="min-h-screen bg-muted">
+            <div className="h-12 border-b px-4 grid grid-cols-2 items-center gap-2">
                 <div className="flex items-center gap-1 text-sm">
                     <Link href="/" className="flex items-center gap-2">
                         <div className="flex aspect-square size-8 items-center justify-center">
@@ -20,13 +32,25 @@ export default function CustomerLayout({ children }) {
                     </Link>
                 </div>
                 <div className="flex justify-end">
-                    <Link
-                        href="/logout"
-                        method="post"
-                        className="font-medium text-sm hover:underline"
-                    >
-                        Sign Out
-                    </Link>
+                    <DropdownMenu>
+                        <DropdownMenuTrigger className="flex items-center gap-2">
+                            <Avatar className="size-8 border border-blue-500">
+                                <AvatarImage src={User} />
+                            </Avatar>
+                            <span className="text-sm">{user.name}</span>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent>
+                            <DropdownMenuItem>My Account</DropdownMenuItem>
+                            <DropdownMenuItem>My Purchase</DropdownMenuItem>
+                            <Link
+                                href="/logout"
+                                method="post"
+                                className="w-full"
+                            >
+                                <DropdownMenuItem>Sign Out</DropdownMenuItem>
+                            </Link>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
                 </div>
             </div>
             <header className="z-10 sticky top-0 bg-background border-b">
@@ -62,7 +86,7 @@ export default function CustomerLayout({ children }) {
                     </div>
                 </div>
             </header>
-            <main className="max-w-7xl mx-auto p-4">{children}</main>
-        </>
+            <main className="max-w-7xl mx-auto">{children}</main>
+        </div>
     );
 }
