@@ -127,10 +127,10 @@ export default function AboutJournal() {
             <h1 className="font-semibold">
                 All manuscripts can be submitted to (e-mail){" "}
                 <a
-                    href="mailto:ditadsjebmpa@gmail.com"
+                    href="mailto:editorinchief@ditadsjebmpa.com"
                     className="text-blue-500 hover:underline"
                 >
-                    ditadsjebmpa@gmail.com
+                    editorinchief@ditadsjebmpa.com
                 </a>
             </h1>
         </div>

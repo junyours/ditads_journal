@@ -155,10 +155,10 @@ export default function SubmissionGuideline() {
                 o All manuscripts must be submitted electronically via email
                 submission at{" "}
                 <a
-                    href="mailto:ditadsjebmpa@gmail.com"
+                    href="mailto:editorinchief@ditadsjebmpa.com"
                     className="text-blue-500 hover:underline"
                 >
-                    ditadsjebmpa@gmail.com
+                    editorinchief@ditadsjebmpa.com
                 </a>
             </p>
             <p>
@@ -289,10 +289,10 @@ export default function SubmissionGuideline() {
                 reach out to our editorial office at R188 Metro Square, Zone 2,
                 Iponan, Cagayan de Oro City, or email us at{" "}
                 <a
-                    href="mailto:ditadsjebmpa@gmail.com"
+                    href="mailto:editorinchief@ditadsjebmpa.com"
                     className="text-blue-500 hover:underline"
                 >
-                    ditadsjebmpa@gmail.com
+                    editorinchief@ditadsjebmpa.com
                 </a>
                 .
             </p>
