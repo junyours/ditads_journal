@@ -41,6 +41,10 @@ Route::middleware(['auth', 'admin', 'verified'])->group(function () {
     Route::post('/admin/web/research-journal/upload', [AdminController::class, 'uploadResearchJournal']);
     Route::post('/admin/web/research-journal/update', [AdminController::class, 'updateResearchJournal']);
 
+    Route::get('/admin/web/events', [AdminController::class, 'event']);
+    Route::post('/admin/web/events/upload', [AdminController::class, 'uploadEvent']);
+    Route::post('/admin/web/events/update', [AdminController::class, 'updateEvent']);
+
     Route::get('/admin/others/payment-methods', [AdminController::class, 'paymentMethod']);
     Route::post('/admin/others/payment-methods/add', [AdminController::class, 'AddPaymentMethod']);
     Route::post('/admin/others/payment-methods/update', [AdminController::class, 'UpdatePaymentMethod']);
@@ -56,6 +60,7 @@ Route::middleware(['auth', 'admin', 'verified'])->group(function () {
 
 Route::get('/', [WebController::class, 'welcome']);
 Route::get('/about-us', [WebController::class, 'aboutUs']);
+Route::get('/events', [WebController::class, 'event']);
 Route::get('/research-consultant', [WebController::class, 'researchConsultant']);
 Route::get('/book-publication', [WebController::class, 'bookPublication']);
 Route::get('/api/book-hash', function (Request $request) {

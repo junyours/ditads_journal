@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AuthorBook;
 use App\Models\BookPublication;
 use App\Models\CustomerBook;
+use App\Models\Event;
 use App\Models\Magazine;
 use App\Models\ResearchJournal;
 use App\Models\User;
@@ -42,6 +43,16 @@ class WebController extends Controller
     public function aboutUs()
     {
         return Inertia::render('web/about-us');
+    }
+
+    public function event()
+    {
+        $events = Event::select('title', 'content', 'image_file_id', 'date')
+            ->get();
+
+        return Inertia::render('web/event', [
+            'events' => $events
+        ]);
     }
 
     public function researchConsultant()

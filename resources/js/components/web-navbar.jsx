@@ -34,6 +34,11 @@ const items = [
         collapse: false,
     },
     {
+        title: "Events",
+        url: "/events",
+        collapse: false,
+    },
+    {
         title: "Research Consultant",
         url: "/research-consultant",
         collapse: false,

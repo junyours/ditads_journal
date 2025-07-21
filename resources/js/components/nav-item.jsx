@@ -30,6 +30,7 @@ import {
     SendToBack,
     SquareLibrary,
     Users,
+    CalendarMinus2,
 } from "lucide-react";
 
 const navAdmin = [
@@ -121,6 +122,12 @@ const navAdmin = [
                         url: "/jebmpa",
                     },
                 ],
+            },
+            {
+                title: "Events",
+                url: "/admin/web/events",
+                icon: CalendarMinus2,
+                collapse: false,
             },
         ],
     },

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AuthorBook;
 use App\Models\BookCategory;
 use App\Models\BookPublication;
+use App\Models\Event;
 use App\Models\Magazine;
 use App\Models\PaymentMethod;
 use App\Models\ResearchJournal;
@@ -1243,6 +1244,139 @@ class AdminController extends Controller
             'tracking_number' => $request->tracking_number,
             'doi' => $request->doi
         ]);
+    }
+
+    public function event()
+    {
+        $events = Event::select('id', 'title', 'content', 'image', 'date')
+            ->get();
+
+        return Inertia::render('web/admin/event', [
+            'events' => $events
+        ]);
+    }
+
+    public function uploadEvent(Request $request)
+    {
+        $accessToken = $this->token();
+
+        $request->validate([
+            'image' => ['required', 'mimes:jpeg,jpg,png'],
+            'title' => ['required'],
+            'contents' => ['required'],
+            'date' => ['required'],
+        ]);
+
+        if ($request->hasFile('image')) {
+            $ditadsFolderId = config('services.google.folder_id');
+            $eventsFolderId = $this->getOrCreateFolder($accessToken, 'events', $ditadsFolderId);
+            $imageFolderId = $this->getOrCreateFolder($accessToken, 'images', $eventsFolderId);
+
+            $file = $request->file('image');
+            $mimeType = $file->getMimeType();
+
+            $metadata = [
+                'name' => 'temp_' . time(),
+                'parents' => [$imageFolderId],
+            ];
+
+            $uploadRes = Http::withToken($accessToken)
+                ->attach('metadata', json_encode($metadata), 'metadata.json', ['Content-Type' => 'application/json'])
+                ->attach('media', file_get_contents($file), $file->getClientOriginalName(), ['Content-Type' => $mimeType])
+                ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
+
+            if ($uploadRes->successful()) {
+                $imageFileId = $uploadRes->json()['id'];
+
+                Http::withToken($accessToken)->patch("https://www.googleapis.com/drive/v3/files/{$imageFileId}", [
+                    'name' => $imageFileId,
+                ]);
+
+                Http::withToken($accessToken)->post("https://www.googleapis.com/drive/v3/files/{$imageFileId}/permissions", [
+                    'role' => 'reader',
+                    'type' => 'anyone',
+                ]);
+
+                $imageUrl = "https://drive.google.com/thumbnail?id={$imageFileId}";
+            }
+        }
+
+        Event::create([
+            'image' => $imageUrl,
+            'image_file_id' => $imageFileId,
+            'title' => $request->title,
+            'content' => $request->contents,
+            'date' => Carbon::parse($request->date)
+                ->timezone('Asia/Manila')
+                ->toDateString(),
+        ]);
+    }
+
+    public function updateEvent(Request $request)
+    {
+        $event = Event::findOrFail($request->id);
+        $accessToken = $this->token();
+
+        $request->validate([
+            'title' => ['required'],
+            'contents' => ['required'],
+            'date' => ['required'],
+        ]);
+
+        $event->update([
+            'title' => $request->title,
+            'content' => $request->contents,
+            'date' => Carbon::parse($request->date)
+                ->timezone('Asia/Manila')
+                ->toDateString(),
+        ]);
+
+        if ($request->hasFile('image')) {
+            $request->validate([
+                'image' => ['mimes:jpeg,jpg,png']
+            ]);
+
+            if ($event->image_file_id) {
+                Http::withToken($accessToken)->delete("https://www.googleapis.com/drive/v3/files/{$event->image_file_id}");
+            }
+
+            $ditadsFolderId = config('services.google.folder_id');
+            $eventsFolderId = $this->getOrCreateFolder($accessToken, 'events', $ditadsFolderId);
+            $imageFolderId = $this->getOrCreateFolder($accessToken, 'images', $eventsFolderId);
+
+            $file = $request->file('image');
+            $mimeType = $file->getMimeType();
+
+            $metadata = [
+                'name' => 'temp_' . time(),
+                'parents' => [$imageFolderId],
+            ];
+
+            $uploadRes = Http::withToken($accessToken)
+                ->attach('metadata', json_encode($metadata), 'metadata.json', ['Content-Type' => 'application/json'])
+                ->attach('media', file_get_contents($file), $file->getClientOriginalName(), ['Content-Type' => $mimeType])
+                ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
+
+            if ($uploadRes->successful()) {
+                $imageFileId = $uploadRes->json()['id'];
+
+                Http::withToken($accessToken)->patch("https://www.googleapis.com/drive/v3/files/{$imageFileId}", [
+                    'name' => $imageFileId,
+                ]);
+
+                Http::withToken($accessToken)->post("https://www.googleapis.com/drive/v3/files/{$imageFileId}/permissions", [
+                    'role' => 'reader',
+                    'type' => 'anyone',
+                ]);
+
+                $imageUrl = "https://drive.google.com/thumbnail?id={$imageFileId}";
+
+                $event->update(attributes: [
+                    'image' => $imageUrl,
+                    'image_file_id' => $imageFileId,
+                ]);
+            }
+        }
     }
 
     public function paymentMethod()
