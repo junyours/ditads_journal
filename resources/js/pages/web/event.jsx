@@ -99,15 +99,13 @@ export default function Event() {
                                 </span>
                             </div>
                         </SheetHeader>
-                        <div className="max-w-4xl mx-auto space-y-6">
+                        <div className="max-w-2xl mx-auto space-y-6">
                             <div className="space-y-4">
-                                <div className="h-[400px] w-full">
-                                    <img
-                                        src={`https://lh3.googleusercontent.com/d/${event?.image_file_id}`}
-                                        alt={`image`}
-                                        className="object-contain size-full"
-                                    />
-                                </div>
+                                <img
+                                    src={`https://lh3.googleusercontent.com/d/${event?.image_file_id}`}
+                                    alt={`image`}
+                                    className="object-contain"
+                                />
                                 <SheetTitle>{event?.title}</SheetTitle>
                             </div>
                             <FroalaEditorView model={event?.content} />
