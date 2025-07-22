@@ -48,6 +48,7 @@ class WebController extends Controller
     public function event()
     {
         $events = Event::select('title', 'content', 'image_file_id', 'date')
+            ->orderBy('date', 'desc')
             ->get();
 
         return Inertia::render('web/event', [

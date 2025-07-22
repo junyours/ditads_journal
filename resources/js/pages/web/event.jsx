@@ -105,7 +105,7 @@ export default function Event() {
                                     <img
                                         src={`https://lh3.googleusercontent.com/d/${event?.image_file_id}`}
                                         alt={`image`}
-                                        className="object-cover size-full"
+                                        className="object-contain size-full"
                                     />
                                 </div>
                                 <SheetTitle>{event?.title}</SheetTitle>
