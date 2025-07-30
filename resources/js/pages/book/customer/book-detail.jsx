@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import CustomerLayout from "@/layouts/customer-layout";
-import { usePage } from "@inertiajs/react";
+import { router, usePage } from "@inertiajs/react";
 import { Heart, Minus, Plus } from "lucide-react";
 import {
     Accordion,
@@ -8,6 +8,7 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useState } from "react";
 
 export default function BookDetail() {
     const { book } = usePage().props;
@@ -22,11 +23,26 @@ export default function BookDetail() {
             month: "long",
             day: "numeric",
         });
+    const [loading, setLoading] = useState(null);
+
+    const handleAddCart = () => {
+        setLoading(true);
+        router.post(
+            "/cart/add",
+            { bookId: book.id },
+            {
+                preserveScroll: true,
+                onFinish: () => {
+                    setLoading(false);
+                },
+            }
+        );
+    };
 
     return (
-        <div className="space-y-8">
-            <div className="flex gap-4">
-                <div className="bg-muted border max-h-60 max-w-60">
+        <div className="space-y-8 p-4">
+            <div className="flex gap-4 bg-background rounded-lg border p-4">
+                <div className="max-h-60 max-w-60">
                     <img
                         src={`https://lh3.googleusercontent.com/d/${book.cover_file_id}`}
                         alt="cover_page"
@@ -35,62 +51,27 @@ export default function BookDetail() {
                 </div>
                 <div className="flex-1 flex flex-col gap-4 justify-between">
                     <div className="space-y-4">
-                        <h1 className="font-semibold text-2xl">{book.title}</h1>
-                        <div className="space-y-2">
+                        <h1 className="font-semibold text-lg">{book.title}</h1>
+                        <div className="space-y-2 text-sm font-medium">
                             <p>
-                                Author/s:{" "}
-                                <span className="font-medium">
-                                    {book.author}
-                                </span>
+                                Author/s: <span>{book.author}</span>
                             </p>
                             <p>
                                 Price:{" "}
-                                <span className="font-medium">
-                                    {formatCurrency(book.hard_price)}
-                                </span>
+                                <span>{formatCurrency(book.hard_price)}</span>
                             </p>
-                            <div className="flex items-center gap-1">
-                                <span>Quantity:</span>
-                                <div className="flex">
-                                    <Button
-                                        size="icon"
-                                        variant="outline"
-                                        className="rounded-r-none"
-                                    >
-                                        <Minus />
-                                    </Button>
-                                    <div className="min-w-10 px-2 border flex justify-center items-center">
-                                        <span>1</span>
-                                    </div>
-                                    <Button
-                                        size="icon"
-                                        variant="outline"
-                                        className="rounded-l-none"
-                                    >
-                                        <Plus />
-                                    </Button>
-                                </div>
-                            </div>
                         </div>
                     </div>
                     <div className="flex gap-2">
                         <Button
                             onClick={(e) => {
                                 e.preventDefault();
+                                handleAddCart();
                             }}
                             className="min-w-52"
+                            disabled={loading}
                         >
-                            Add to Cart
-                        </Button>
-                        <Button
-                            onClick={(e) => {
-                                e.preventDefault();
-                            }}
-                            size="icon"
-                            variant="ghost"
-                            className="shrink-0"
-                        >
-                            <Heart />
+                            {loading ? "Adding..." : "Add to Cart"}
                         </Button>
                     </div>
                 </div>

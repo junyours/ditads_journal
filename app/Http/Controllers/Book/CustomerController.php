@@ -14,8 +14,10 @@ use Inertia\Inertia;
 
 class CustomerController extends Controller
 {
-    public function book()
+    public function book(Request $request)
     {
+        $search = $request->input('search');
+
         $books = BookPublication::select(
             'id',
             'title',
@@ -26,11 +28,15 @@ class CustomerController extends Controller
             'hard_price',
             'published_at'
         )
+            ->when($search, function ($query, $search) {
+                $query->where('title', 'like', '%' . $search . '%')
+                    ->orWhere('author', 'like', '%' . $search . '%');
+            })
             ->orderBy('published_at', 'desc')
             ->get();
 
         return Inertia::render('book/customer/book', [
-            'books' => $books
+            'books' => $books,
         ]);
     }
 
@@ -65,6 +71,11 @@ class CustomerController extends Controller
     public function profile()
     {
         return Inertia::render('book/customer/account/profile');
+    }
+
+    public function order()
+    {
+        return Inertia::render('book/customer/account/order');
     }
 
     public function cart(Request $request)

@@ -27,9 +27,8 @@ export default function Book() {
     };
 
     return (
-        <div className="flex p-4">
-            <div className="w-full max-w-80"></div>
-            <div className="flex-1 pl-4 space-y-4">
+        <div className="p-4">
+            <div className="flex-1 space-y-4">
                 {books.map((book, index) => (
                     <Link
                         key={book.id}

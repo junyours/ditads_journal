@@ -8,15 +8,21 @@ import {
     DropdownMenu,
     DropdownMenuContent,
     DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage } from "@/components/ui/avatar";
 import User from "../../../public/images/user.png";
+import { useState } from "react";
 
 export default function CustomerLayout({ children }) {
+    const { cartCount } = usePage().props;
+    const params = new URLSearchParams(window.location.search);
     const user = usePage().props.auth.user;
+    const [search, setSearch] = useState(params.get("search") || "");
+
+    const handleSearch = () => {
+        router.get("books", { search });
+    };
 
     return (
         <div className="min-h-screen bg-muted">
@@ -40,8 +46,16 @@ export default function CustomerLayout({ children }) {
                             <span className="text-sm">{user.name}</span>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent>
-                            <DropdownMenuItem>My Account</DropdownMenuItem>
-                            <DropdownMenuItem>My Purchase</DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => router.visit("/account/profile")}
+                            >
+                                My Profile
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() => router.visit("/account/orders")}
+                            >
+                                My Orders
+                            </DropdownMenuItem>
                             <Link
                                 href="/logout"
                                 method="post"
@@ -61,10 +75,16 @@ export default function CustomerLayout({ children }) {
                     <div className="flex items-center justify-end gap-2">
                         <div className="flex-1 flex justify-end">
                             <Input
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
                                 className="max-w-72 rounded-r-none"
                                 placeholder="Search for ISBN, Title, Author/s..."
                             />
-                            <Button size="icon" className="rounded-l-none">
+                            <Button
+                                onClick={handleSearch}
+                                size="icon"
+                                className="rounded-l-none"
+                            >
                                 <Search />
                             </Button>
                         </div>
@@ -76,12 +96,14 @@ export default function CustomerLayout({ children }) {
                             >
                                 <ShoppingCart />
                             </Button>
-                            <Badge
-                                className="absolute -top-2 -right-2 h-5 min-w-5 rounded-full px-1 tabular-nums"
-                                variant="destructive"
-                            >
-                                99
-                            </Badge>
+                            {cartCount > 0 && (
+                                <Badge
+                                    className="absolute -top-2 -right-2 h-5 min-w-5 rounded-full px-1 tabular-nums flex justify-center"
+                                    variant="destructive"
+                                >
+                                    {cartCount}
+                                </Badge>
+                            )}
                         </div>
                     </div>
                 </div>
