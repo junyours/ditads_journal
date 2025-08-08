@@ -14,6 +14,7 @@ import Zenodo from "../../../../../public/images/index-services/Zenodo.png";
 import Crossref from "../../../../../public/images/index-services/Crossref.png";
 import ISI from "../../../../../public/images/index-services/isi.png";
 import EuroPub from "../../../../../public/images/index-services/Euro-Pub.png";
+import Schilit from "../../../../../public/images/index-services/schilit.png";
 
 const images = [
     { name: Google, link: "https://scholar.google.com/" },
@@ -35,6 +36,7 @@ const images = [
     { name: Crossref, link: "https://www.crossref.org/" },
     { name: ISI, link: "https://www.isindexing.com/isi/" },
     { name: EuroPub, link: "https://europub.co.uk/" },
+    { name: Schilit, link: "https://www.scilit.com/" },
 ];
 
 export default function IndexAbstract() {
