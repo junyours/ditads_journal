@@ -285,6 +285,7 @@ class WebController extends Controller
             ->get();
 
         $journals = ResearchJournal::select(
+            'id',
             'volume',
             'issue',
             'title',
@@ -334,6 +335,29 @@ class WebController extends Controller
             'archives' => $archives,
             'activeVolume' => $volume,
             'activeIssue' => $issue,
+        ]);
+    }
+
+    public function viewJournalIMRJ($id)
+    {
+        $journal = ResearchJournal::select(
+            'id',
+            'volume',
+            'issue',
+            'title',
+            'author',
+            'abstract',
+            'pdf_file',
+            'published_at',
+            'country',
+            'page_number',
+            'doi',
+            'type'
+        )
+            ->findOrFail($id);
+
+        return Inertia::render('web/imrj-journal/view-journal', [
+            'journal' => $journal
         ]);
     }
 

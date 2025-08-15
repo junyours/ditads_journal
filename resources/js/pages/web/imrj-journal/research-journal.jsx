@@ -1,6 +1,5 @@
 import PDF from "../../../../../public/images/pdf.png";
 import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetHeader } from "@/components/ui/sheet";
 import { useState } from "react";
 import { MoveRight } from "lucide-react";
 import { router } from "@inertiajs/react";
@@ -18,21 +17,10 @@ export default function ResearchJournal({
     activeVolume,
     activeIssue,
 }) {
-    const [open, setOpen] = useState(false);
-    const [journal, setJournal] = useState(null);
     const [selectedArchive, setSelectedArchive] = useState({
         volume: activeVolume,
         issue: activeIssue,
     });
-
-    const handleOpen = (journal = null) => {
-        if (journal) {
-            setJournal(journal);
-        } else {
-            setJournal(null);
-        }
-        setOpen(!open);
-    };
 
     const handleArchiveClick = (volume, issue) => {
         setSelectedArchive({ volume, issue });
@@ -120,7 +108,11 @@ export default function ResearchJournal({
                             </p>
                             <div className="flex items-center">
                                 <Button
-                                    onClick={() => handleOpen(journal)}
+                                    onClick={() =>
+                                        router.visit(
+                                            `/research-journal/imrj/${journal.id}`
+                                        )
+                                    }
                                     size="sm"
                                     variant="ghost"
                                 >
@@ -162,69 +154,6 @@ export default function ResearchJournal({
                     </div>
                 </div>
             </div>
-
-            <Sheet open={open} onOpenChange={() => handleOpen()}>
-                <SheetContent
-                    side="bottom"
-                    className="h-full overflow-y-auto space-y-4 text-sm"
-                >
-                    <SheetHeader>
-                        <h1 className="text-blue-600 font-medium uppercase">
-                            {journal?.title}
-                        </h1>
-                    </SheetHeader>
-                    <div className="sm:flex gap-1">
-                        <p className="font-bold">Author/s:</p>
-                        <p>{journal?.author}</p>
-                    </div>
-                    <div className="sm:flex gap-1">
-                        <p className="font-bold">Country:</p>
-                        <p>{journal?.country}</p>
-                    </div>
-                    <div className="sm:flex gap-1">
-                        <p className="font-bold">Volume & Issue:</p>
-                        <div className="sm:flex gap-1 font-medium">
-                            <p>Volume: {journal?.volume},</p>
-                            <p>Issue: {journal?.issue},</p>
-                            <p>
-                                {new Date(journal?.published_at).toLocaleString(
-                                    "en-US",
-                                    {
-                                        month: "long",
-                                        year: "numeric",
-                                    }
-                                )}
-                            </p>
-                        </div>
-                    </div>
-                    <div className="sm:flex gap-1">
-                        <p className="font-bold">Page No.:</p>
-                        <p>{journal?.page_number}</p>
-                    </div>
-                    <div className="sm:flex gap-1">
-                        <p className="font-bold">DOI:</p>
-                        <a
-                            href={journal?.doi}
-                            target="_blank"
-                            className="hover:underline"
-                        >
-                            {journal?.doi}
-                        </a>
-                    </div>
-                    <div className="flex flex-col gap-1">
-                        <h1 className="font-bold">Abstract:</h1>
-                        <p
-                            className="text-justify whitespace-pre-line sm:px-2"
-                            dangerouslySetInnerHTML={{
-                                __html: journal?.abstract.replace(
-                                    /(Aims:|Methodology:|Study Design:|Results?:|Conclusion:|Keywords?:)/g,
-                                    '<span class="font-semibold">$1</span>'
-                                ),
-                            }}
-                        />
-                    </div>
-                </SheetContent>
-            </Sheet>
         </>
     );
 }

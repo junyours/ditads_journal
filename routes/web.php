@@ -81,6 +81,7 @@ Route::get('/flip-magazine/{hash}', [WebController::class, 'viewFlipMagazine']);
 Route::get('/magazine', [WebController::class, 'magazine']);
 Route::redirect('/research-journal', '/research-journal/imrj');
 Route::get('/research-journal/imrj', [WebController::class, 'IMRJ']);
+Route::get('/research-journal/imrj/{id}', [WebController::class, 'viewJournalIMRJ']);
 Route::get('/research-journal/jebmpa', [WebController::class, 'JEBMPA']);
 Route::get('/IMRJ/{path}', [WebController::class, 'viewIMRJ'])->where('path', '.*');
 Route::get('/JEBMPA/{path}', [WebController::class, 'viewJEBMPA'])->where('path', '.*');
