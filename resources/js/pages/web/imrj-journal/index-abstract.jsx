@@ -17,17 +17,17 @@ import EuroPub from "../../../../../public/images/index-services/Euro-Pub.png";
 import Schilit from "../../../../../public/images/index-services/schilit.png";
 
 const images = [
-    { name: Google, link: "https://scholar.google.com/" },
+    { name: Google, link: "https://scholar.google.com/citations?user=CaBuTTQAAAAJ&hl=en" },
     { name: ORCID, link: "https://orcid.org/" },
     { name: Zenodo, link: "https://zenodo.org/" },
-    { name: Academia, link: "https://www.academia.edu/" },
+    { name: Academia, link: "https://independent.academia.edu/BationN" },
     { name: Bielefeld, link: "https://www.base-search.net/" },
-    { name: Mendeley, link: "https://doaj.org/" },
+    { name: Mendeley, link: "https://www.mendeley.com/" },
     // { name: DOAJ, link: "https://doaj.org/" },
     { name: Index, link: "https://journals.indexcopernicus.com/" },
-    { name: ISSUU, link: "https://issuu.com/" },
+    { name: ISSUU, link: "https://issuu.com/ditadsimrj" },
     { name: Scribd, link: "https://www.scribd.com/" },
-    { name: Semantic, link: "https://www.semanticscholar.org/" },
+    { name: Semantic, link: "https://www.semanticscholar.org/search?q=dit%20ads&sort=relevance" },
     // {
     //     name: Web,
     //     link: "https://clarivate.com/academia-government/scientific-and-academic-research/research-discovery-and-referencing/web-of-science/",
@@ -35,7 +35,7 @@ const images = [
     { name: WorldCat, link: "https://search.worldcat.org/" },
     { name: Crossref, link: "https://www.crossref.org/" },
     { name: ISI, link: "https://www.isindexing.com/isi/" },
-    { name: EuroPub, link: "https://europub.co.uk/" },
+    { name: EuroPub, link: "https://europub.co.uk/journals/ditads-international-multidisciplinary-research-journal-J-32589#articles" },
     { name: Schilit, link: "https://www.scilit.com/" },
 ];
 
