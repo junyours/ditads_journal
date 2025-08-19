@@ -3,6 +3,7 @@
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="google-site-verification" content="R_0o7TCe9W3RXtB8e3fkpcH7GebAtjpzwDacgcG0tpU" />
         <link rel="shortcut icon" href="/images/ditads-logo.png" type="image/x-icon" />
 
         <title inertia>{{ config('app.name') }}</title>
