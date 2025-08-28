@@ -5,6 +5,8 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\WebController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use Spatie\Sitemap\Sitemap;
+use Spatie\Sitemap\Tags\Url;
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/settings/profile', [SettingController::class, 'profile']);
@@ -89,6 +91,20 @@ Route::get('/JEBMPA/{path}', [WebController::class, 'viewJEBMPA'])->where('path'
 Route::get('/view-book/{path}', [WebController::class, 'viewBook'])->where('path', '.*');
 Route::get('/view-magazine/{path}', [WebController::class, 'viewMagazine'])->where('path', '.*');
 Route::get('/contact-us', [WebController::class, 'contactUs']);
+
+Route::get('/sitemap.xml', function () {
+    return Sitemap::create()
+        ->add(Url::create('/'))
+        ->add(Url::create('/about-us'))
+        ->add(Url::create('/events'))
+        ->add(Url::create('/research-consultant'))
+        ->add(Url::create('/book-publication'))
+        ->add(Url::create('/magazine'))
+        ->add(Url::create('/research-journal/imrj'))
+        ->add(Url::create('/research-journal/jebmpa'))
+        ->add(Url::create('/contact-us'))
+        ->toResponse(request());
+});
 
 require __DIR__ . '/auth.php';
 require __DIR__ . '/journal.php';
