@@ -25,7 +25,7 @@ return [
 
         'url' => env('INERTIA_SSR_URL', 'http://127.0.0.1:13714'),
 
-        'bundle' => base_path('bootstrap/ssr/ssr.mjs'),
+        // 'bundle' => base_path('bootstrap/ssr/ssr.mjs'),
 
     ],
 
@@ -47,7 +47,7 @@ return [
 
         'page_paths' => [
 
-            resource_path('js/Pages'),
+            resource_path('js/pages'),
 
         ],
 
