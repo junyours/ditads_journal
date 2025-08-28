@@ -79,7 +79,7 @@ const items = [
 export default function WebNavbar({ open, onOpenChange }) {
     const isMobile = useIsMobile();
     const user = usePage().props.auth.user;
-    const currentPath = window.location.pathname;
+    const { url } = usePage();
 
     return (
         <div className="flex justify-center">
@@ -89,7 +89,11 @@ export default function WebNavbar({ open, onOpenChange }) {
                         <div className="p-2 space-y-2">
                             {items.map((item, index) =>
                                 item.collapse ? (
-                                    <Accordion type="single" collapsible>
+                                    <Accordion
+                                        key={item.title}
+                                        type="single"
+                                        collapsible
+                                    >
                                         <AccordionItem
                                             value={`item-${index}`}
                                             className="border-none"
@@ -114,7 +118,7 @@ export default function WebNavbar({ open, onOpenChange }) {
                                                             }}
                                                             variant="ghost"
                                                             className={`justify-start text-start text-wrap w-full ${
-                                                                currentPath ===
+                                                                url ===
                                                                 subItem.url
                                                                     ? "text-primary"
                                                                     : ""
@@ -137,7 +141,7 @@ export default function WebNavbar({ open, onOpenChange }) {
                                             }}
                                             variant="ghost"
                                             className={`justify-start w-full ${
-                                                currentPath === item.url
+                                                url === item.url
                                                     ? "text-primary"
                                                     : ""
                                             }`}
@@ -185,7 +189,7 @@ export default function WebNavbar({ open, onOpenChange }) {
                                             Sign in
                                         </Button>
                                     </Link>
-                                    {/* {currentPath === "/book-publication" && (
+                                    {/* {url === "/book-publication" && (
                                         <Link href="/book/sign-up">
                                             <Button
                                                 onClick={() => {
@@ -199,7 +203,7 @@ export default function WebNavbar({ open, onOpenChange }) {
                                             </Button>
                                         </Link>
                                     )}
-                                    {currentPath === "/research-journal" && (
+                                    {url === "/research-journal" && (
                                         <Link href="/journal/sign-up">
                                             <Button
                                                 onClick={() => {
@@ -221,7 +225,7 @@ export default function WebNavbar({ open, onOpenChange }) {
             ) : (
                 items.map((item) =>
                     item.collapse ? (
-                        <NavigationMenu>
+                        <NavigationMenu key={item.title}>
                             <NavigationMenuList>
                                 <NavigationMenuItem key={item.title}>
                                     <NavigationMenuTrigger>
@@ -231,10 +235,10 @@ export default function WebNavbar({ open, onOpenChange }) {
                                         <div className="grid w-[350px] gap-4 p-4">
                                             {item.items.map((subItem) => (
                                                 <NavigationMenuLink
+                                                    key={subItem.title}
                                                     asChild
                                                     className={`flex items-center gap-2 text-sm hover:bg-muted p-2 rounded-lg ${
-                                                        currentPath ===
-                                                        subItem.url
+                                                        url === subItem.url
                                                             ? "text-primary hover:text-primary focus:text-primary"
                                                             : ""
                                                     }`}
@@ -261,14 +265,14 @@ export default function WebNavbar({ open, onOpenChange }) {
                             </NavigationMenuList>
                         </NavigationMenu>
                     ) : (
-                        <NavigationMenu>
+                        <NavigationMenu key={item.title}>
                             <NavigationMenuList>
-                                <NavigationMenuItem key={item.title}>
+                                <NavigationMenuItem>
                                     <NavigationMenuLink
                                         asChild
                                         className={navigationMenuTriggerStyle({
                                             className:
-                                                currentPath === item.url
+                                                url === item.url
                                                     ? "text-primary hover:text-primary focus:text-primary"
                                                     : "",
                                         })}

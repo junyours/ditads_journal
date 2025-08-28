@@ -1,4 +1,4 @@
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import DitadsLogo from "./ditads-logo";
 
 const items = [
@@ -66,7 +66,7 @@ const items = [
 ];
 
 export default function WebFooter() {
-    const currentPath = window.location.pathname;
+    const { url } = usePage();
 
     const filteredItems = items.map((item) => {
         if (item.title === "Contact Us") {
@@ -80,19 +80,19 @@ export default function WebFooter() {
                         subitem.name ===
                         "ditadsimrj@ditadsinternationalmultidisciplinaryresearchjournal.net"
                     ) {
-                        return currentPath.includes("research-journal/imrj");
+                        return url.includes("research-journal/imrj");
                     }
 
                     // Only show JEBMPA email if on the JEBMPA page
                     if (subitem.name === "editorinchief@ditadsjebmpa.com") {
-                        return currentPath.includes("research-journal/jebmpa");
+                        return url.includes("research-journal/jebmpa");
                     }
 
                     // Show default email on all other pages
                     if (subitem.name === "ditads@infosheet.dev") {
                         return (
-                            !currentPath.includes("research-journal/imrj") &&
-                            !currentPath.includes("research-journal/jebmpa")
+                            !url.includes("research-journal/imrj") &&
+                            !url.includes("research-journal/jebmpa")
                         );
                     }
 
@@ -150,7 +150,7 @@ export default function WebFooter() {
                         ))}
                     </div>
                 </div>
-                {currentPath === "/research-journal/imrj" && (
+                {url === "/research-journal/imrj" && (
                     <div className="text-center mt-4">
                         <a
                             href="https://ditadsresearchcenter.com/research-journal/imrj"

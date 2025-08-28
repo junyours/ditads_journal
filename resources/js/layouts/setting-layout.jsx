@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 
 const items = [
     {
@@ -14,7 +14,7 @@ const items = [
 ];
 
 export default function SettingLayout({ children }) {
-    const currentPath = window.location.pathname;
+    const { url } = usePage();
 
     return (
         <div className="flex max-lg:flex-col gap-4">
@@ -25,7 +25,7 @@ export default function SettingLayout({ children }) {
                         variant="ghost"
                         asChild
                         className={cn("w-full justify-start", {
-                            "bg-muted": currentPath === item.href,
+                            "bg-muted": url === item.href,
                         })}
                     >
                         <Link href={item.href}>{item.title}</Link>

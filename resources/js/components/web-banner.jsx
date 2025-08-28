@@ -9,7 +9,7 @@ import { usePage } from "@inertiajs/react";
 import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function WebBanner({ images }) {
-    const currentPath = window.location.pathname;
+    const { url } = usePage();
     const user = usePage().props.auth.user;
     const isMobile = useIsMobile();
 
@@ -44,7 +44,7 @@ export default function WebBanner({ images }) {
                 alt="image-0"
                 className="w-full object-contain"
             />
-            {currentPath === "/research-journal" &&
+            {url === "/research-journal" &&
                 (!user || user.role === "author") && (
                     <div className="absolute right-2 bottom-2 sm:right-4 sm:bottom-4">
                         <a href="mailto:ditadsimrj@ditadsinternationalmultidisciplinaryresearchjournal.net">

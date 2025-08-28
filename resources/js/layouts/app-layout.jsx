@@ -12,10 +12,10 @@ import { useEffect } from "react";
 export default function AppLayout({ children, title = "" }) {
     const user = usePage().props.auth.user;
     const { setOpen } = useSecurity();
-    const currentPath = usePage().url;
+    const { url } = usePage();
 
     useEffect(() => {
-        if (user.is_default === 1 && currentPath !== "/settings/password") {
+        if (user.is_default === 1 && url !== "/settings/password") {
             setOpen(true);
         } else {
             setOpen(false);

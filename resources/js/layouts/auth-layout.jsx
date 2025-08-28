@@ -1,11 +1,11 @@
 import DitadsLogo from "@/components/ditads-logo";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import JournalLogo from "../../../public/images/journal-logo.png";
 
 export default function AuthLayout({ children, title = "", description = "" }) {
     const isMobile = useIsMobile();
-    const currentPath = window.location.pathname;
+    const { url } = usePage();
 
     return isMobile ? (
         <div className="flex min-h-svh flex-col items-center justify-center gap-6 p-4">
@@ -42,7 +42,7 @@ export default function AuthLayout({ children, title = "", description = "" }) {
                 </div>
             </div>
             <div className="bg-muted flex-1 flex items-center justify-center">
-                {currentPath === "/journal/sign-up" ? (
+                {url === "/journal/sign-up" ? (
                     <Link href="/research-journal">
                         <img
                             src={JournalLogo}

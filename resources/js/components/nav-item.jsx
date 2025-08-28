@@ -15,7 +15,7 @@ import {
     useSidebar,
 } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { Link } from "@inertiajs/react";
+import { Link, usePage } from "@inertiajs/react";
 import {
     BookHeart,
     BookOpenText,
@@ -261,7 +261,7 @@ const navCustomer = [
 export function NavItem({ user }) {
     const { setOpenMobile } = useSidebar();
     const isMobile = useIsMobile();
-    const currentPath = window.location.pathname;
+    const { url } = usePage();
 
     const navGroups =
         (user.role === "admin" && navAdmin) ||
@@ -280,7 +280,7 @@ export function NavItem({ user }) {
                             asChild
                             className="group/collapsible"
                             defaultOpen={
-                                currentPath.startsWith(item.url) ? true : false
+                                url.startsWith(item.url) ? true : false
                             }
                         >
                             <SidebarMenuItem>
@@ -305,7 +305,7 @@ export function NavItem({ user }) {
                                                 <SidebarMenuSubButton
                                                     asChild
                                                     isActive={
-                                                        currentPath.startsWith(
+                                                        url.startsWith(
                                                             item.url +
                                                                 subitem.url
                                                         )
@@ -343,9 +343,7 @@ export function NavItem({ user }) {
                                 tooltip={item.title}
                                 asChild
                                 isActive={
-                                    currentPath.startsWith(item.url)
-                                        ? true
-                                        : false
+                                    url.startsWith(item.url) ? true : false
                                 }
                             >
                                 <Link href={item.url}>
