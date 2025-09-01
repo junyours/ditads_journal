@@ -1,6 +1,6 @@
 import WebLayout from "@/layouts/web-layout";
 import BookPublicationBanner from "../../../../../public/images/book-publication-banner.png";
-import { Link, router, usePage } from "@inertiajs/react";
+import { Head, Link, router, usePage } from "@inertiajs/react";
 import {
     Card,
     CardContent,
@@ -78,6 +78,8 @@ export default function BookPublication() {
 
     return (
         <>
+            <Head title="Book Publication" />
+
             <div className="space-y-4 mt-4">
                 <Carousel
                     opts={{ loop: true }}

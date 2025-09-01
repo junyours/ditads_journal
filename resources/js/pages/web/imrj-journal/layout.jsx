@@ -12,7 +12,7 @@ import SubmissionGuideline from "./submission-guideline";
 import ReviewProcess from "./review-process";
 import EditorialBoard from "./editorial-board";
 import ResearchJournal from "./research-journal";
-import { usePage } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
 import AboutPublisher from "./about-publisher";
 import IndexAbstract from "./index-abstract";
 import Download from "./download";
@@ -76,42 +76,53 @@ export default function JournalLayout() {
     ];
 
     return (
-        <div className="container mx-auto p-4 flex gap-4 max-lg:flex-col-reverse">
-            <div className="flex-1">
-                <Accordion type="single" collapsible>
-                    {contents.map((content, index) => (
-                        <AccordionItem key={index} value={`item-${index}`}>
-                            <AccordionTrigger>{content.title}</AccordionTrigger>
-                            <AccordionContent>
-                                <content.page {...(content.props || {})} />
-                            </AccordionContent>
-                        </AccordionItem>
-                    ))}
-                </Accordion>
-            </div>
-            <div className="h-fit w-full border sm:flex lg:max-w-96 lg:flex-col">
-                <div className="flex items-center justify-center">
-                    <img src={SDG} alt="sdg-logo" className="object-contain" />
+        <>
+            <Head title="Research Journal IMRJ" />
+
+            <div className="container mx-auto p-4 flex gap-4 max-lg:flex-col-reverse">
+                <div className="flex-1">
+                    <Accordion type="single" collapsible>
+                        {contents.map((content, index) => (
+                            <AccordionItem key={index} value={`item-${index}`}>
+                                <AccordionTrigger>
+                                    {content.title}
+                                </AccordionTrigger>
+                                <AccordionContent>
+                                    <content.page {...(content.props || {})} />
+                                </AccordionContent>
+                            </AccordionItem>
+                        ))}
+                    </Accordion>
                 </div>
-                <p className="text-justify p-4 text-sm">
-                    <span className="font-semibold">
-                        Sustainability Commitment Statement
-                    </span>
-                    : All journals published under DIT.ADS International
-                    Multidisciplinary Research Journal (DIT.ADS IMRJ) are fully
-                    aligned with the 17 Sustainable Development Goals (SDGs) of
-                    the United Nations. We actively encourage and prioritize
-                    research that contributes to addressing global challenges
-                    such as poverty eradication, quality education, climate
-                    action, clean energy, sustainable communities, responsible
-                    consumption, and partnerships for the goals. By embedding
-                    the SDGs into our publication framework, we ensure that our
-                    journals serve as platforms for knowledge that transforms
-                    society, promotes inclusive growth, and advances global
-                    sustainability.
-                </p>
+                <div className="h-fit w-full border sm:flex lg:max-w-96 lg:flex-col">
+                    <div className="flex items-center justify-center">
+                        <img
+                            src={SDG}
+                            alt="sdg-logo"
+                            className="object-contain"
+                        />
+                    </div>
+                    <p className="text-justify p-4 text-sm">
+                        <span className="font-semibold">
+                            Sustainability Commitment Statement
+                        </span>
+                        : All journals published under DIT.ADS International
+                        Multidisciplinary Research Journal (DIT.ADS IMRJ) are
+                        fully aligned with the 17 Sustainable Development Goals
+                        (SDGs) of the United Nations. We actively encourage and
+                        prioritize research that contributes to addressing
+                        global challenges such as poverty eradication, quality
+                        education, climate action, clean energy, sustainable
+                        communities, responsible consumption, and partnerships
+                        for the goals. By embedding the SDGs into our
+                        publication framework, we ensure that our journals serve
+                        as platforms for knowledge that transforms society,
+                        promotes inclusive growth, and advances global
+                        sustainability.
+                    </p>
+                </div>
             </div>
-        </div>
+        </>
     );
 }
 

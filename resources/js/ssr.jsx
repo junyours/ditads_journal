@@ -4,11 +4,13 @@ import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import ReactDOMServer from "react-dom/server";
 import { route } from "../../vendor/tightenco/ziggy";
 
+const appName = import.meta.env.VITE_APP_NAME;
+
 createServer((page) =>
     createInertiaApp({
         page,
         render: ReactDOMServer.renderToString,
-        title: () => import.meta.env.VITE_APP_NAME,
+        title: (title) => (title ? `${title} - ${appName}` : appName),
         resolve: (name) =>
             resolvePageComponent(
                 `./pages/${name}.jsx`,

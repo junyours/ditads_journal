@@ -1,6 +1,6 @@
 import WebLayout from "@/layouts/web-layout";
 import ResearchConsultantBanner from "../../../../public/images/research-consultant-banner.png";
-import { usePage } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
 import {
     Card,
     CardDescription,
@@ -27,52 +27,62 @@ export default function ResearchConsultant() {
     }));
 
     return (
-        <div className="space-y-4 p-4">
-            {groupedConsultants.map(
-                ({ position, members }) =>
-                    members.length > 0 && (
-                        <div key={position}>
-                            <h1 className="text-base font-semibold mb-2">
-                                {position}
-                            </h1>
-                            <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                                {members.map((consultant, index) => (
-                                    <Card key={index} className="shadow-none">
-                                        <div className="h-[250px] w-full">
-                                            <img
-                                                src={consultant.avatar ?? User}
-                                                alt="avatar"
-                                                className="object-contain size-full rounded-t-lg"
-                                            />
-                                        </div>
-                                        <CardHeader className="space-y-4">
-                                            <div className="space-y-2">
-                                                <div>
-                                                    <h1 className="font-medium">
-                                                        {consultant.name}
-                                                    </h1>
-                                                    <a
-                                                        href={`mailto:${consultant.email}`}
-                                                        className="text-xs hover:underline"
-                                                    >
-                                                        {consultant.email}
-                                                    </a>
-                                                </div>
-                                                <CardTitle>
-                                                    {consultant.position}
-                                                </CardTitle>
+        <>
+            <Head title="Research Consultant" />
+
+            <div className="space-y-4 p-4">
+                {groupedConsultants.map(
+                    ({ position, members }) =>
+                        members.length > 0 && (
+                            <div key={position}>
+                                <h1 className="text-base font-semibold mb-2">
+                                    {position}
+                                </h1>
+                                <div className="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                                    {members.map((consultant, index) => (
+                                        <Card
+                                            key={index}
+                                            className="shadow-none"
+                                        >
+                                            <div className="h-[250px] w-full">
+                                                <img
+                                                    src={
+                                                        consultant.avatar ??
+                                                        User
+                                                    }
+                                                    alt="avatar"
+                                                    className="object-contain size-full rounded-t-lg"
+                                                />
                                             </div>
-                                            <CardDescription>
-                                                {consultant.department}
-                                            </CardDescription>
-                                        </CardHeader>
-                                    </Card>
-                                ))}
+                                            <CardHeader className="space-y-4">
+                                                <div className="space-y-2">
+                                                    <div>
+                                                        <h1 className="font-medium">
+                                                            {consultant.name}
+                                                        </h1>
+                                                        <a
+                                                            href={`mailto:${consultant.email}`}
+                                                            className="text-xs hover:underline"
+                                                        >
+                                                            {consultant.email}
+                                                        </a>
+                                                    </div>
+                                                    <CardTitle>
+                                                        {consultant.position}
+                                                    </CardTitle>
+                                                </div>
+                                                <CardDescription>
+                                                    {consultant.department}
+                                                </CardDescription>
+                                            </CardHeader>
+                                        </Card>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                    )
-            )}
-        </div>
+                        )
+                )}
+            </div>
+        </>
     );
 }
 

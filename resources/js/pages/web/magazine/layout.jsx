@@ -10,7 +10,7 @@ import AimScope from "./aim-scope";
 import ReviewProcess from "./review-process";
 import EditorialBoard from "./editorial-board";
 import Magazine from "./magazine";
-import { usePage } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
 import AboutMagazine from "./about-magazine";
 import AboutPublisher from "./about-publisher";
 import AboutLogo from "./about-logo";
@@ -65,18 +65,22 @@ export default function MagazineLayout() {
     ];
 
     return (
-        <div className="container mx-auto p-4">
-            <Accordion type="single" collapsible>
-                {contents.map((content, index) => (
-                    <AccordionItem key={index} value={`item-${index}`}>
-                        <AccordionTrigger>{content.title}</AccordionTrigger>
-                        <AccordionContent>
-                            <content.page {...(content.props || {})} />
-                        </AccordionContent>
-                    </AccordionItem>
-                ))}
-            </Accordion>
-        </div>
+        <>
+            <Head title="Magazine" />
+
+            <div className="container mx-auto p-4">
+                <Accordion type="single" collapsible>
+                    {contents.map((content, index) => (
+                        <AccordionItem key={index} value={`item-${index}`}>
+                            <AccordionTrigger>{content.title}</AccordionTrigger>
+                            <AccordionContent>
+                                <content.page {...(content.props || {})} />
+                            </AccordionContent>
+                        </AccordionItem>
+                    ))}
+                </Accordion>
+            </div>
+        </>
     );
 }
 

@@ -10,21 +10,13 @@ const banners = [DitadsBanner, MagazineBanner, JournalBanner, JEBMPABanner];
 export default function Welcome() {
     return (
         <>
-            <Head title="Welcome | ZAS Digital Institute Training and Development Services">
+            <Head title="Welcome">
                 <meta
                     name="description"
                     content="DIT.ADS provides research consultancy, statistics and data analysis, feasibility studies, business planning, seminars, and workshops in Cagayan de Oro and beyond."
                 />
-                <meta
-                    property="og:title"
-                    content="ZAS Digital Institute Training and Development Services"
-                />
-                <meta
-                    property="og:description"
-                    content="Empowering students, teachers, and businesses through research, consultancy, training, and development services."
-                />
-                <meta property="og:type" content="website" />
             </Head>
+
             <div className="max-w-4xl mx-auto p-4">
                 <h1 className="text-center font-black text-4xl text-primary">
                     ZAS DIGITAL INSTITUTE TRAINING AND DEVELOPMENT SERVICES

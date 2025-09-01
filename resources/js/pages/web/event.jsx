@@ -2,7 +2,7 @@ import WebLayout from "@/layouts/web-layout";
 import { useState } from "react";
 import FroalaEditorView from "react-froala-wysiwyg/FroalaEditorView";
 import EventBanner from "../../../../public/images/event-banner.png";
-import { usePage } from "@inertiajs/react";
+import { Head, usePage } from "@inertiajs/react";
 import {
     Card,
     CardContent,
@@ -43,6 +43,8 @@ export default function Event() {
 
     return (
         <>
+            <Head title="Events" />
+
             <div className="container mx-auto p-4">
                 <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {events.map((event, index) => (
