@@ -9,7 +9,6 @@
 
     <title inertia>{{ config('app.name') }}</title>
 
-    <!-- Scholar meta tags -->
     @if(isset($journal))
         <meta name="citation_title" content="{{ $journal->title }}">
         @foreach(explode(',', $journal->author) as $author)
@@ -19,16 +18,17 @@
             content="{{ \Carbon\Carbon::parse($journal->published_at)->format('Y/m/d') }}">
         <meta name="citation_volume" content="{{ $journal->volume }}">
         <meta name="citation_issue" content="{{ $journal->issue }}">
-        <meta name="citation_journal_title" content="International Multidisciplinary Research Journal">
+        <meta name="citation_journal_title" content="{{ $journal->type === 'imrj'
+            ? 'DIT.ADS International Multidisciplinary Research Journal'
+            : 'DIT.ADS Journal of Economics, Business Management, and Public Administration' 
+                    }}">
         <meta name="citation_pdf_url"
             content="{{ url(($journal->type === 'imrj' ? 'IMRJ/' : 'JEBMPA/') . $journal->pdf_file) }}">
     @endif
 
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800,900&display=swap" rel="stylesheet" />
 
-    <!-- Scripts -->
     @routes
     @viteReactRefresh
     @vite(['resources/js/app.jsx', "resources/js/pages/{$page['component']}.jsx"])
