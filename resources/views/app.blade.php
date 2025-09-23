@@ -1,24 +1,42 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
-    <head>
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-        <meta name="google-site-verification" content="R_0o7TCe9W3RXtB8e3fkpcH7GebAtjpzwDacgcG0tpU" />
-        <link rel="shortcut icon" href="/images/ditads-logo.png" type="image/x-icon" />
 
-        <title inertia>{{ config('app.name') }}</title>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="google-site-verification" content="R_0o7TCe9W3RXtB8e3fkpcH7GebAtjpzwDacgcG0tpU" />
+    <link rel="shortcut icon" href="/images/ditads-logo.png" type="image/x-icon" />
 
-        <!-- Fonts -->
-        <link rel="preconnect" href="https://fonts.bunny.net">
-        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800,900&display=swap" rel="stylesheet" />
+    <title inertia>{{ config('app.name') }}</title>
 
-        <!-- Scripts -->
-        @routes
-        @viteReactRefresh
-        @vite(['resources/js/app.jsx', "resources/js/pages/{$page['component']}.jsx"])
-        @inertiaHead
-    </head>
-    <body class="font-sans antialiased">
-        @inertia
-    </body>
+    <!-- Scholar meta tags -->
+    @if(isset($journal))
+        <meta name="citation_title" content="{{ $journal->title }}">
+        @foreach(explode(',', $journal->author) as $author)
+            <meta name="citation_author" content="{{ trim($author) }}">
+        @endforeach
+        <meta name="citation_publication_date"
+            content="{{ \Carbon\Carbon::parse($journal->published_at)->format('Y/m/d') }}">
+        <meta name="citation_volume" content="{{ $journal->volume }}">
+        <meta name="citation_issue" content="{{ $journal->issue }}">
+        <meta name="citation_journal_title" content="International Multidisciplinary Research Journal">
+        <meta name="citation_pdf_url"
+            content="{{ url(($journal->type === 'imrj' ? 'IMRJ/' : 'JEBMPA/') . $journal->pdf_file) }}">
+    @endif
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800,900&display=swap" rel="stylesheet" />
+
+    <!-- Scripts -->
+    @routes
+    @viteReactRefresh
+    @vite(['resources/js/app.jsx', "resources/js/pages/{$page['component']}.jsx"])
+    @inertiaHead
+</head>
+
+<body class="font-sans antialiased">
+    @inertia
+</body>
+
 </html>

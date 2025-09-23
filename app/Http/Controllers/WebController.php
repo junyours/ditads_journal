@@ -28,8 +28,8 @@ class WebController extends Controller
             'grant_type' => 'refresh_token',
         ]);
 
-        if (!$response->successful()) {
-            throw new \Exception('Failed to get Google access token: ' . $response->body());
+        if (! $response->successful()) {
+            throw new \Exception('Failed to get Google access token: '.$response->body());
         }
 
         return $response->json()['access_token'];
@@ -52,7 +52,7 @@ class WebController extends Controller
             ->get();
 
         return Inertia::render('web/event', [
-            'events' => $events
+            'events' => $events,
         ]);
     }
 
@@ -64,7 +64,7 @@ class WebController extends Controller
             ->get();
 
         return Inertia::render('web/research-consultant', [
-            'consultants' => $consultants
+            'consultants' => $consultants,
         ]);
     }
 
@@ -76,7 +76,7 @@ class WebController extends Controller
         if ($user?->role === 'author') {
             $bookIds = AuthorBook::where('author_id', $user->id)
                 ->pluck('book_publication_id');
-        } else if ($user?->role === 'customer') {
+        } elseif ($user?->role === 'customer') {
             $bookIds = CustomerBook::where('customer_id', $user->id)
                 ->pluck(column: 'book_publication_id');
         }
@@ -116,6 +116,7 @@ class WebController extends Controller
             ->paginate(100)
             ->through(function ($book) use ($bookIds) {
                 $book->has_access = $bookIds->contains($book->id);
+
                 return $book;
             })
             ->withQueryString();
@@ -123,30 +124,32 @@ class WebController extends Controller
         return Inertia::render('web/book/book-publication', [
             'books' => $books,
             'covers' => $covers,
-            'search' => $search
+            'search' => $search,
         ]);
     }
 
     public function generateBookHash($soft_isbn, $hard_isbn)
     {
         $secret = config('app.key');
-        return hash_hmac('sha256', $soft_isbn . '|' . $hard_isbn, $secret);
+
+        return hash_hmac('sha256', $soft_isbn.'|'.$hard_isbn, $secret);
     }
 
     public function viewFlipBook(Request $request, $hash)
     {
         $user = $request->user();
 
-        if (!$user) {
+        if (! $user) {
             abort(401);
         }
 
         $book = BookPublication::get()->first(function ($book) use ($hash) {
             $generated = $this->generateBookHash($book->soft_isbn, $book->hard_isbn);
+
             return hash_equals($generated, $hash);
         });
 
-        if (!$book) {
+        if (! $book) {
             abort(404);
         }
 
@@ -155,19 +158,20 @@ class WebController extends Controller
                 ->where('book_publication_id', $book->id)
                 ->exists();
 
-            if (!$hasAccess) {
+            if (! $hasAccess) {
                 abort(403, 'Unauthorized access to this book');
             }
         }
 
         return Inertia::render('web/book/view-book', [
-            'book' => $book->pdf_file
+            'book' => $book->pdf_file,
         ]);
     }
 
     public function generateMagazineHash($cover_file_id)
     {
         $secret = config('app.key');
+
         return hash_hmac('sha256', $cover_file_id, $secret);
     }
 
@@ -175,15 +179,16 @@ class WebController extends Controller
     {
         $magazine = Magazine::get()->first(function ($magazine) use ($hash) {
             $generated = $this->generateMagazineHash($magazine->cover_file_id);
+
             return hash_equals($generated, $hash);
         });
 
-        if (!$magazine) {
+        if (! $magazine) {
             abort(404);
         }
 
         return Inertia::render('web/magazine/view-magazine', [
-            'magazine' => $magazine->pdf_file
+            'magazine' => $magazine->pdf_file,
         ]);
     }
 
@@ -192,7 +197,7 @@ class WebController extends Controller
         $volume = $request->query('volume');
         $issue = $request->query('issue');
 
-        if (!$volume || !$issue) {
+        if (! $volume || ! $issue) {
             $latest = Magazine::orderByDesc('published_at')->first();
 
             if ($latest) {
@@ -236,20 +241,20 @@ class WebController extends Controller
                 $year = date('Y', strtotime($first->published_at));
 
                 if ($month >= 4 && $month <= 6) {
-                    $range = "April - June";
+                    $range = 'April - June';
                 } elseif ($month >= 7 && $month <= 9) {
-                    $range = "July - September";
+                    $range = 'July - September';
                 } elseif ($month >= 10 && $month <= 12) {
-                    $range = "October - December";
+                    $range = 'October - December';
                 } else {
-                    $range = "January - March";
+                    $range = 'January - March';
                     $year += 1;
                 }
 
                 return [
                     'volume' => $first->volume,
                     'issue' => $first->issue,
-                    'label' => "Volume {$first->volume}, Issue {$first->issue} ({$range} {$year})"
+                    'label' => "Volume {$first->volume}, Issue {$first->issue} ({$range} {$year})",
                 ];
             })->values();
 
@@ -267,7 +272,7 @@ class WebController extends Controller
         $volume = $request->query('volume');
         $issue = $request->query('issue');
 
-        if (!$volume || !$issue) {
+        if (! $volume || ! $issue) {
             $latest = ResearchJournal::select('volume', 'issue')
                 ->orderByDesc('volume')
                 ->orderByDesc('issue')
@@ -317,15 +322,16 @@ class WebController extends Controller
                 $month = date('n', strtotime($first->published_at));
                 $year = date('Y', strtotime($first->published_at));
                 $range = match ((int) ceil($month / 3)) {
-                    1 => "January - March",
-                    2 => "April - June",
-                    3 => "July - September",
-                    4 => "October - December",
+                    1 => 'January - March',
+                    2 => 'April - June',
+                    3 => 'July - September',
+                    4 => 'October - December',
                 };
+
                 return [
                     'volume' => $first->volume,
                     'issue' => $first->issue,
-                    'label' => "Volume {$first->volume}, Issue {$first->issue} ({$range} {$year})"
+                    'label' => "Volume {$first->volume}, Issue {$first->issue} ({$range} {$year})",
                 ];
             })->values();
 
@@ -357,7 +363,9 @@ class WebController extends Controller
             ->findOrFail($id);
 
         return Inertia::render('web/imrj-journal/view-journal', [
-            'journal' => $journal
+            'journal' => $journal,
+        ])->withViewData([
+            'journal' => $journal,
         ]);
     }
 
@@ -366,7 +374,7 @@ class WebController extends Controller
         $volume = $request->query('volume');
         $issue = $request->query('issue');
 
-        if (!$volume || !$issue) {
+        if (! $volume || ! $issue) {
             $latest = ResearchJournal::orderByDesc('published_at')->first();
 
             if ($latest) {
@@ -425,20 +433,20 @@ class WebController extends Controller
                 $year = date('Y', strtotime($first->published_at));
 
                 if ($month >= 4 && $month <= 6) {
-                    $range = "April - June";
+                    $range = 'April - June';
                 } elseif ($month >= 7 && $month <= 9) {
-                    $range = "July - September";
+                    $range = 'July - September';
                 } elseif ($month >= 10 && $month <= 12) {
-                    $range = "October - December";
+                    $range = 'October - December';
                 } else {
-                    $range = "January - March";
+                    $range = 'January - March';
                     $year += 1;
                 }
 
                 return [
                     'volume' => $first->volume,
                     'issue' => $first->issue,
-                    'label' => "Volume {$first->volume}, Issue {$first->issue} ({$range} {$year})"
+                    'label' => "Volume {$first->volume}, Issue {$first->issue} ({$range} {$year})",
                 ];
             })->values();
 
@@ -470,7 +478,9 @@ class WebController extends Controller
             ->findOrFail($id);
 
         return Inertia::render('web/jebmpa-journal/view-journal', [
-            'journal' => $journal
+            'journal' => $journal,
+        ])->withViewData([
+            'journal' => $journal,
         ]);
     }
 
@@ -520,7 +530,7 @@ class WebController extends Controller
     {
         $user = $request->user();
 
-        if (!$user) {
+        if (! $user) {
             abort(401);
         }
 
@@ -534,7 +544,7 @@ class WebController extends Controller
                 )
                 ->exists();
 
-            if (!$hasAccess) {
+            if (! $hasAccess) {
                 abort(403, 'Unauthorized access to this book');
             }
         }
