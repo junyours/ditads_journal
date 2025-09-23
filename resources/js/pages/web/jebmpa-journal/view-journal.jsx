@@ -9,24 +9,27 @@ const banners = [JournalBanner];
 export default function ViewJournal() {
     const { journal } = usePage().props;
 
+    const authors = journal.author.split(",").map((a) => a.trim());
+
+    const pubDate = new Date(journal.published_at)
+        .toISOString()
+        .split("T")[0]
+        .replace(/-/g, "/");
+
     return (
         <>
             <Head>
                 <meta name="citation_title" content={journal.title} />
-                <meta name="citation_author" content={journal.author} />
-                <meta
-                    name="citation_publication_date"
-                    content={new Date(journal.published_at).toLocaleString(
-                        "en-US",
-                        {
-                            day: "2-digit",
-                            month: "2-digit",
-                            year: "numeric",
-                        }
-                    )}
-                />
+                {authors.map((author, index) => (
+                    <meta key={index} name="citation_author" content={author} />
+                ))}
+                <meta name="citation_publication_date" content={pubDate} />
                 <meta name="citation_volume" content={journal.volume} />
                 <meta name="citation_issue" content={journal.issue} />
+                <meta
+                    name="citation_journal_title"
+                    content="Journal of Economics, Business Management, and Public Administration"
+                />
                 <meta
                     name="citation_pdf_url"
                     content={`https://ditadsresearchcenter.com/JEBMPA/${journal.pdf_file}`}
