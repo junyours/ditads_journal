@@ -1,6 +1,6 @@
 import WebLayout from "@/layouts/web-layout";
 import JournalBanner from "../../../../../public/images/journal-banner.png";
-import { Head, usePage } from "@inertiajs/react";
+import { usePage } from "@inertiajs/react";
 import PDF from "../../../../../public/images/pdf.png";
 import { Button } from "@/components/ui/button";
 
@@ -18,7 +18,7 @@ export default function ViewJournal() {
 
     return (
         <>
-            <Head>
+            <head>
                 <meta name="citation_title" content={journal.title} />
                 {authors.map((author, index) => (
                     <meta key={index} name="citation_author" content={author} />
@@ -34,7 +34,7 @@ export default function ViewJournal() {
                     name="citation_pdf_url"
                     content={`https://ditadsresearchcenter.com/IMRJ/${journal.pdf_file}`}
                 />
-            </Head>
+            </head>
             <div className="container mx-auto p-4 space-y-6">
                 <h1 className="text-blue-600 font-medium uppercase">
                     {journal.title}
