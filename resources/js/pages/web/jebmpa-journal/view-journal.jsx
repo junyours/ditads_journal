@@ -45,11 +45,11 @@ export default function ViewJournal() {
             <div className="sm:flex gap-1">
                 <p className="font-bold">DOI:</p>
                 <a
-                    href={journal.doi}
+                    href={`https://doi.org/${journal.doi}`}
                     target="_blank"
                     className="hover:underline"
                 >
-                    {journal.doi}
+                    {`https://doi.org/${journal.doi}`}
                 </a>
             </div>
             <div className="sm:flex gap-1 items-center">
