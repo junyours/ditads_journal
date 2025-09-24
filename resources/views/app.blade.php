@@ -10,23 +10,18 @@
     <title inertia>{{ config('app.name') }}</title>
 
     @if(isset($journal))
-        <meta name="citation_title" content="{{ $journal->title }}">
-        @foreach(explode(',', $journal->author) as $author)
-            <meta name="citation_author" content="{{ trim($author) }}">
-        @endforeach
-        <meta name="citation_publication_date"
-            content="{{ \Carbon\Carbon::parse($journal->published_at)->format('Y/m/d') }}">
-        <meta name="citation_volume" content="{{ $journal->volume }}">
-        <meta name="citation_issue" content="{{ $journal->issue }}">
-        <meta name="citation_pages" content="{{ $journal->page_number }}">
-        <meta name="citation_doi" content="{{ $journal->doi }}">
-        <meta name="citation_publisher" content="ZAS Digital Institute Training and Development Services">
-        <meta name="citation_journal_title" content="{{ $journal->type === 'imrj'
-            ? 'DIT.ADS International Multidisciplinary Research Journal'
-            : 'DIT.ADS Journal of Economics, Business Management, and Public Administration' 
-                    }}">
-        <meta name="citation_pdf_url"
-            content="{{ url(($journal->type === 'imrj' ? 'IMRJ/' : 'JEBMPA/') . $journal->pdf_file) }}">
+    <meta name="citation_title" content="{{ $journal->title }}" />
+    @foreach(explode(',', $journal->author) as $author)
+    <meta name="citation_author" content="{{ trim($author) }}" />
+    @endforeach
+    <meta name="citation_publication_date" content="{{ \Carbon\Carbon::parse($journal->published_at)->format('Y/m/d') }}" />
+    <meta name="citation_volume" content="{{ $journal->volume }}" />
+    <meta name="citation_issue" content="{{ $journal->issue }}" />
+    <meta name="citation_pages" content="{{ $journal->page_number }}" />
+    <meta name="citation_doi" content="{{ $journal->doi }}" />
+    <meta name="citation_publisher" content="ZAS Digital Institute Training and Development Services" />
+    <meta name="citation_journal_title" content="{{ $journal->type === 'imrj' ? 'DIT.ADS International Multidisciplinary Research Journal' : 'DIT.ADS Journal of Economics, Business Management, and Public Administration' }}" />
+    <meta name="citation_pdf_url" content="{{ url(($journal->type === 'imrj' ? 'IMRJ/' : 'JEBMPA/') . $journal->pdf_file) }}" />
     @endif
 
     <link rel="preconnect" href="https://fonts.bunny.net">
