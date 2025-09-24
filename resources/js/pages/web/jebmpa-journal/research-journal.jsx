@@ -95,11 +95,11 @@ export default function ResearchJournal({
                                 <p className="text-xs font-medium">
                                     DOI:{" "}
                                     <a
-                                        href={journal.doi}
+                                        href={`https://doi.org/${journal.doi}`}
                                         target="_blank"
                                         className="hover:underline"
                                     >
-                                        {journal.doi}
+                                        {`https://doi.org/${journal.doi}`}
                                     </a>
                                 </p>
                             </div>
