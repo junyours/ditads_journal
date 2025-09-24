@@ -1072,6 +1072,7 @@ class AdminController extends Controller
             'type'
         )
             ->where('type', 'imrj')
+            ->orderBy('published_at', 'DESC')
             ->get();
 
         return Inertia::render('web/admin/research-journal/imrj', [
@@ -1097,6 +1098,7 @@ class AdminController extends Controller
             'type'
         )
             ->where('type', 'jebmpa')
+            ->orderBy('published_at', 'DESC')
             ->get();
 
         return Inertia::render('web/admin/research-journal/jebmpa', [
