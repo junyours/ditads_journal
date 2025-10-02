@@ -42,6 +42,7 @@ Route::middleware(['auth', 'admin', 'verified'])->group(function () {
     Route::get('/admin/web/research-journal/jebmpa', [AdminController::class, 'getJEBMPA']);
     Route::post('/admin/web/research-journal/upload', [AdminController::class, 'uploadResearchJournal']);
     Route::post('/admin/web/research-journal/update', [AdminController::class, 'updateResearchJournal']);
+    Route::post('/admin/web/research-journal/delete', [AdminController::class, 'deleteResearchJournal']);
 
     Route::get('/admin/web/events', [AdminController::class, 'event']);
     Route::post('/admin/web/events/upload', [AdminController::class, 'uploadEvent']);

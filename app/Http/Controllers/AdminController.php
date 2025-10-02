@@ -1248,6 +1248,18 @@ class AdminController extends Controller
         ]);
     }
 
+    public function deleteResearchJournal(Request $request)
+    {
+        $journal = ResearchJournal::findOrFail($request->id);
+        $accessToken = $this->token();
+
+        if ($journal->pdf_file) {
+            Http::withToken($accessToken)->delete("https://www.googleapis.com/drive/v3/files/{$journal->pdf_file}");
+        }
+
+        $journal->delete();
+    }
+
     public function event()
     {
         $events = Event::select('id', 'title', 'content', 'image', 'date')

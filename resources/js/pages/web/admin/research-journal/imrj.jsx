@@ -12,6 +12,7 @@ import {
     Loader,
     MoreHorizontal,
     Plus,
+    Trash,
     Upload,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -24,7 +25,7 @@ import {
     SheetHeader,
     SheetTitle,
 } from "@/components/ui/sheet";
-import { useForm, usePage } from "@inertiajs/react";
+import { router, useForm, usePage } from "@inertiajs/react";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import InputError from "@/components/input-error";
@@ -84,8 +85,14 @@ export default function IMRJ() {
         page_number: "",
         tracking_number: "",
         doi: "",
-        type: "imrj"
+        type: "imrj",
     });
+    const [showDelete, setShowDelete] = useState({
+        id: null,
+        title: "",
+        show: false,
+    });
+    const [loadingDelete, setLoadingDelete] = useState(false);
 
     const handleOpen = (journal = null) => {
         if (journal) {
@@ -103,7 +110,7 @@ export default function IMRJ() {
                 page_number: journal.page_number,
                 tracking_number: journal.tracking_number,
                 doi: journal.doi,
-                type: journal.type
+                type: journal.type,
             };
             setData(journalData);
             setInitialData(journalData);
@@ -122,7 +129,7 @@ export default function IMRJ() {
                 page_number: "",
                 tracking_number: "",
                 doi: "",
-                type: "imrj"
+                type: "imrj",
             };
             setData(newData);
             setInitialData(newData);
@@ -153,6 +160,27 @@ export default function IMRJ() {
                 toast.success("Journal updated successfully.");
             },
         });
+    };
+
+    const handleDelete = () => {
+        setLoadingDelete(true);
+        router.post(
+            "/admin/web/research-journal/delete",
+            { id: showDelete.id },
+            {
+                onSuccess: () => {
+                    toast.success("Journal deleted successfully.");
+                },
+                onFinish: () => {
+                    setLoadingDelete(false);
+                    setShowDelete({
+                        id: null,
+                        title: "",
+                        show: false,
+                    });
+                },
+            }
+        );
     };
 
     const columns = [
@@ -199,6 +227,19 @@ export default function IMRJ() {
                             >
                                 <FilePenLine />
                                 Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                                onClick={() =>
+                                    setShowDelete({
+                                        id: journal.id,
+                                        title: journal.title,
+                                        show: true,
+                                    })
+                                }
+                                className="text-destructive"
+                            >
+                                <Trash />
+                                Delete
                             </DropdownMenuItem>
                         </DropdownMenuContent>
                     </DropdownMenu>
@@ -448,6 +489,43 @@ export default function IMRJ() {
                             }}
                         >
                             Yes, discard
+                        </Button>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+
+            <AlertDialog open={showDelete.show}>
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>{showDelete.title}</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            Are you sure you want to permanently delete this
+                            journal? This action cannot be undone.
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <Button
+                            variant="ghost"
+                            onClick={() =>
+                                setShowDelete({
+                                    id: null,
+                                    title: "",
+                                    show: false,
+                                })
+                            }
+                            disabled={loadingDelete}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            onClick={handleDelete}
+                            disabled={loadingDelete}
+                        >
+                            {loadingDelete && (
+                                <Loader className="animate-spin" />
+                            )}
+                            {loadingDelete ? "Deleting" : "Delete"}
                         </Button>
                     </AlertDialogFooter>
                 </AlertDialogContent>
