@@ -62,6 +62,9 @@ export default function AboutPublisher() {
                     </span>{" "}
                     7515
                 </li>
+                <li>
+                    <span className="font-semibold">• CDA CTPro No.:</span> 271
+                </li>
             </ul>
             <br />
             <p>

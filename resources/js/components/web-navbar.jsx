@@ -1,13 +1,11 @@
 import {
     NavigationMenu,
     NavigationMenuContent,
-    NavigationMenuIndicator,
     NavigationMenuItem,
     NavigationMenuLink,
     NavigationMenuList,
     NavigationMenuTrigger,
     navigationMenuTriggerStyle,
-    NavigationMenuViewport,
 } from "@/components/ui/navigation-menu";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Link, usePage } from "@inertiajs/react";
@@ -15,6 +13,7 @@ import { Drawer, DrawerContent } from "@/components/ui/drawer";
 import { Button } from "./ui/button";
 import IMRJ from "../../../public/images/imrj.png";
 import JEBMPA from "../../../public/images/jebmpa.png";
+import DISKURSO from "../../../public/images/diskurso.png";
 import {
     Accordion,
     AccordionContent,
@@ -67,6 +66,11 @@ const items = [
                 icon: JEBMPA,
                 url: "/research-journal/jebmpa",
             },
+            {
+                title: "Diskurso International Multidisciplinary Research Journal",
+                icon: DISKURSO,
+                link: "https://diskurso.org/",
+            },
         ],
     },
     {
@@ -102,32 +106,68 @@ export default function WebNavbar({ open, onOpenChange }) {
                                                 {item.title}
                                             </AccordionTrigger>
                                             <AccordionContent>
-                                                {item.items.map((subItem) => (
-                                                    <Link
-                                                        key={subItem.title}
-                                                        href={subItem.url}
-                                                    >
-                                                        <Button
+                                                {item.items.map((subItem) =>
+                                                    subItem.link ? (
+                                                        <a
                                                             key={subItem.title}
-                                                            onClick={() => {
-                                                                if (isMobile) {
-                                                                    onOpenChange(
-                                                                        false
-                                                                    );
-                                                                }
-                                                            }}
-                                                            variant="ghost"
-                                                            className={`justify-start text-start text-wrap w-full ${
-                                                                url ===
-                                                                subItem.url
-                                                                    ? "text-primary"
-                                                                    : ""
-                                                            }`}
+                                                            href={subItem.link}
+                                                            target="_blank"
                                                         >
-                                                            {subItem.title}
-                                                        </Button>
-                                                    </Link>
-                                                ))}
+                                                            <Button
+                                                                key={
+                                                                    subItem.title
+                                                                }
+                                                                onClick={() => {
+                                                                    if (
+                                                                        isMobile
+                                                                    ) {
+                                                                        onOpenChange(
+                                                                            false
+                                                                        );
+                                                                    }
+                                                                }}
+                                                                variant="ghost"
+                                                                className={`justify-start text-start text-wrap w-full ${
+                                                                    url ===
+                                                                    subItem.url
+                                                                        ? "text-primary"
+                                                                        : ""
+                                                                }`}
+                                                            >
+                                                                {subItem.title}
+                                                            </Button>
+                                                        </a>
+                                                    ) : (
+                                                        <Link
+                                                            key={subItem.title}
+                                                            href={subItem.url}
+                                                        >
+                                                            <Button
+                                                                key={
+                                                                    subItem.title
+                                                                }
+                                                                onClick={() => {
+                                                                    if (
+                                                                        isMobile
+                                                                    ) {
+                                                                        onOpenChange(
+                                                                            false
+                                                                        );
+                                                                    }
+                                                                }}
+                                                                variant="ghost"
+                                                                className={`justify-start text-start text-wrap w-full ${
+                                                                    url ===
+                                                                    subItem.url
+                                                                        ? "text-primary"
+                                                                        : ""
+                                                                }`}
+                                                            >
+                                                                {subItem.title}
+                                                            </Button>
+                                                        </Link>
+                                                    )
+                                                )}
                                             </AccordionContent>
                                         </AccordionItem>
                                     </Accordion>
@@ -243,20 +283,42 @@ export default function WebNavbar({ open, onOpenChange }) {
                                                             : ""
                                                     }`}
                                                 >
-                                                    <Link href={subItem.url}>
-                                                        <div className="shrink-0 size-10">
-                                                            <img
-                                                                src={
-                                                                    subItem.icon
-                                                                }
-                                                                alt={
-                                                                    subItem.title
-                                                                }
-                                                                className="object-contain rounded-lg"
-                                                            />
-                                                        </div>
-                                                        {subItem.title}
-                                                    </Link>
+                                                    {subItem.link ? (
+                                                        <a
+                                                            href={subItem.link}
+                                                            target="_blank"
+                                                        >
+                                                            <div className="shrink-0 size-10">
+                                                                <img
+                                                                    src={
+                                                                        subItem.icon
+                                                                    }
+                                                                    alt={
+                                                                        subItem.title
+                                                                    }
+                                                                    className="object-contain rounded-lg"
+                                                                />
+                                                            </div>
+                                                            {subItem.title}
+                                                        </a>
+                                                    ) : (
+                                                        <Link
+                                                            href={subItem.url}
+                                                        >
+                                                            <div className="shrink-0 size-10">
+                                                                <img
+                                                                    src={
+                                                                        subItem.icon
+                                                                    }
+                                                                    alt={
+                                                                        subItem.title
+                                                                    }
+                                                                    className="object-contain rounded-lg"
+                                                                />
+                                                            </div>
+                                                            {subItem.title}
+                                                        </Link>
+                                                    )}
                                                 </NavigationMenuLink>
                                             ))}
                                         </div>
