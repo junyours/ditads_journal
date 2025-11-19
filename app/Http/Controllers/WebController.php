@@ -28,8 +28,8 @@ class WebController extends Controller
             'grant_type' => 'refresh_token',
         ]);
 
-        if (! $response->successful()) {
-            throw new \Exception('Failed to get Google access token: '.$response->body());
+        if (!$response->successful()) {
+            throw new \Exception('Failed to get Google access token: ' . $response->body());
         }
 
         return $response->json()['access_token'];
@@ -97,7 +97,8 @@ class WebController extends Controller
             'hard_price',
             'soft_price',
             'pdf_file',
-            'cover_file_id'
+            'cover_file_id',
+            'open_access'
         );
 
         $covers = (clone $booksQuery)->select('cover_file_id', 'cover_page')->get();
@@ -132,34 +133,38 @@ class WebController extends Controller
     {
         $secret = config('app.key');
 
-        return hash_hmac('sha256', $soft_isbn.'|'.$hard_isbn, $secret);
+        return hash_hmac('sha256', $soft_isbn . '|' . $hard_isbn, $secret);
     }
 
     public function viewFlipBook(Request $request, $hash)
     {
-        $user = $request->user();
-
-        if (! $user) {
-            abort(401);
-        }
-
         $book = BookPublication::get()->first(function ($book) use ($hash) {
             $generated = $this->generateBookHash($book->soft_isbn, $book->hard_isbn);
 
             return hash_equals($generated, $hash);
         });
 
-        if (! $book) {
+        if (!$book) {
             abort(404);
         }
 
-        if ($user->role !== 'admin') {
-            $hasAccess = AuthorBook::where('author_id', $user->id)
-                ->where('book_publication_id', $book->id)
-                ->exists();
+        $isOpenAccess = $book->open_access == 1;
 
-            if (! $hasAccess) {
-                abort(403, 'Unauthorized access to this book');
+        if (!$isOpenAccess) {
+            $user = $request->user();
+
+            if (!$user) {
+                abort(401);
+            }
+
+            if ($user->role !== 'admin') {
+                $hasAccess = AuthorBook::where('author_id', $user->id)
+                    ->where('book_publication_id', $book->id)
+                    ->exists();
+
+                if (!$hasAccess) {
+                    abort(403, 'Unauthorized access to this book');
+                }
             }
         }
 
@@ -183,7 +188,7 @@ class WebController extends Controller
             return hash_equals($generated, $hash);
         });
 
-        if (! $magazine) {
+        if (!$magazine) {
             abort(404);
         }
 
@@ -197,7 +202,7 @@ class WebController extends Controller
         $volume = $request->query('volume');
         $issue = $request->query('issue');
 
-        if (! $volume || ! $issue) {
+        if (!$volume || !$issue) {
             $latest = Magazine::orderByDesc('published_at')->first();
 
             if ($latest) {
@@ -272,7 +277,7 @@ class WebController extends Controller
         $volume = $request->query('volume');
         $issue = $request->query('issue');
 
-        if (! $volume || ! $issue) {
+        if (!$volume || !$issue) {
             $latest = ResearchJournal::select('volume', 'issue')
                 ->orderByDesc('volume')
                 ->orderByDesc('issue')
@@ -365,8 +370,8 @@ class WebController extends Controller
         return Inertia::render('web/imrj-journal/view-journal', [
             'journal' => $journal,
         ])->withViewData([
-            'journal' => $journal,
-        ]);
+                    'journal' => $journal,
+                ]);
     }
 
     public function JEBMPA(Request $request)
@@ -374,7 +379,7 @@ class WebController extends Controller
         $volume = $request->query('volume');
         $issue = $request->query('issue');
 
-        if (! $volume || ! $issue) {
+        if (!$volume || !$issue) {
             $latest = ResearchJournal::orderByDesc('published_at')->first();
 
             if ($latest) {
@@ -480,8 +485,8 @@ class WebController extends Controller
         return Inertia::render('web/jebmpa-journal/view-journal', [
             'journal' => $journal,
         ])->withViewData([
-            'journal' => $journal,
-        ]);
+                    'journal' => $journal,
+                ]);
     }
 
     public function viewIMRJ($path)
@@ -530,7 +535,15 @@ class WebController extends Controller
     {
         $user = $request->user();
 
-        if (! $user) {
+        $openAccess = BookPublication::where('pdf_file', $path)
+            ->where('open_access', 1)
+            ->exists();
+
+        if ($openAccess) {
+            return $this->servePdf($path);
+        }
+
+        if (!$user) {
             abort(401);
         }
 
@@ -544,11 +557,16 @@ class WebController extends Controller
                 )
                 ->exists();
 
-            if (! $hasAccess) {
+            if (!$hasAccess) {
                 abort(403, 'Unauthorized access to this book');
             }
         }
 
+        return $this->servePdf($path);
+    }
+
+    private function servePdf($path)
+    {
         $accessToken = $this->token();
 
         $cloudinaryResponse = Http::get("https://res.cloudinary.com/dzzyp9crw/raw/upload/{$path}");

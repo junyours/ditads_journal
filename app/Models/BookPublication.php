@@ -22,7 +22,8 @@ class BookPublication extends Model
         'overview_pdf_file',
         'hard_price',
         'soft_price',
-        'cover_file_id'
+        'cover_file_id',
+        'open_access'
     ];
 
     public function customer_book()

@@ -54,6 +54,7 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import Avatar from "../../../../../public/images/user.png";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export default function BookPublication() {
     const { books, categories, authors } = usePage().props;
@@ -87,6 +88,7 @@ export default function BookPublication() {
         overview_pdf_file: null,
         hard_price: "",
         // soft_price: "",
+        open_access: 0,
     });
 
     const filteredAuthors = useMemo(() => {
@@ -114,6 +116,7 @@ export default function BookPublication() {
                 overview_pdf_file: book.overview_pdf_file,
                 hard_price: book.hard_price,
                 // soft_price: book.soft_price,
+                open_access: book.open_access,
             };
             setData(bookData);
             setInitialData(bookData);
@@ -135,6 +138,7 @@ export default function BookPublication() {
                 overview_pdf_file: null,
                 hard_price: "",
                 // soft_price: "",
+                open_access: 0,
             };
             setData(newData);
             setInitialData(newData);
@@ -333,6 +337,25 @@ export default function BookPublication() {
                             />
                             <InputError message={errors.book_category_id} />
                         </div> */}
+                        <Label className="hover:bg-accent/50 flex items-start gap-3 rounded-lg border p-3 has-[[aria-checked=true]]:border-primary has-[[aria-checked=true]]:bg-green-50 dark:has-[[aria-checked=true]]:border-green-900 dark:has-[[aria-checked=true]]:bg-green-950">
+                            <Checkbox
+                                id="toggle-2"
+                                checked={data.open_access == 1}
+                                onCheckedChange={(checked) =>
+                                    setData("open_access", checked ? 1 : 0)
+                                }
+                                className="data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-white dark:data-[state=checked]:border-green-700 dark:data-[state=checked]:bg-green-700"
+                            />
+                            <div className="grid gap-1.5 font-normal">
+                                <p className="text-sm leading-none font-medium">
+                                    Open Access
+                                </p>
+                                <p className="text-muted-foreground text-sm">
+                                    You can enable or disable open access at any
+                                    time.
+                                </p>
+                            </div>
+                        </Label>
                         <div className="space-y-1">
                             <Label>Cover Page</Label>
                             <div className="flex items-center gap-4">

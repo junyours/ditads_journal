@@ -76,6 +76,8 @@ export default function BookPublication() {
         );
     };
 
+    const isOpenAccess = book?.open_access === 1 || book?.open_access === true;
+
     return (
         <>
             <Head title="Book Publication" />
@@ -256,7 +258,9 @@ export default function BookPublication() {
                             <div
                                 onClick={() => {
                                     if (!loading) {
-                                        if (user?.role === "admin") {
+                                        if (isOpenAccess) {
+                                            setIsOpen(true);
+                                        } else if (user?.role === "admin") {
                                             setIsOpen(true);
                                         } else if (
                                             user?.role === "customer" &&
@@ -267,6 +271,7 @@ export default function BookPublication() {
                                     }
                                 }}
                                 className={`relative size-fit ${
+                                    isOpenAccess ||
                                     (user?.role === "customer" &&
                                         book?.has_access) ||
                                     (user?.role === "admin" && !loading)
@@ -276,9 +281,10 @@ export default function BookPublication() {
                             >
                                 <div
                                     className={
-                                        !user ||
-                                        (user?.role === "customer" &&
-                                            !book?.has_access)
+                                        !isOpenAccess &&
+                                        (!user ||
+                                            (user?.role === "customer" &&
+                                                !book?.has_access))
                                             ? "bg-black opacity-35"
                                             : "bg-transparent"
                                     }
@@ -303,7 +309,7 @@ export default function BookPublication() {
                                 </div>
                                 <div className="absolute inset-0 flex items-center justify-center">
                                     {loading && <ClipLoader color="green" />}
-                                    {!user && (
+                                    {!user && !isOpenAccess && (
                                         <Button
                                             onClick={() =>
                                                 router.visit("/sign-in")
@@ -314,7 +320,8 @@ export default function BookPublication() {
                                             Sign in
                                         </Button>
                                     )}
-                                    {user?.role === "customer" &&
+                                    {!isOpenAccess &&
+                                        user?.role === "customer" &&
                                         !book?.has_access && (
                                             <Button
                                                 onClick={() =>
@@ -343,7 +350,21 @@ export default function BookPublication() {
                         <div
                             onClick={async () => {
                                 setIsOpen(false);
-                                if (user?.role === "admin") {
+                                if (isOpenAccess) {
+                                    setLoading(true);
+                                    const res = await axios.get(
+                                        "/api/book-hash",
+                                        {
+                                            params: {
+                                                soft_isbn: book.soft_isbn,
+                                                hard_isbn: book.hard_isbn,
+                                            },
+                                        }
+                                    );
+                                    const hash = res.data.hash;
+                                    window.open(`/flip-book/${hash}`, "_blank");
+                                    setLoading(false);
+                                } else if (user?.role === "admin") {
                                     if (!loading) {
                                         setLoading(true);
                                         const res = await axios.get(
@@ -397,7 +418,14 @@ export default function BookPublication() {
                         <div
                             onClick={async () => {
                                 setIsOpen(false);
-                                if (user?.role === "admin") {
+                                if (isOpenAccess) {
+                                    setLoading(true);
+                                    window.open(
+                                        `/view-book/${book.pdf_file}`,
+                                        "_blank"
+                                    );
+                                    setLoading(false);
+                                } else if (user?.role === "admin") {
                                     if (!loading) {
                                         setLoading(true);
                                         window.open(

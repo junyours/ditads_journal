@@ -496,7 +496,7 @@ class AdminController extends Controller
 
     public function getBookPublication()
     {
-        $books = BookPublication::select('id', 'title', 'soft_isbn', 'hard_isbn', 'cover_page', 'author', 'overview', 'published_at', 'pdf_file', 'book_category_id', 'doi', 'overview_pdf_file', 'hard_price')
+        $books = BookPublication::select('id', 'title', 'soft_isbn', 'hard_isbn', 'cover_page', 'author', 'overview', 'published_at', 'pdf_file', 'book_category_id', 'doi', 'overview_pdf_file', 'hard_price', 'open_access')
             ->get();
 
         $categories = BookCategory::select('id', 'name')->get();
@@ -657,6 +657,7 @@ class AdminController extends Controller
             // 'overview_pdf_file' => $overviewPdfFileId,
             'hard_price' => $request->hard_price,
             // 'soft_price' => $request->soft_price,
+            'open_access' => $request->open_access,
         ]);
     }
 
@@ -695,6 +696,7 @@ class AdminController extends Controller
             'doi' => $request->doi,
             'hard_price' => $request->hard_price,
             // 'soft_price' => $request->soft_price,
+            'open_access' => $request->open_access,
         ]);
 
         if ($request->hasFile('cover_page')) {
