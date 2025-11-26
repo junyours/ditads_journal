@@ -48,6 +48,12 @@ Route::middleware(['auth', 'admin', 'verified'])->group(function () {
     Route::post('/admin/web/events/upload', [AdminController::class, 'uploadEvent']);
     Route::post('/admin/web/events/update', [AdminController::class, 'updateEvent']);
 
+    Route::get('/admin/web/cooperative-training-service', [AdminController::class, 'cooperativeTraining']);
+    Route::get('/admin/web/cooperative-training-service/{event_name}', [AdminController::class, 'trainingApplicant']);
+    Route::post('/admin/web/cooperative-training-service/{id}', [AdminController::class, 'applicantApproved']);
+    Route::post('/admin/web/training/upload', [AdminController::class, 'uploadTraining']);
+    Route::post('/admin/web/training/update', [AdminController::class, 'updateTraining']);
+
     Route::get('/admin/others/payment-methods', [AdminController::class, 'paymentMethod']);
     Route::post('/admin/others/payment-methods/add', [AdminController::class, 'AddPaymentMethod']);
     Route::post('/admin/others/payment-methods/update', [AdminController::class, 'UpdatePaymentMethod']);
@@ -64,6 +70,8 @@ Route::middleware(['auth', 'admin', 'verified'])->group(function () {
 Route::get('/', [WebController::class, 'welcome']);
 Route::get('/about-us', [WebController::class, 'aboutUs']);
 Route::get('/events', [WebController::class, 'event']);
+Route::get('/cooperative-training-service', [WebController::class, 'cooperativeTraining']);
+Route::post('/cooperative-training-service/submit', [WebController::class, 'submitApplicant']);
 Route::get('/research-consultant', [WebController::class, 'researchConsultant']);
 Route::get('/book-publication', [WebController::class, 'bookPublication']);
 Route::get('/api/book-hash', function (Request $request) {

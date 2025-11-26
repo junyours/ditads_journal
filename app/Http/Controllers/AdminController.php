@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ApplicantTraining;
 use App\Models\AuthorBook;
 use App\Models\BookCategory;
 use App\Models\BookPublication;
+use App\Models\CooperativeTraining;
 use App\Models\Event;
 use App\Models\Magazine;
 use App\Models\PaymentMethod;
@@ -1393,6 +1395,88 @@ class AdminController extends Controller
                 ]);
             }
         }
+    }
+
+    public function cooperativeTraining()
+    {
+        $trainings = CooperativeTraining::query()
+            ->select('id', 'event_name', 'from_date', 'to_date', 'description')
+            ->orderByDesc('from_date')
+            ->orderByDesc('to_date')
+            ->get();
+
+        return Inertia::render('web/admin/training/cooperative-training', [
+            'trainings' => $trainings
+        ]);
+    }
+
+    public function trainingApplicant($event_name)
+    {
+        $training = CooperativeTraining::where('event_name', $event_name)
+            ->with('applicant_training.applicant')
+            ->firstOrFail();
+
+        $review_training = $training->applicant_training->where('status', 'under_review')->values();
+        $approve_training = $training->applicant_training->where('status', 'approved')->values();
+
+        return Inertia::render('web/admin/training/cooperative-applicant', [
+            'training' => $training,
+            'review_training' => $review_training,
+            'approve_training' => $approve_training,
+        ]);
+    }
+
+    public function applicantApproved($id)
+    {
+        $applicant = ApplicantTraining::findOrFail($id);
+
+        $applicant->update([
+            'status' => 'approved'
+        ]);
+    }
+
+    public function uploadTraining(Request $request)
+    {
+        $request->validate([
+            'event_name' => ['required'],
+            'description' => ['required'],
+            'from_date' => ['required'],
+            'to_date' => ['required'],
+        ]);
+
+        CooperativeTraining::create([
+            'event_name' => $request->event_name,
+            'description' => $request->description,
+            'from_date' => Carbon::parse($request->from_date)
+                ->timezone('Asia/Manila')
+                ->toDateString(),
+            'to_date' => Carbon::parse($request->to_date)
+                ->timezone('Asia/Manila')
+                ->toDateString(),
+        ]);
+    }
+
+    public function updateTraining(Request $request)
+    {
+        $training = CooperativeTraining::findOrFail($request->id);
+
+        $request->validate([
+            'event_name' => ['required'],
+            'description' => ['required'],
+            'from_date' => ['required'],
+            'to_date' => ['required'],
+        ]);
+
+        $training->update([
+            'event_name' => $request->event_name,
+            'description' => $request->description,
+            'from_date' => Carbon::parse($request->from_date)
+                ->timezone('Asia/Manila')
+                ->toDateString(),
+            'to_date' => Carbon::parse($request->to_date)
+                ->timezone('Asia/Manila')
+                ->toDateString(),
+        ]);
     }
 
     public function paymentMethod()

@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Applicant;
+use App\Models\ApplicantTraining;
 use App\Models\AuthorBook;
 use App\Models\BookPublication;
+use App\Models\CooperativeTraining;
 use App\Models\CustomerBook;
 use App\Models\Event;
 use App\Models\Magazine;
 use App\Models\ResearchJournal;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Inertia\Inertia;
@@ -35,6 +39,26 @@ class WebController extends Controller
         return $response->json()['access_token'];
     }
 
+    private function getOrCreateFolder($accessToken, $folderName, $parentId)
+    {
+        $response = Http::withToken($accessToken)->get('https://www.googleapis.com/drive/v3/files', [
+            'q' => "name='{$folderName}' and '{$parentId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false",
+            'fields' => 'files(id)',
+        ]);
+
+        if ($response->successful() && count($response['files']) > 0) {
+            return $response['files'][0]['id'];
+        }
+
+        $create = Http::withToken($accessToken)->post('https://www.googleapis.com/drive/v3/files', [
+            'name' => $folderName,
+            'mimeType' => 'application/vnd.google-apps.folder',
+            'parents' => [$parentId],
+        ]);
+
+        return $create->json()['id'];
+    }
+
     public function welcome()
     {
         return Inertia::render('web/welcome');
@@ -54,6 +78,93 @@ class WebController extends Controller
         return Inertia::render('web/event', [
             'events' => $events,
         ]);
+    }
+
+    public function cooperativeTraining()
+    {
+        $trainings = CooperativeTraining::query()
+            ->select('id', 'event_name', 'from_date', 'to_date', 'description')
+            ->orderByDesc('from_date')
+            ->orderByDesc('to_date')
+            ->get();
+
+        return Inertia::render('web/cooperative-training', [
+            'trainings' => $trainings
+        ]);
+    }
+
+    public function submitApplicant(Request $request)
+    {
+        $accessToken = $this->token();
+
+        $request->validate([
+            'last_name' => ['required'],
+            'first_name' => ['required'],
+            'email' => ['email'],
+            'birth_date' => ['required'],
+            'gender' => ['required'],
+            'cooperative_name' => ['required'],
+            'proof_payment' => ['required'],
+        ]);
+
+        if ($request->hasFile('proof_payment')) {
+            $ditadsFolderId = config('services.google.folder_id');
+
+            $proof_paymentsFolderId = $this->getOrCreateFolder($accessToken, 'proof_payments', $ditadsFolderId);
+
+            $file = $request->file('proof_payment');
+            $mimeType = $file->getMimeType();
+
+            $metadata = [
+                'name' => 'temp_' . time(),
+                'parents' => [$proof_paymentsFolderId],
+            ];
+
+            $uploadResponse = Http::withToken($accessToken)
+                ->attach('metadata', json_encode($metadata), 'metadata.json', ['Content-Type' => 'application/json'])
+                ->attach('media', file_get_contents($file), $file->getClientOriginalName(), ['Content-Type' => $mimeType])
+                ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
+
+            if ($uploadResponse->successful()) {
+                $fileId = $uploadResponse->json()['id'];
+
+                Http::withToken($accessToken)->patch("https://www.googleapis.com/drive/v3/files/{$fileId}", [
+                    'name' => $fileId,
+                ]);
+
+                Http::withToken($accessToken)->post("https://www.googleapis.com/drive/v3/files/{$fileId}/permissions", [
+                    'role' => 'reader',
+                    'type' => 'anyone',
+                ]);
+
+                $applicant = Applicant::create([
+                    'last_name' => $request->last_name,
+                    'first_name' => $request->first_name,
+                    'middle_name' => $request->middle_name,
+                    'email' => $request->email,
+                    'birth_date' => Carbon::parse($request->birth_date)
+                        ->timezone('Asia/Manila')
+                        ->toDateString(),
+                    'gender' => $request->gender,
+                    'cooperative_name' => $request->cooperative_name
+                ]);
+
+                do {
+                    $application_number = random_int(1000000000, 9999999999);
+                } while (
+                    ApplicantTraining::query()
+                        ->where('application_number', $application_number)
+                        ->exists()
+                );
+
+                ApplicantTraining::create([
+                    'applicant_id' => $applicant->id,
+                    'training_id' => $request->training_id,
+                    'application_number' => $application_number,
+                    'proof_payment' => $fileId,
+                ]);
+            }
+        }
     }
 
     public function researchConsultant()

@@ -31,6 +31,7 @@ import {
     SquareLibrary,
     Users,
     CalendarMinus2,
+    Presentation,
 } from "lucide-react";
 
 const navAdmin = [
@@ -127,6 +128,12 @@ const navAdmin = [
                 title: "Events",
                 url: "/admin/web/events",
                 icon: CalendarMinus2,
+                collapse: false,
+            },
+            {
+                title: "Cooperative Training Service",
+                url: "/admin/web/cooperative-training-service",
+                icon: Presentation,
                 collapse: false,
             },
         ],

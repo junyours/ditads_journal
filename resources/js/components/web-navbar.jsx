@@ -23,11 +23,6 @@ import {
 
 const items = [
     {
-        title: "Home",
-        url: "/",
-        collapse: false,
-    },
-    {
         title: "About Us",
         url: "/about-us",
         collapse: false,
@@ -35,6 +30,11 @@ const items = [
     {
         title: "Events",
         url: "/events",
+        collapse: false,
+    },
+    {
+        title: "Cooperative Training Service",
+        url: "/cooperative-training-service",
         collapse: false,
     },
     {
