@@ -5,10 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Applicant;
 use App\Models\ApplicantTraining;
 use App\Models\AuthorBook;
+use App\Models\BookMonitoring;
 use App\Models\BookPublication;
 use App\Models\CooperativeTraining;
 use App\Models\CustomerBook;
 use App\Models\Event;
+use App\Models\JournalMonitoring;
 use App\Models\Magazine;
 use App\Models\ResearchJournal;
 use App\Models\User;
@@ -718,8 +720,55 @@ class WebController extends Controller
         abort(404);
     }
 
+    public function monitoringJournal(Request $request)
+    {
+        $search = $request->input('search');
+
+        $journals = JournalMonitoring::when($search, function ($query, $search) {
+            $query->where('submission', 'like', "%{$search}%");
+        })
+            ->paginate(10);
+
+        return Inertia::render('web/monitoring/journal', [
+            'search' => $search,
+            'journals' => $journals
+        ]);
+    }
+
+    public function monitoringBook(Request $request)
+    {
+        $search = $request->input('search');
+
+        $books = BookMonitoring::when($search, function ($query, $search) {
+            $query->where('book_title', 'like', "%{$search}%");
+        })
+            ->paginate(10);
+
+        return Inertia::render('web/monitoring/book', [
+            'search' => $search,
+            'books' => $books
+        ]);
+    }
+
     public function contactUs()
     {
         return Inertia::render('web/contact-us');
+    }
+
+    public function viewPdf($path)
+    {
+        $accessToken = $this->token();
+
+        $googleDriveResponse = Http::withToken($accessToken)->get("https://www.googleapis.com/drive/v3/files/{$path}", [
+            'alt' => 'media',
+        ]);
+
+        if ($googleDriveResponse->ok()) {
+            return response($googleDriveResponse->body(), 200, [
+                'Content-Type' => 'application/pdf',
+            ]);
+        }
+
+        abort(404);
     }
 }

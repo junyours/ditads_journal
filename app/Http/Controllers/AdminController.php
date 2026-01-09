@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\ApplicantTraining;
 use App\Models\AuthorBook;
 use App\Models\BookCategory;
+use App\Models\BookMonitoring;
 use App\Models\BookPublication;
 use App\Models\CooperativeTraining;
 use App\Models\Event;
+use App\Models\JournalMonitoring;
 use App\Models\Magazine;
 use App\Models\PaymentMethod;
 use App\Models\ResearchJournal;
@@ -1476,6 +1478,340 @@ class AdminController extends Controller
             'to_date' => Carbon::parse($request->to_date)
                 ->timezone('Asia/Manila')
                 ->toDateString(),
+        ]);
+    }
+
+    public function monitoringJournal(Request $request)
+    {
+        $search = $request->input('search');
+
+        $journals = JournalMonitoring::when($search, function ($query, $search) {
+            $query->where('submission', 'like', "%{$search}%");
+        })
+            ->paginate(10);
+
+        return Inertia::render('web/admin/monitoring/journal', [
+            'search' => $search,
+            'journals' => $journals
+        ]);
+    }
+
+    public function addMonitoringJournal(Request $request)
+    {
+        $accessToken = $this->token();
+
+        $data = $request->validate([
+            'submission' => ['required'],
+            'institution' => ['required'],
+            'paper_type' => ['required'],
+            'paper_file' => ['required', 'mimes:pdf'],
+            'date_accomplished' => ['required'],
+            'status_whole_paper' => ['required'],
+            'urgency' => ['required'],
+            'processing_status' => ['required'],
+            'date_published' => ['required'],
+            'doi' => ['required'],
+        ]);
+
+        if ($request->hasFile('paper_file')) {
+            $parentFolderId = config('services.google.folder_id');
+            $monitoringFolderId = $this->getOrCreateFolder($accessToken, 'monitoring', $parentFolderId);
+            $paperFileFolderId = $this->getOrCreateFolder($accessToken, 'paper_files', $monitoringFolderId);
+
+            $file = $request->file('paper_file');
+            $mimeType = $file->getMimeType();
+
+            $tempMetadata = [
+                'name' => 'temp_upload.pdf',
+                'parents' => [$paperFileFolderId],
+            ];
+
+            $uploadRes = Http::withToken($accessToken)
+                ->attach('metadata', json_encode($tempMetadata), 'metadata.json', ['Content-Type' => 'application/json'])
+                ->attach('media', file_get_contents($file), 'temp_upload.pdf', ['Content-Type' => $mimeType])
+                ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
+
+            if ($uploadRes->successful()) {
+                $fileId = $uploadRes->json()['id'];
+
+                Http::withToken($accessToken)->patch("https://www.googleapis.com/drive/v3/files/{$fileId}", [
+                    'name' => "{$fileId}.pdf"
+                ]);
+
+                Http::withToken($accessToken)->post("https://www.googleapis.com/drive/v3/files/{$fileId}/permissions", [
+                    'role' => 'reader',
+                    'type' => 'anyone',
+                ]);
+            }
+        }
+
+        JournalMonitoring::create([
+            'submission' => $data['submission'],
+            'institution' => $data['institution'],
+            'paper_type' => $data['paper_type'],
+            'paper_file' => $fileId,
+            'date_accomplished' => Carbon::parse($data['date_accomplished'])
+                ->timezone('Asia/Manila')
+                ->toDateString(),
+            'status_whole_paper' => $data['status_whole_paper'],
+            'urgency' => $data['urgency'],
+            'processing_status' => $data['processing_status'],
+            'date_published' => Carbon::parse($data['date_published'])
+                ->timezone('Asia/Manila')
+                ->toDateString(),
+            'doi' => $data['doi'],
+        ]);
+    }
+
+    public function updateMonitoringJournal(Request $request)
+    {
+        $accessToken = $this->token();
+
+        $journal = JournalMonitoring::findOrFail($request->input('id'));
+
+        $data = $request->validate([
+            'submission' => ['required'],
+            'institution' => ['required'],
+            'paper_type' => ['required'],
+            'date_accomplished' => ['required'],
+            'status_whole_paper' => ['required'],
+            'urgency' => ['required'],
+            'processing_status' => ['required'],
+            'date_published' => ['required'],
+            'doi' => ['required'],
+        ]);
+
+        $oldFileId = $journal->paper_file;
+        $newFileId = $oldFileId;
+
+        if ($request->hasFile('paper_file')) {
+            $request->validate(rules: [
+                'paper_file' => ['required', 'mimes:pdf'],
+            ]);
+
+            $parentFolderId = config('services.google.folder_id');
+            $monitoringFolderId = $this->getOrCreateFolder($accessToken, 'monitoring', $parentFolderId);
+            $paperFileFolderId = $this->getOrCreateFolder($accessToken, 'paper_files', $monitoringFolderId);
+
+            $file = $request->file('paper_file');
+            $mimeType = $file->getMimeType();
+
+            $metadata = [
+                'name' => 'temp_upload.pdf',
+                'parents' => [$paperFileFolderId],
+            ];
+
+            $upload = Http::withToken($accessToken)
+                ->attach('metadata', json_encode($metadata), 'metadata.json', ['Content-Type' => 'application/json'])
+                ->attach('media', file_get_contents($file), 'temp_upload.pdf', ['Content-Type' => $mimeType])
+                ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
+
+            if ($upload->successful()) {
+                $newFileId = $upload->json()['id'];
+
+                Http::withToken($accessToken)->patch("https://www.googleapis.com/drive/v3/files/{$newFileId}", [
+                    'name' => "{$newFileId}.pdf"
+                ]);
+
+                Http::withToken($accessToken)->post("https://www.googleapis.com/drive/v3/files/{$newFileId}/permissions", [
+                    'role' => 'reader',
+                    'type' => 'anyone',
+                ]);
+
+                if ($oldFileId && $oldFileId !== $newFileId) {
+                    Http::withToken($accessToken)->delete("https://www.googleapis.com/drive/v3/files/{$oldFileId}");
+                }
+            }
+        }
+
+        $journal->update([
+            'submission' => $data['submission'],
+            'institution' => $data['institution'],
+            'paper_type' => $data['paper_type'],
+            'paper_file' => $newFileId,
+            'date_accomplished' => Carbon::parse($data['date_accomplished'])
+                ->timezone('Asia/Manila')
+                ->toDateString(),
+            'status_whole_paper' => $data['status_whole_paper'],
+            'urgency' => $data['urgency'],
+            'processing_status' => $data['processing_status'],
+            'date_published' => Carbon::parse($data['date_published'])
+                ->timezone('Asia/Manila')
+                ->toDateString(),
+            'doi' => $data['doi'],
+        ]);
+    }
+
+    public function monitoringBook(Request $request)
+    {
+        $search = $request->input('search');
+
+        $books = BookMonitoring::when($search, function ($query, $search) {
+            $query->where('book_title', 'like', "%{$search}%");
+        })
+            ->paginate(10);
+
+        return Inertia::render('web/admin/monitoring/book', [
+            'search' => $search,
+            'books' => $books
+        ]);
+    }
+
+    public function addMonitoringBook(Request $request)
+    {
+        $accessToken = $this->token();
+
+        $data = $request->validate([
+            'book_title' => ['required'],
+            'chapter' => ['required'],
+            'chapter_title' => ['required'],
+            'author' => ['required'],
+            'deadline' => ['required'],
+            'chapter_file' => ['required', 'mimes:pdf'],
+            'payment_status' => ['required'],
+            'completed_book' => ['required'],
+            'status' => ['required'],
+            'remarks' => ['required'],
+            'isbn_submission' => ['required'],
+            'nlp_submission' => ['required'],
+            'completed_electronic' => ['required'],
+            'doi' => ['required']
+        ]);
+
+        if ($request->hasFile('chapter_file')) {
+            $parentFolderId = config('services.google.folder_id');
+            $monitoringFolderId = $this->getOrCreateFolder($accessToken, 'monitoring', $parentFolderId);
+            $chapterFileFolderId = $this->getOrCreateFolder($accessToken, 'chapter_files', $monitoringFolderId);
+
+            $file = $request->file('chapter_file');
+            $mimeType = $file->getMimeType();
+
+            $tempMetadata = [
+                'name' => 'temp_upload.pdf',
+                'parents' => [$chapterFileFolderId],
+            ];
+
+            $uploadRes = Http::withToken($accessToken)
+                ->attach('metadata', json_encode($tempMetadata), 'metadata.json', ['Content-Type' => 'application/json'])
+                ->attach('media', file_get_contents($file), 'temp_upload.pdf', ['Content-Type' => $mimeType])
+                ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
+
+            if ($uploadRes->successful()) {
+                $fileId = $uploadRes->json()['id'];
+
+                Http::withToken($accessToken)->patch("https://www.googleapis.com/drive/v3/files/{$fileId}", [
+                    'name' => "{$fileId}.pdf"
+                ]);
+
+                Http::withToken($accessToken)->post("https://www.googleapis.com/drive/v3/files/{$fileId}/permissions", [
+                    'role' => 'reader',
+                    'type' => 'anyone',
+                ]);
+            }
+        }
+
+        BookMonitoring::create([
+            'book_title' => $data['book_title'],
+            'chapter' => $data['chapter'],
+            'chapter_title' => $data['chapter_title'],
+            'author' => $data['author'],
+            'deadline' => Carbon::parse($data['deadline'])
+                ->timezone('Asia/Manila')
+                ->toDateString(),
+            'chapter_file' => $fileId,
+            'payment_status' => $data['payment_status'],
+            'completed_book' => $data['completed_book'],
+            'status' => $data['status'],
+            'remarks' => $data['remarks'],
+            'isbn_submission' => $data['isbn_submission'],
+            'nlp_submission' => $data['nlp_submission'],
+            'completed_electronic' => $data['completed_electronic'],
+            'doi' => $data['doi']
+        ]);
+    }
+
+    public function updateMonitoringBook(Request $request)
+    {
+        $accessToken = $this->token();
+
+        $book = BookMonitoring::findOrFail($request->input('id'));
+
+        $data = $request->validate([
+            'book_title' => ['required'],
+            'chapter' => ['required'],
+            'chapter_title' => ['required'],
+            'author' => ['required'],
+            'deadline' => ['required'],
+            'payment_status' => ['required'],
+            'completed_book' => ['required'],
+            'status' => ['required'],
+            'remarks' => ['required'],
+            'isbn_submission' => ['required'],
+            'nlp_submission' => ['required'],
+            'completed_electronic' => ['required'],
+            'doi' => ['required']
+        ]);
+
+        $oldFileId = $book->chapter_file;
+        $newFileId = $oldFileId;
+
+        if ($request->hasFile('chapter_file')) {
+            $request->validate(rules: [
+                'chapter_file' => ['required', 'mimes:pdf'],
+            ]);
+
+            $parentFolderId = config('services.google.folder_id');
+            $monitoringFolderId = $this->getOrCreateFolder($accessToken, 'monitoring', $parentFolderId);
+            $chapterFileFolderId = $this->getOrCreateFolder($accessToken, 'chapter_files', $monitoringFolderId);
+
+            $file = $request->file('chapter_file');
+            $mimeType = $file->getMimeType();
+
+            $metadata = [
+                'name' => 'temp_upload.pdf',
+                'parents' => [$chapterFileFolderId],
+            ];
+
+            $upload = Http::withToken($accessToken)
+                ->attach('metadata', json_encode($metadata), 'metadata.json', ['Content-Type' => 'application/json'])
+                ->attach('media', file_get_contents($file), 'temp_upload.pdf', ['Content-Type' => $mimeType])
+                ->post('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart');
+
+            if ($upload->successful()) {
+                $newFileId = $upload->json()['id'];
+
+                Http::withToken($accessToken)->patch("https://www.googleapis.com/drive/v3/files/{$newFileId}", [
+                    'name' => "{$newFileId}.pdf"
+                ]);
+
+                Http::withToken($accessToken)->post("https://www.googleapis.com/drive/v3/files/{$newFileId}/permissions", [
+                    'role' => 'reader',
+                    'type' => 'anyone',
+                ]);
+
+                if ($oldFileId && $oldFileId !== $newFileId) {
+                    Http::withToken($accessToken)->delete("https://www.googleapis.com/drive/v3/files/{$oldFileId}");
+                }
+            }
+        }
+
+        $book->update([
+            'book_title' => $data['book_title'],
+            'chapter' => $data['chapter'],
+            'chapter_title' => $data['chapter_title'],
+            'author' => $data['author'],
+            'deadline' => Carbon::parse($data['deadline'])
+                ->timezone('Asia/Manila')
+                ->toDateString(),
+            'chapter_file' => $newFileId,
+            'payment_status' => $data['payment_status'],
+            'completed_book' => $data['completed_book'],
+            'status' => $data['status'],
+            'remarks' => $data['remarks'],
+            'isbn_submission' => $data['isbn_submission'],
+            'nlp_submission' => $data['nlp_submission'],
+            'completed_electronic' => $data['completed_electronic'],
+            'doi' => $data['doi']
         ]);
     }
 

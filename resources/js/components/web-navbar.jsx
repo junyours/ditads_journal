@@ -74,6 +74,20 @@ const items = [
         ],
     },
     {
+        title: "Monitoring",
+        collapse: true,
+        items: [
+            {
+                title: "Journal Monitoring",
+                url: "/monitoring/journal",
+            },
+            {
+                title: "Book Monitoring",
+                url: "/monitoring/book",
+            },
+        ],
+    },
+    {
         title: "Contact Us",
         url: "/contact-us",
         collapse: false,
@@ -288,34 +302,38 @@ export default function WebNavbar({ open, onOpenChange }) {
                                                             href={subItem.link}
                                                             target="_blank"
                                                         >
-                                                            <div className="shrink-0 size-10">
-                                                                <img
-                                                                    src={
-                                                                        subItem.icon
-                                                                    }
-                                                                    alt={
-                                                                        subItem.title
-                                                                    }
-                                                                    className="object-contain rounded-lg"
-                                                                />
-                                                            </div>
+                                                            {subItem.icon && (
+                                                                <div className="shrink-0 size-10">
+                                                                    <img
+                                                                        src={
+                                                                            subItem.icon
+                                                                        }
+                                                                        alt={
+                                                                            subItem.title
+                                                                        }
+                                                                        className="object-contain rounded-lg"
+                                                                    />
+                                                                </div>
+                                                            )}
                                                             {subItem.title}
                                                         </a>
                                                     ) : (
                                                         <Link
                                                             href={subItem.url}
                                                         >
-                                                            <div className="shrink-0 size-10">
-                                                                <img
-                                                                    src={
-                                                                        subItem.icon
-                                                                    }
-                                                                    alt={
-                                                                        subItem.title
-                                                                    }
-                                                                    className="object-contain rounded-lg"
-                                                                />
-                                                            </div>
+                                                            {subItem.icon && (
+                                                                <div className="shrink-0 size-10">
+                                                                    <img
+                                                                        src={
+                                                                            subItem.icon
+                                                                        }
+                                                                        alt={
+                                                                            subItem.title
+                                                                        }
+                                                                        className="object-contain rounded-lg"
+                                                                    />
+                                                                </div>
+                                                            )}
                                                             {subItem.title}
                                                         </Link>
                                                     )}

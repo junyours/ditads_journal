@@ -32,6 +32,7 @@ import {
     Users,
     CalendarMinus2,
     Presentation,
+    Monitor,
 } from "lucide-react";
 
 const navAdmin = [
@@ -135,6 +136,22 @@ const navAdmin = [
                 url: "/admin/web/cooperative-training-service",
                 icon: Presentation,
                 collapse: false,
+            },
+            {
+                title: "Monitoring",
+                url: "/admin/web/monitoring",
+                icon: Monitor,
+                collapse: true,
+                subitems: [
+                    {
+                        title: "Journal",
+                        url: "/journal",
+                    },
+                    {
+                        title: "Book",
+                        url: "/book",
+                    },
+                ],
             },
         ],
     },

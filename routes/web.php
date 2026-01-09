@@ -54,6 +54,13 @@ Route::middleware(['auth', 'admin', 'verified'])->group(function () {
     Route::post('/admin/web/training/upload', [AdminController::class, 'uploadTraining']);
     Route::post('/admin/web/training/update', [AdminController::class, 'updateTraining']);
 
+    Route::get('/admin/web/monitoring/journal', [AdminController::class, 'monitoringJournal']);
+    Route::post('/admin/web/monitoring/journal/add', [AdminController::class, 'addMonitoringJournal']);
+    Route::post('/admin/web/monitoring/journal/update', [AdminController::class, 'updateMonitoringJournal']);
+    Route::get('/admin/web/monitoring/book', [AdminController::class, 'monitoringBook']);
+    Route::post('/admin/web/monitoring/book/add', [AdminController::class, 'addMonitoringBook']);
+    Route::post('/admin/web/monitoring/book/update', [AdminController::class, 'updateMonitoringBook']);
+
     Route::get('/admin/others/payment-methods', [AdminController::class, 'paymentMethod']);
     Route::post('/admin/others/payment-methods/add', [AdminController::class, 'AddPaymentMethod']);
     Route::post('/admin/others/payment-methods/update', [AdminController::class, 'UpdatePaymentMethod']);
@@ -99,6 +106,9 @@ Route::get('/IMRJ/{path}', [WebController::class, 'viewIMRJ'])->where('path', '.
 Route::get('/JEBMPA/{path}', [WebController::class, 'viewJEBMPA'])->where('path', '.*');
 Route::get('/view-book/{path}', [WebController::class, 'viewBook'])->where('path', '.*');
 Route::get('/view-magazine/{path}', [WebController::class, 'viewMagazine'])->where('path', '.*');
+Route::get('/view-pdf/{path}', [WebController::class, 'viewPdf'])->where('path', '.*');
+Route::get('/monitoring/journal', [WebController::class, 'monitoringJournal']);
+Route::get('/monitoring/book', [WebController::class, 'monitoringBook']);
 Route::get('/contact-us', [WebController::class, 'contactUs']);
 
 Route::get('/sitemap.xml', function () {
@@ -106,6 +116,7 @@ Route::get('/sitemap.xml', function () {
         ->add(Url::create('/'))
         ->add(Url::create('/about-us'))
         ->add(Url::create('/events'))
+        ->add(Url::create('/cooperative-training-service'))
         ->add(Url::create('/research-consultant'))
         ->add(Url::create('/book-publication'))
         ->add(Url::create('/magazine'))
