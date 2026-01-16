@@ -1,13 +1,5 @@
 import AppLayout from "@/layouts/app-layout";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
     BookText,
     BookUser,
     Check,
@@ -19,9 +11,7 @@ import {
     Upload,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useMemo, useState } from "react";
-import { DataTable } from "@/components/table/data-table";
-import { ColumnHeader } from "@/components/table/column-header";
+import { useEffect, useMemo, useState } from "react";
 import {
     Sheet,
     SheetContent,
@@ -55,9 +45,35 @@ import {
 } from "@/components/ui/dialog";
 import Avatar from "../../../../../public/images/user.png";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuSeparator,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
+import { debounce } from "lodash";
 
 export default function BookPublication() {
-    const { books, categories, authors } = usePage().props;
+    const { search, books, categories, authors, flash } = usePage().props;
     const [open, setOpen] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
     const [previewCoverPage, setPreviewCoverPage] = useState(null);
@@ -148,6 +164,17 @@ export default function BookPublication() {
         clearErrors();
     };
 
+    const handleSearch = debounce((value) => {
+        router.get(
+            "/admin/web/book-publication",
+            { search: value },
+            {
+                preserveState: true,
+                replace: true,
+            }
+        );
+    }, 1000);
+
     const hasUnsavedChanges = () => {
         return JSON.stringify(data) !== JSON.stringify(initialData);
     };
@@ -213,99 +240,171 @@ export default function BookPublication() {
         });
     };
 
-    const columns = [
-        {
-            accessorKey: "cover_page",
-            header: "",
-            cell: ({ row }) => {
-                const book = row.original;
-                return (
-                    <div className="size-8">
-                        <img
-                            src={book.cover_page}
-                            alt="cover_page"
-                            className="size-full object-cover"
-                        />
-                    </div>
-                );
-            },
-        },
-        {
-            accessorKey: "soft_isbn",
-            header: ({ column }) => (
-                <ColumnHeader column={column} title="Soft Bound ISBN" />
-            ),
-        },
-        {
-            accessorKey: "hard_isbn",
-            header: ({ column }) => (
-                <ColumnHeader column={column} title="Hard Bound ISBN" />
-            ),
-        },
-        {
-            accessorKey: "title",
-            header: "Title",
-        },
-        {
-            accessorKey: "published_at",
-            header: "Published At",
-            cell: ({ row }) => {
-                const book = row.original;
-                return formatDate(book.published_at);
-            },
-        },
-        {
-            id: "actions",
-            cell: ({ row }) => {
-                const book = row.original;
-                return (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Open menu</span>
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem asChild>
-                                <a
-                                    href={`/view-book/${book.pdf_file}`}
-                                    target="_blank"
-                                >
-                                    <FileText />
-                                    View PDF
-                                </a>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                onClick={() => handleOpenAuthorDialog(book)}
-                            >
-                                <BookUser />
-                                Open access author
-                            </DropdownMenuItem>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem onClick={() => handleOpen(book)}>
-                                <FilePenLine />
-                                Edit
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                );
-            },
-        },
-    ];
+    useEffect(() => {
+        if (flash.error) toast.error(flash.error);
+    }, [flash]);
 
     return (
         <>
-            <DataTable
-                columns={columns}
-                data={books}
-                button={{
-                    title: "Upload",
-                    icon: Plus,
-                    onClick: () => handleOpen(),
-                }}
-            />
+            <div className="space-y-4">
+                <div className="flex items-center justify-between gap-4">
+                    <Input
+                        defaultValue={search}
+                        onChange={(e) => handleSearch(e.target.value)}
+                        className="max-w-xs"
+                        placeholder="Search..."
+                        type="search"
+                    />
+                    <Button onClick={() => handleOpen()}>
+                        <Plus />
+                        Upload
+                    </Button>
+                </div>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead></TableHead>
+                            <TableHead>Soft Bound ISBN</TableHead>
+                            <TableHead>Hard Bound ISBN</TableHead>
+                            <TableHead>Title</TableHead>
+                            <TableHead>Published At</TableHead>
+                            <TableHead className="text-right"></TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {books.data.map((book) => (
+                            <TableRow key={book.id}>
+                                <TableCell>
+                                    <div className="size-8">
+                                        <img
+                                            src={book.cover_page}
+                                            alt="cover_page"
+                                            className="size-full object-cover"
+                                        />
+                                    </div>
+                                </TableCell>
+                                <TableCell>{book.soft_isbn}</TableCell>
+                                <TableCell>{book.hard_isbn}</TableCell>
+                                <TableCell>{book.title}</TableCell>
+                                <TableCell className="whitespace-nowrap">
+                                    {formatDate(book.published_at)}
+                                </TableCell>
+                                <TableCell className="text-right">
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button
+                                                variant="ghost"
+                                                className="h-8 w-8 p-0"
+                                            >
+                                                <span className="sr-only">
+                                                    Open menu
+                                                </span>
+                                                <MoreHorizontal className="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuLabel>
+                                                Actions
+                                            </DropdownMenuLabel>
+                                            <DropdownMenuItem asChild>
+                                                <a
+                                                    href={`/view-book/${book.pdf_file}`}
+                                                    target="_blank"
+                                                >
+                                                    <FileText />
+                                                    View PDF
+                                                </a>
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem
+                                                onClick={() =>
+                                                    handleOpenAuthorDialog(book)
+                                                }
+                                            >
+                                                <BookUser />
+                                                Open access author
+                                            </DropdownMenuItem>
+                                            <DropdownMenuSeparator />
+                                            <DropdownMenuItem
+                                                onClick={() => handleOpen(book)}
+                                            >
+                                                <FilePenLine />
+                                                Edit
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                <Pagination className="justify-end">
+                    <PaginationContent>
+                        <PaginationItem>
+                            <PaginationPrevious
+                                className={cn(
+                                    "cursor-default",
+                                    books.current_page > 1
+                                        ? ""
+                                        : "pointer-events-none opacity-50"
+                                )}
+                                onClick={() =>
+                                    books.current_page > 1 &&
+                                    router.get(
+                                        "/admin/web/book-publication",
+                                        {
+                                            page: books.current_page - 1,
+                                            search: search ?? "",
+                                        },
+                                        { preserveState: true }
+                                    )
+                                }
+                            />
+                        </PaginationItem>
+                        {Array.from(
+                            { length: books.last_page },
+                            (_, i) => i + 1
+                        ).map((page) => (
+                            <PaginationItem key={page}>
+                                <PaginationLink
+                                    isActive={page === books.current_page}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        router.get(
+                                            "/admin/web/book-publication",
+                                            { page, search: search ?? "" },
+                                            { preserveState: true }
+                                        );
+                                    }}
+                                    className="cursor-default"
+                                >
+                                    {page}
+                                </PaginationLink>
+                            </PaginationItem>
+                        ))}
+                        <PaginationItem>
+                            <PaginationNext
+                                className={cn(
+                                    "cursor-default",
+                                    books.current_page < books.last_page
+                                        ? ""
+                                        : "pointer-events-none opacity-50"
+                                )}
+                                onClick={() =>
+                                    books.current_page < books.last_page &&
+                                    router.get(
+                                        "/admin/web/book-publication",
+                                        {
+                                            page: books.current_page + 1,
+                                            search: search ?? "",
+                                        },
+                                        { preserveState: true }
+                                    )
+                                }
+                            />
+                        </PaginationItem>
+                    </PaginationContent>
+                </Pagination>
+            </div>
 
             <Sheet
                 open={open}

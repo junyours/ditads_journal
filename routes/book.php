@@ -4,7 +4,7 @@ use App\Http\Controllers\Book\CustomerController;
 use App\Http\Controllers\PaymentController;
 use Illuminate\Support\Facades\Route;
 
-Route::middleware(['auth', 'customer', 'verified'])->group(function () {
+Route::middleware(['auth', 'role:customer', 'verified'])->group(function () {
   Route::get('/books', [CustomerController::class, 'book']);
   Route::get('/book/{title}/{author}/{cover_file_id}', [CustomerController::class, 'bookDetail']);
 

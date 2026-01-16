@@ -2,25 +2,25 @@
 
 namespace App\Http\Middleware;
 
-use Auth;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
-class Editor
+class Role
 {
     /**
      * Handle an incoming request.
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request $request, Closure $next, $role): Response
     {
         if (!Auth::check()) {
             return redirect('/sign-in');
         }
 
-        if (Auth::user()->role !== 'editor') {
+        if (Auth::user()->role !== $role) {
             abort(403);
         }
 

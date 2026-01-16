@@ -1,13 +1,5 @@
 import AppLayout from "@/layouts/app-layout";
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { ColumnHeader } from "@/components/table/column-header";
-import {
     FilePenLine,
     Loader,
     MoreHorizontal,
@@ -16,8 +8,7 @@ import {
     Upload,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
-import { DataTable } from "@/components/table/data-table";
+import { useEffect, useState } from "react";
 import {
     Sheet,
     SheetContent,
@@ -43,6 +34,31 @@ import {
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import CountryCombobox from "@/components/country-combobox";
+import { debounce } from "lodash";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
+import {
+    Pagination,
+    PaginationContent,
+    PaginationItem,
+    PaginationLink,
+    PaginationNext,
+    PaginationPrevious,
+} from "@/components/ui/pagination";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuLabel,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { cn } from "@/lib/utils";
 
 const baseYear = 2025;
 const now = new Date();
@@ -67,7 +83,7 @@ if (currentMonth >= 4 && currentMonth <= 6) {
 }
 
 export default function JEBMPA() {
-    const { journals } = usePage().props;
+    const { search, journals, flash } = usePage().props;
     const [open, setOpen] = useState(false);
     const [editData, setEditData] = useState(false);
     const [initialData, setInitialData] = useState(null);
@@ -144,6 +160,17 @@ export default function JEBMPA() {
         clearErrors();
     };
 
+    const handleSearch = debounce((value) => {
+        router.get(
+            "/admin/web/research-journal/jebmpa",
+            { search: value },
+            {
+                preserveState: true,
+                replace: true,
+            }
+        );
+    }, 1000);
+
     const hasUnsavedChanges = () => {
         return JSON.stringify(data) !== JSON.stringify(initialData);
     };
@@ -189,81 +216,159 @@ export default function JEBMPA() {
         );
     };
 
-    const columns = [
-        {
-            accessorKey: "title",
-            header: "Title",
-        },
-        {
-            accessorKey: "volume",
-            header: ({ column }) => (
-                <ColumnHeader column={column} title="Volume" />
-            ),
-        },
-        {
-            accessorKey: "issue",
-            header: ({ column }) => (
-                <ColumnHeader column={column} title="Issue" />
-            ),
-        },
-        {
-            accessorKey: "published_at",
-            header: "Published At",
-            cell: ({ row }) => {
-                const journal = row.original;
-                return formatDate(journal.published_at);
-            },
-        },
-        {
-            id: "actions",
-            cell: ({ row }) => {
-                const journal = row.original;
-                return (
-                    <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                                <span className="sr-only">Open menu</span>
-                                <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <DropdownMenuItem
-                                onClick={() => handleOpen(journal)}
-                            >
-                                <FilePenLine />
-                                Edit
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                                onClick={() =>
-                                    setShowDelete({
-                                        id: journal.id,
-                                        title: journal.title,
-                                        show: true,
-                                    })
-                                }
-                                className="text-destructive"
-                            >
-                                <Trash />
-                                Delete
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                );
-            },
-        },
-    ];
+    useEffect(() => {
+        if (flash.error) toast.error(flash.error);
+    }, [flash]);
+
     return (
         <>
-            <DataTable
-                columns={columns}
-                data={journals}
-                button={{
-                    title: "Upload",
-                    icon: Plus,
-                    onClick: () => handleOpen(),
-                }}
-            />
+            <div className="space-y-4">
+                <div className="flex items-center justify-between gap-4">
+                    <Input
+                        defaultValue={search}
+                        onChange={(e) => handleSearch(e.target.value)}
+                        className="max-w-xs"
+                        placeholder="Search..."
+                        type="search"
+                    />
+                    <Button onClick={() => handleOpen()}>
+                        <Plus />
+                        Upload
+                    </Button>
+                </div>
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Title</TableHead>
+                            <TableHead>Volume</TableHead>
+                            <TableHead>Issue</TableHead>
+                            <TableHead>Published At</TableHead>
+                            <TableHead className="text-right"></TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                        {journals.data.map((journal) => (
+                            <TableRow key={journal.id}>
+                                <TableCell>{journal.title}</TableCell>
+                                <TableCell>{journal.volume}</TableCell>
+                                <TableCell>{journal.issue}</TableCell>
+                                <TableCell className="whitespace-nowrap">
+                                    {formatDate(journal.published_at)}
+                                </TableCell>
+                                <TableCell className="text-right">
+                                    <DropdownMenu>
+                                        <DropdownMenuTrigger asChild>
+                                            <Button
+                                                variant="ghost"
+                                                className="h-8 w-8 p-0"
+                                            >
+                                                <span className="sr-only">
+                                                    Open menu
+                                                </span>
+                                                <MoreHorizontal className="h-4 w-4" />
+                                            </Button>
+                                        </DropdownMenuTrigger>
+                                        <DropdownMenuContent align="end">
+                                            <DropdownMenuLabel>
+                                                Actions
+                                            </DropdownMenuLabel>
+                                            <DropdownMenuItem
+                                                onClick={() =>
+                                                    handleOpen(journal)
+                                                }
+                                            >
+                                                <FilePenLine />
+                                                Edit
+                                            </DropdownMenuItem>
+                                            <DropdownMenuItem
+                                                onClick={() =>
+                                                    setShowDelete({
+                                                        id: journal.id,
+                                                        title: journal.title,
+                                                        show: true,
+                                                    })
+                                                }
+                                                className="text-destructive"
+                                            >
+                                                <Trash />
+                                                Delete
+                                            </DropdownMenuItem>
+                                        </DropdownMenuContent>
+                                    </DropdownMenu>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+                <Pagination className="justify-end">
+                    <PaginationContent>
+                        <PaginationItem>
+                            <PaginationPrevious
+                                className={cn(
+                                    "cursor-default",
+                                    journals.current_page > 1
+                                        ? ""
+                                        : "pointer-events-none opacity-50"
+                                )}
+                                onClick={() =>
+                                    journals.current_page > 1 &&
+                                    router.get(
+                                        "/admin/web/research-journal/jebmpa",
+                                        {
+                                            page: journals.current_page - 1,
+                                            search: search ?? "",
+                                        },
+                                        { preserveState: true }
+                                    )
+                                }
+                            />
+                        </PaginationItem>
+                        {Array.from(
+                            { length: journals.last_page },
+                            (_, i) => i + 1
+                        ).map((page) => (
+                            <PaginationItem key={page}>
+                                <PaginationLink
+                                    isActive={page === journals.current_page}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        router.get(
+                                            "/admin/web/research-journal/jebmpa",
+                                            { page, search: search ?? "" },
+                                            { preserveState: true }
+                                        );
+                                    }}
+                                    className="cursor-default"
+                                >
+                                    {page}
+                                </PaginationLink>
+                            </PaginationItem>
+                        ))}
+                        <PaginationItem>
+                            <PaginationNext
+                                className={cn(
+                                    "cursor-default",
+                                    journals.current_page < journals.last_page
+                                        ? ""
+                                        : "pointer-events-none opacity-50"
+                                )}
+                                onClick={() =>
+                                    journals.current_page <
+                                        journals.last_page &&
+                                    router.get(
+                                        "/admin/web/research-journal/jebmpa",
+                                        {
+                                            page: journals.current_page + 1,
+                                            search: search ?? "",
+                                        },
+                                        { preserveState: true }
+                                    )
+                                }
+                            />
+                        </PaginationItem>
+                    </PaginationContent>
+                </Pagination>
+            </div>
 
             <Sheet
                 open={open}

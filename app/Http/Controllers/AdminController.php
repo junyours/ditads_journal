@@ -25,46 +25,6 @@ use Inertia\Inertia;
 
 class AdminController extends Controller
 {
-    private function token()
-    {
-        $client_id = config('services.google.client_id');
-        $client_secret = config('services.google.client_secret');
-        $refresh_token = config('services.google.refresh_token');
-
-        $response = Http::asForm()->post('https://oauth2.googleapis.com/token', [
-            'client_id' => $client_id,
-            'client_secret' => $client_secret,
-            'refresh_token' => $refresh_token,
-            'grant_type' => 'refresh_token',
-        ]);
-
-        if (!$response->successful()) {
-            throw new \Exception('Failed to get Google access token: ' . $response->body());
-        }
-
-        return $response->json()['access_token'];
-    }
-
-    private function getOrCreateFolder($accessToken, $folderName, $parentId)
-    {
-        $response = Http::withToken($accessToken)->get('https://www.googleapis.com/drive/v3/files', [
-            'q' => "name='{$folderName}' and '{$parentId}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false",
-            'fields' => 'files(id)',
-        ]);
-
-        if ($response->successful() && count($response['files']) > 0) {
-            return $response['files'][0]['id'];
-        }
-
-        $create = Http::withToken($accessToken)->post('https://www.googleapis.com/drive/v3/files', [
-            'name' => $folderName,
-            'mimeType' => 'application/vnd.google-apps.folder',
-            'parents' => [$parentId],
-        ]);
-
-        return $create->json()['id'];
-    }
-
     public function dashboard()
     {
         $journals = ResearchJournal::select(
@@ -109,7 +69,7 @@ class AdminController extends Controller
     {
         $accessToken = $this->token();
 
-        $request->validate([
+        $data = $request->validate([
             'email' => ['required', 'email', 'unique:users'],
             'name' => ['required'],
             'position' => ['required'],
@@ -152,14 +112,14 @@ class AdminController extends Controller
         }
 
         User::create([
-            'name' => $request->name,
-            'email' => $request->email,
+            'name' => $data['name'],
+            'email' => $data['email'],
             'email_verified_at' => now(),
             'password' => Hash::make('P@ssw0rd'),
             'is_default' => 1,
             'role' => 'editor',
-            'position' => $request->position,
-            'department' => $request->department,
+            'position' => $data['position'],
+            'department' => $data['department'],
             'avatar' => $avatarUrl ?? null,
             'file_id' => $fileId ?? null,
         ]);
@@ -167,21 +127,21 @@ class AdminController extends Controller
 
     public function updateEditor(Request $request)
     {
-        $editor = User::findOrFail($request->id);
+        $editor = User::findOrFail($request->input('id'));
         $accessToken = $this->token();
 
-        $request->validate([
-            'email' => ['required', 'email', 'unique:users,email,' . $request->id],
+        $data = $request->validate([
+            'email' => ['required', 'email', 'unique:users,email,' . $request->input('id')],
             'name' => ['required'],
             'position' => ['required'],
             'department' => ['required'],
         ]);
 
-        $editor->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'position' => $request->position,
-            'department' => $request->department,
+        $editor->query()->update([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'position' => $data['position'],
+            'department' => $data['department'],
         ]);
 
         if ($request->hasFile('avatar')) {
@@ -224,7 +184,7 @@ class AdminController extends Controller
 
                 $avatarUrl = "https://drive.google.com/thumbnail?id={$fileId}";
 
-                $editor->update([
+                $editor->query()->update([
                     'avatar' => $avatarUrl,
                     'file_id' => $fileId,
                 ]);
@@ -247,7 +207,7 @@ class AdminController extends Controller
     {
         $accessToken = $this->token();
 
-        $request->validate([
+        $data = $request->validate([
             'email' => ['required', 'email', 'unique:users'],
             'name' => ['required'],
             'position' => ['required'],
@@ -289,14 +249,14 @@ class AdminController extends Controller
         }
 
         User::create([
-            'name' => $request->name,
-            'email' => $request->email,
+            'name' => $data['name'],
+            'email' => $data['email'],
             'email_verified_at' => now(),
             'password' => Hash::make('P@ssw0rd'),
             'is_default' => 1,
             'role' => 'consultant',
-            'position' => $request->position,
-            'department' => $request->department,
+            'position' => $data['position'],
+            'department' => $data['department'],
             'avatar' => $avatarUrl ?? null,
             'file_id' => $fileId ?? null
         ]);
@@ -304,21 +264,21 @@ class AdminController extends Controller
 
     public function updateConsultant(Request $request)
     {
-        $consultant = User::findOrFail($request->id);
+        $consultant = User::findOrFail($request->input('id'));
         $accessToken = $this->token();
 
-        $request->validate([
-            'email' => ['required', 'email', 'unique:users,email,' . $request->id],
+        $data = $request->validate([
+            'email' => ['required', 'email', 'unique:users,email,' . $request->input('id')],
             'name' => ['required'],
             'position' => ['required'],
             'department' => ['required'],
         ]);
 
-        $consultant->update([
-            'name' => $request->name,
-            'email' => $request->email,
-            'position' => $request->position,
-            'department' => $request->department
+        $consultant->query()->update([
+            'name' => $data['name'],
+            'email' => $data['email'],
+            'position' => $data['position'],
+            'department' => $data['department']
         ]);
 
         if ($request->hasFile('avatar')) {
@@ -361,7 +321,7 @@ class AdminController extends Controller
 
                 $avatarUrl = "https://drive.google.com/thumbnail?id={$fileId}";
 
-                $consultant->update([
+                $consultant->query()->update([
                     'avatar' => $avatarUrl,
                     'file_id' => $fileId
                 ]);
@@ -384,7 +344,7 @@ class AdminController extends Controller
     {
         $accessToken = $this->token();
 
-        $request->validate([
+        $data = $request->validate([
             'email' => ['required', 'email', 'unique:users'],
             'name' => ['required']
         ]);
@@ -424,8 +384,8 @@ class AdminController extends Controller
         }
 
         User::create([
-            'name' => $request->name,
-            'email' => $request->email,
+            'name' => $data['name'],
+            'email' => $data['email'],
             'email_verified_at' => now(),
             'password' => Hash::make('P@ssw0rd'),
             'is_default' => 1,
@@ -437,17 +397,17 @@ class AdminController extends Controller
 
     public function updateAuthor(Request $request)
     {
-        $author = User::findOrFail($request->id);
+        $author = User::findOrFail($request->input('id'));
         $accessToken = $this->token();
 
-        $request->validate([
-            'email' => ['required', 'email', 'unique:users,email,' . $request->id],
+        $data = $request->validate([
+            'email' => ['required', 'email', 'unique:users,email,' . $request->input('id')],
             'name' => ['required']
         ]);
 
-        $author->update([
-            'name' => $request->name,
-            'email' => $request->email,
+        $author->query()->update([
+            'name' => $data['name'],
+            'email' => $data['email'],
         ]);
 
         if ($request->hasFile('avatar')) {
@@ -490,7 +450,7 @@ class AdminController extends Controller
 
                 $avatarUrl = "https://drive.google.com/thumbnail?id={$fileId}";
 
-                $author->update([
+                $author->query()->update([
                     'avatar' => $avatarUrl,
                     'file_id' => $fileId
                 ]);
@@ -498,10 +458,16 @@ class AdminController extends Controller
         }
     }
 
-    public function getBookPublication()
+    public function getBookPublication(Request $request)
     {
+        $search = $request->input('search');
+
         $books = BookPublication::select('id', 'title', 'soft_isbn', 'hard_isbn', 'cover_page', 'author', 'overview', 'published_at', 'pdf_file', 'book_category_id', 'doi', 'overview_pdf_file', 'hard_price', 'open_access')
-            ->get();
+            ->when($search, function ($query, $search) {
+                $query->where('title', 'like', "%{$search}%");
+            })
+            ->orderByDesc('published_at')
+            ->paginate(50);
 
         $categories = BookCategory::select('id', 'name')->get();
 
@@ -515,6 +481,7 @@ class AdminController extends Controller
             ->get();
 
         return Inertia::render('web/admin/book-publication', [
+            'search' => $search,
             'books' => $books,
             'categories' => $categories,
             'authors' => $authors
@@ -525,7 +492,7 @@ class AdminController extends Controller
     {
         $accessToken = $this->token();
 
-        $request->validate([
+        $data = $request->validate([
             'title' => ['required'],
             'soft_isbn' => ['required', 'unique:book_publications'],
             'hard_isbn' => ['nullable', 'unique:book_publications'],
@@ -645,35 +612,35 @@ class AdminController extends Controller
         }
 
         BookPublication::create([
-            'title' => $request->title,
-            'soft_isbn' => $request->soft_isbn,
-            'hard_isbn' => $request->hard_isbn,
+            'title' => $data['title'],
+            'soft_isbn' => $data['soft_isbn'],
+            'hard_isbn' => $data['hard_isbn'],
             'cover_page' => $coverPageUrl,
             'cover_file_id' => $coverFileId,
-            'author' => $request->author,
-            'overview' => $request->overview,
-            'published_at' => Carbon::parse($request->published_at)
+            'author' => $data['author'],
+            'overview' => $data['overview'],
+            'published_at' => Carbon::parse($data['published_at'])
                 ->timezone('Asia/Manila')
                 ->toDateString(),
             'pdf_file' => $pdfFileId,
             // 'book_category_id' => $request->book_category_id,
-            'doi' => $request->doi,
+            'doi' => $data['doi'],
             // 'overview_pdf_file' => $overviewPdfFileId,
-            'hard_price' => $request->hard_price,
+            'hard_price' => $data['hard_price'],
             // 'soft_price' => $request->soft_price,
-            'open_access' => $request->open_access,
+            'open_access' => $request->input('open_access'),
         ]);
     }
 
     public function updateBookPublication(Request $request)
     {
-        $book = BookPublication::findOrFail($request->id);
+        $book = BookPublication::findOrFail($request->input('id'));
         $accessToken = $this->token();
 
-        $request->validate([
+        $data = $request->validate([
             'title' => ['required'],
-            'soft_isbn' => ['required', 'unique:book_publications,soft_isbn,' . $request->id],
-            'hard_isbn' => ['nullable', 'unique:book_publications,hard_isbn,' . $request->id],
+            'soft_isbn' => ['required', 'unique:book_publications,soft_isbn,' . $request->input('id')],
+            'hard_isbn' => ['nullable', 'unique:book_publications,hard_isbn,' . $request->input('id')],
             'author' => ['required'],
             'overview' => ['required'],
             'published_at' => ['required'],
@@ -687,20 +654,20 @@ class AdminController extends Controller
             // 'soft_price.required' => 'The soft bound price field is required.'
         ]);
 
-        $book->update([
-            'title' => $request->title,
-            'soft_isbn' => $request->soft_isbn,
-            'hard_isbn' => $request->hard_isbn,
-            'author' => $request->author,
-            'overview' => $request->overview,
-            'published_at' => Carbon::parse($request->published_at)
+        $book->query()->update([
+            'title' => $data['title'],
+            'soft_isbn' => $data['soft_isbn'],
+            'hard_isbn' => $data['hard_isbn'],
+            'author' => $data['author'],
+            'overview' => $data['overview'],
+            'published_at' => Carbon::parse($data['published_at'])
                 ->timezone('Asia/Manila')
                 ->toDateString(),
             // 'book_category_id' => $request->book_category_id,
-            'doi' => $request->doi,
-            'hard_price' => $request->hard_price,
+            'doi' => $data['doi'],
+            'hard_price' => $data['hard_price'],
             // 'soft_price' => $request->soft_price,
-            'open_access' => $request->open_access,
+            'open_access' => $request->input('open_access'),
         ]);
 
         if ($request->hasFile('cover_page')) {
@@ -743,7 +710,7 @@ class AdminController extends Controller
 
                 $coverPageUrl = "https://drive.google.com/thumbnail?id={$coverFileId}";
 
-                $book->update([
+                $book->query()->update([
                     'cover_page' => $coverPageUrl,
                     'cover_file_id' => $coverFileId
                 ]);
@@ -788,7 +755,7 @@ class AdminController extends Controller
 
                 Http::withToken($accessToken)->delete("https://www.googleapis.com/drive/v3/files/{$book->pdf_file}");
 
-                $book->update([
+                $book->query()->update([
                     'pdf_file' => $newPdfFileId,
                 ]);
             }
@@ -830,7 +797,7 @@ class AdminController extends Controller
 
                 Http::withToken($accessToken)->delete("https://www.googleapis.com/drive/v3/files/{$book->overview_pdf_file}");
 
-                $book->update([
+                $book->query()->update([
                     'overview_pdf_file' => $newOverviewPdfFileId,
                 ]);
             }
@@ -839,12 +806,12 @@ class AdminController extends Controller
 
     public function linkAuthorBook(Request $request)
     {
-        AuthorBook::where('book_publication_id', $request->book_id)->delete();
+        AuthorBook::query()->where('book_publication_id', $request->input('book_id'))->delete();
 
-        foreach ($request->author_id as $authorId) {
+        foreach ($request->input('author_id') as $authorId) {
             AuthorBook::create(attributes: [
                 'author_id' => $authorId,
-                'book_publication_id' => $request->book_id,
+                'book_publication_id' => $request->input('book_id'),
             ]);
         }
     }
@@ -863,7 +830,7 @@ class AdminController extends Controller
     {
         $accessToken = $this->token();
 
-        $request->validate([
+        $data = $request->validate([
             'cover_page' => ['required', 'mimes:jpeg,jpg,png'],
             'volume' => ['required'],
             'issue' => ['required'],
@@ -939,11 +906,11 @@ class AdminController extends Controller
 
         Magazine::create([
             'cover_page' => $coverPageUrl,
-            'volume' => $request->volume,
-            'issue' => $request->issue,
+            'volume' => $data['volume'],
+            'issue' => $data['issue'],
             'pdf_file' => $fileId,
             'cover_file_id' => $coverFileId,
-            'published_at' => Carbon::parse($request->published_at)
+            'published_at' => Carbon::parse($data['published_at'])
                 ->timezone('Asia/Manila')
                 ->toDateString(),
         ]);
@@ -951,19 +918,19 @@ class AdminController extends Controller
 
     public function updateMagazine(Request $request)
     {
-        $magazine = Magazine::findOrFail($request->id);
+        $magazine = Magazine::findOrFail($request->input('id'));
         $accessToken = $this->token();
 
-        $request->validate([
+        $data = $request->validate([
             'volume' => ['required'],
             'issue' => ['required'],
             'published_at' => ['required'],
         ]);
 
-        $magazine->update([
-            'volume' => $request->volume,
-            'issue' => $request->issue,
-            'published_at' => Carbon::parse($request->published_at)
+        $magazine->query()->update([
+            'volume' => $data['volume'],
+            'issue' => $data['issue'],
+            'published_at' => Carbon::parse($data['published_at'])
                 ->timezone('Asia/Manila')
                 ->toDateString(),
         ]);
@@ -1008,7 +975,7 @@ class AdminController extends Controller
 
                 $coverPageUrl = "https://drive.google.com/thumbnail?id={$coverFileId}";
 
-                $magazine->update([
+                $magazine->query()->update([
                     'cover_page' => $coverPageUrl,
                     'cover_file_id' => $coverFileId
                 ]);
@@ -1053,15 +1020,17 @@ class AdminController extends Controller
 
                 Http::withToken($accessToken)->delete("https://www.googleapis.com/drive/v3/files/{$magazine->pdf_file}");
 
-                $magazine->update([
+                $magazine->query()->update([
                     'pdf_file' => $newPdfFileId,
                 ]);
             }
         }
     }
 
-    public function getIMRJ()
+    public function getIMRJ(Request $request)
     {
+        $search = $request->input('search');
+
         $journals = ResearchJournal::select(
             'id',
             'volume',
@@ -1077,17 +1046,23 @@ class AdminController extends Controller
             'doi',
             'type'
         )
+            ->when($search, function ($query, $search) {
+                $query->where('title', 'like', "%{$search}%");
+            })
             ->where('type', 'imrj')
-            ->orderBy('published_at', 'DESC')
-            ->get();
+            ->orderByDesc('published_at')
+            ->paginate(50);
 
         return Inertia::render('web/admin/research-journal/imrj', [
+            'search' => $search,
             'journals' => $journals
         ]);
     }
 
-    public function getJEBMPA()
+    public function getJEBMPA(Request $request)
     {
+        $search = $request->input('search');
+
         $journals = ResearchJournal::select(
             'id',
             'volume',
@@ -1103,11 +1078,15 @@ class AdminController extends Controller
             'doi',
             'type'
         )
+            ->when($search, function ($query, $search) {
+                $query->where('title', 'like', "%{$search}%");
+            })
             ->where('type', 'jebmpa')
-            ->orderBy('published_at', 'DESC')
-            ->get();
+            ->orderByDesc('published_at')
+            ->paginate(50);
 
         return Inertia::render('web/admin/research-journal/jebmpa', [
+            'search' => $search,
             'journals' => $journals
         ]);
     }
@@ -1116,7 +1095,7 @@ class AdminController extends Controller
     {
         $accessToken = $this->token();
 
-        $request->validate([
+        $data = $request->validate([
             'volume' => ['required'],
             'issue' => ['required'],
             'title' => ['required'],
@@ -1163,27 +1142,27 @@ class AdminController extends Controller
         }
 
         ResearchJournal::create([
-            'volume' => $request->volume,
-            'issue' => $request->issue,
-            'title' => $request->title,
-            'author' => $request->author,
-            'abstract' => $request->abstract,
+            'volume' => $data['volume'],
+            'issue' => $data['issue'],
+            'title' => $data['title'],
+            'author' => $data['author'],
+            'abstract' => $data['abstract'],
             'pdf_file' => $fileId,
-            'published_at' => Carbon::parse($request->published_at)->timezone('Asia/Manila')->toDateString(),
-            'country' => $request->country,
-            'page_number' => $request->page_number,
-            'tracking_number' => $request->tracking_number,
-            'doi' => $request->doi,
-            'type' => $request->type
+            'published_at' => Carbon::parse($data['published_at'])->timezone('Asia/Manila')->toDateString(),
+            'country' => $data['country'],
+            'page_number' => $data['page_number'],
+            'tracking_number' => $data['tracking_number'],
+            'doi' => $data['doi'],
+            'type' => $request->input('type')
         ]);
     }
 
     public function updateResearchJournal(Request $request)
     {
-        $journal = ResearchJournal::findOrFail($request->id);
+        $journal = ResearchJournal::findOrFail($request->input('id'));
         $accessToken = $this->token();
 
-        $request->validate([
+        $data = $request->validate([
             'volume' => ['required'],
             'issue' => ['required'],
             'title' => ['required'],
@@ -1192,7 +1171,7 @@ class AdminController extends Controller
             'published_at' => ['required'],
             'country' => ['required'],
             'page_number' => ['required'],
-            'tracking_number' => ['required', 'unique:research_journals,tracking_number,' . $request->id],
+            'tracking_number' => ['required', 'unique:research_journals,tracking_number,' . $request->input('id')],
             'doi' => ['required'],
         ]);
 
@@ -1239,31 +1218,31 @@ class AdminController extends Controller
             }
         }
 
-        $journal->update([
-            'volume' => $request->volume,
-            'issue' => $request->issue,
-            'title' => $request->title,
-            'author' => $request->author,
-            'abstract' => $request->abstract,
-            'published_at' => Carbon::parse($request->published_at)->timezone('Asia/Manila')->toDateString(),
-            'country' => $request->country,
-            'page_number' => $request->page_number,
+        $journal->query()->update([
+            'volume' => $data['volume'],
+            'issue' => $data['issue'],
+            'title' => $data['title'],
+            'author' => $data['author'],
+            'abstract' => $data['abstract'],
+            'published_at' => Carbon::parse($data['published_at'])->timezone('Asia/Manila')->toDateString(),
+            'country' => $data['country'],
+            'page_number' => $data['page_number'],
             'pdf_file' => $newFileId,
-            'tracking_number' => $request->tracking_number,
-            'doi' => $request->doi
+            'tracking_number' => $data['tracking_number'],
+            'doi' => $data['doi']
         ]);
     }
 
     public function deleteResearchJournal(Request $request)
     {
-        $journal = ResearchJournal::findOrFail($request->id);
+        $journal = ResearchJournal::findOrFail($request->input('id'));
         $accessToken = $this->token();
 
         if ($journal->pdf_file) {
             Http::withToken($accessToken)->delete("https://www.googleapis.com/drive/v3/files/{$journal->pdf_file}");
         }
 
-        $journal->delete();
+        $journal->query()->delete();
     }
 
     public function event()
@@ -1280,7 +1259,7 @@ class AdminController extends Controller
     {
         $accessToken = $this->token();
 
-        $request->validate([
+        $data = $request->validate([
             'image' => ['required', 'mimes:jpeg,jpg,png'],
             'title' => ['required'],
             'contents' => ['required'],
@@ -1324,9 +1303,9 @@ class AdminController extends Controller
         Event::create([
             'image' => $imageUrl,
             'image_file_id' => $imageFileId,
-            'title' => $request->title,
-            'content' => $request->contents,
-            'date' => Carbon::parse($request->date)
+            'title' => $data['title'],
+            'content' => $data['contents'],
+            'date' => Carbon::parse($data['date'])
                 ->timezone('Asia/Manila')
                 ->toDateString(),
         ]);
@@ -1334,19 +1313,19 @@ class AdminController extends Controller
 
     public function updateEvent(Request $request)
     {
-        $event = Event::findOrFail($request->id);
+        $event = Event::findOrFail($request->input('id'));
         $accessToken = $this->token();
 
-        $request->validate([
+        $data = $request->validate([
             'title' => ['required'],
             'contents' => ['required'],
             'date' => ['required'],
         ]);
 
-        $event->update([
-            'title' => $request->title,
-            'content' => $request->contents,
-            'date' => Carbon::parse($request->date)
+        $event->query()->update([
+            'title' => $data['title'],
+            'content' => $data['contents'],
+            'date' => Carbon::parse($data['date'])
                 ->timezone('Asia/Manila')
                 ->toDateString(),
         ]);
@@ -1391,7 +1370,7 @@ class AdminController extends Controller
 
                 $imageUrl = "https://drive.google.com/thumbnail?id={$imageFileId}";
 
-                $event->update(attributes: [
+                $event->query()->update([
                     'image' => $imageUrl,
                     'image_file_id' => $imageFileId,
                 ]);
@@ -1414,7 +1393,7 @@ class AdminController extends Controller
 
     public function trainingApplicant($event_name)
     {
-        $training = CooperativeTraining::where('event_name', $event_name)
+        $training = CooperativeTraining::query()->where('event_name', $event_name)
             ->with('applicant_training.applicant')
             ->firstOrFail();
 
@@ -1432,14 +1411,14 @@ class AdminController extends Controller
     {
         $applicant = ApplicantTraining::findOrFail($id);
 
-        $applicant->update([
+        $applicant->query()->update([
             'status' => 'approved'
         ]);
     }
 
     public function uploadTraining(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'event_name' => ['required'],
             'description' => ['required'],
             'from_date' => ['required'],
@@ -1447,12 +1426,12 @@ class AdminController extends Controller
         ]);
 
         CooperativeTraining::create([
-            'event_name' => $request->event_name,
-            'description' => $request->description,
-            'from_date' => Carbon::parse($request->from_date)
+            'event_name' => $data['event_name'],
+            'description' => $data['description'],
+            'from_date' => Carbon::parse($data['from_date'])
                 ->timezone('Asia/Manila')
                 ->toDateString(),
-            'to_date' => Carbon::parse($request->to_date)
+            'to_date' => Carbon::parse($data['to_date'])
                 ->timezone('Asia/Manila')
                 ->toDateString(),
         ]);
@@ -1460,22 +1439,22 @@ class AdminController extends Controller
 
     public function updateTraining(Request $request)
     {
-        $training = CooperativeTraining::findOrFail($request->id);
+        $training = CooperativeTraining::findOrFail($request->input('id'));
 
-        $request->validate([
+        $data = $request->validate([
             'event_name' => ['required'],
             'description' => ['required'],
             'from_date' => ['required'],
             'to_date' => ['required'],
         ]);
 
-        $training->update([
-            'event_name' => $request->event_name,
-            'description' => $request->description,
-            'from_date' => Carbon::parse($request->from_date)
+        $training->query()->update([
+            'event_name' => $data['event_name'],
+            'description' => $data['description'],
+            'from_date' => Carbon::parse($data['from_date'])
                 ->timezone('Asia/Manila')
                 ->toDateString(),
-            'to_date' => Carbon::parse($request->to_date)
+            'to_date' => Carbon::parse($data['to_date'])
                 ->timezone('Asia/Manila')
                 ->toDateString(),
         ]);
@@ -1485,7 +1464,7 @@ class AdminController extends Controller
     {
         $search = $request->input('search');
 
-        $journals = JournalMonitoring::when($search, function ($query, $search) {
+        $journals = JournalMonitoring::query()->when($search, function ($query, $search) {
             $query->where('submission', 'like', "%{$search}%");
         })
             ->paginate(10);
@@ -1624,7 +1603,7 @@ class AdminController extends Controller
             }
         }
 
-        $journal->update([
+        $journal->query()->update([
             'submission' => $data['submission'],
             'institution' => $data['institution'],
             'paper_type' => $data['paper_type'],
@@ -1646,7 +1625,7 @@ class AdminController extends Controller
     {
         $search = $request->input('search');
 
-        $books = BookMonitoring::when($search, function ($query, $search) {
+        $books = BookMonitoring::query()->when($search, function ($query, $search) {
             $query->where('book_title', 'like', "%{$search}%");
         })
             ->paginate(10);
@@ -1795,7 +1774,7 @@ class AdminController extends Controller
             }
         }
 
-        $book->update([
+        $book->query()->update([
             'book_title' => $data['book_title'],
             'chapter' => $data['chapter'],
             'chapter_title' => $data['chapter_title'],
@@ -1826,14 +1805,14 @@ class AdminController extends Controller
 
     public function AddPaymentMethod(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'name' => ['required', 'unique:payment_methods'],
             'account_name' => ['required'],
             'account_email' => ['unique:payment_methods'],
-            'qr_code' => $request->have_qr === 'yes' ? ['required', 'mimes:jpeg,jpg,png', 'max:2048'] : ['nullable'],
+            'qr_code' => $request->input('have_qr') === 'yes' ? ['required', 'mimes:jpeg,jpg,png', 'max:2048'] : ['nullable'],
         ]);
 
-        if ($request->have_qr === 'yes') {
+        if ($request->input('have_qr') === 'yes') {
             $uploadedQrCode = Cloudinary::uploadApi()->upload(
                 $request->file('qr_code')->getRealPath(),
                 [
@@ -1845,32 +1824,32 @@ class AdminController extends Controller
         }
 
         PaymentMethod::create([
-            'name' => $request->name,
-            'account_name' => $request->account_name,
-            'account_number' => $request->account_number,
-            'account_email' => $request->account_email,
+            'name' => $data['name'],
+            'account_name' => $data['account_name'],
+            'account_number' => $data['account_number'],
+            'account_email' => $data['account_email'],
             'qr_code' => $qr_code ?? null
         ]);
     }
 
     public function UpdatePaymentMethod(Request $request)
     {
-        $payment = PaymentMethod::findOrFail($request->id);
+        $payment = PaymentMethod::findOrFail($request->input('id'));
 
-        $request->validate([
-            'name' => ['required', 'unique:payment_methods,name,' . $request->id],
+        $data = $request->validate([
+            'name' => ['required', 'unique:payment_methods,name,' . $request->input('id')],
             'account_name' => ['required'],
-            'account_email' => ['unique:payment_methods,account_email,' . $request->id],
+            'account_email' => ['unique:payment_methods,account_email,' . $request->input('id')],
         ]);
 
-        $payment->update([
-            'name' => $request->name,
-            'account_name' => $request->account_name,
-            'account_number' => $request->account_number,
-            'account_email' => $request->account_email,
+        $payment->query()->update([
+            'name' => $data['name'],
+            'account_name' => $data['account_name'],
+            'account_number' => $data['account_number'],
+            'account_email' => $data['account_email'],
         ]);
 
-        if ($request->have_qr === 'yes') {
+        if ($request->input('have_qr') === 'yes') {
             $request->validate([
                 'qr_code' => ['required']
             ]);
@@ -1894,7 +1873,7 @@ class AdminController extends Controller
 
                 $qr_code = $uploadedQrCode['secure_url'];
 
-                $payment->update([
+                $payment->query()->update([
                     'qr_code' => $qr_code
                 ]);
             }
@@ -1903,7 +1882,7 @@ class AdminController extends Controller
                 $publicId = pathinfo(parse_url($payment->qr_code, PHP_URL_PATH), PATHINFO_FILENAME);
                 Cloudinary::uploadApi()->destroy('ditads/payment_methods/qr_code/' . $publicId);
 
-                $payment->update([
+                $payment->query()->update([
                     'qr_code' => null,
                 ]);
             }
@@ -1922,25 +1901,25 @@ class AdminController extends Controller
 
     public function addSchool(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'name' => ['required', 'unique:schools'],
         ]);
 
         School::create([
-            'name' => $request->name,
+            'name' => $data['name'],
         ]);
     }
 
     public function updateSchool(Request $request)
     {
-        $school = School::findOrFail($request->id);
+        $school = School::findOrFail($request->input('id'));
 
-        $request->validate([
-            'name' => ['required', 'unique:schools,name,' . $request->id],
+        $data = $request->validate([
+            'name' => ['required', 'unique:schools,name,' . $request->input('id')],
         ]);
 
-        $school->update([
-            'name' => $request->name,
+        $school->query()->update([
+            'name' => $data['name'],
         ]);
     }
 
@@ -1955,25 +1934,25 @@ class AdminController extends Controller
 
     public function AddBookCategory(Request $request)
     {
-        $request->validate([
+        $data = $request->validate([
             'name' => ['required', 'unique:book_categories'],
         ]);
 
         BookCategory::create([
-            'name' => $request->name,
+            'name' => $data['name'],
         ]);
     }
 
     public function UpdateBookCategory(Request $request)
     {
-        $category = BookCategory::findOrFail($request->id);
+        $category = BookCategory::findOrFail($request->input('id'));
 
-        $request->validate([
-            'name' => ['required', 'unique:book_categories,name,' . $request->id],
+        $data = $request->validate([
+            'name' => ['required', 'unique:book_categories,name,' . $request->input('id')],
         ]);
 
-        $category->update([
-            'name' => $request->name,
+        $category->query()->update([
+            'name' => $data['name'],
         ]);
     }
 }
