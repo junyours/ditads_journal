@@ -275,7 +275,7 @@ export default function BookPublication() {
                         {books.data.map((book) => (
                             <TableRow key={book.id}>
                                 <TableCell>
-                                    <div className="size-8">
+                                    <div className="size-12">
                                         <img
                                             src={book.cover_page}
                                             alt="cover_page"
@@ -283,8 +283,8 @@ export default function BookPublication() {
                                         />
                                     </div>
                                 </TableCell>
-                                <TableCell>{book.soft_isbn}</TableCell>
-                                <TableCell>{book.hard_isbn}</TableCell>
+                                <TableCell className="text-nowrap">{book.soft_isbn}</TableCell>
+                                <TableCell className="text-nowrap">{book.hard_isbn}</TableCell>
                                 <TableCell>{book.title}</TableCell>
                                 <TableCell className="whitespace-nowrap">
                                     {formatDate(book.published_at)}
