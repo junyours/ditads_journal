@@ -137,7 +137,7 @@ class AdminController extends Controller
             'department' => ['required'],
         ]);
 
-        $editor->query()->update([
+        $editor->update([
             'name' => $data['name'],
             'email' => $data['email'],
             'position' => $data['position'],
@@ -184,7 +184,7 @@ class AdminController extends Controller
 
                 $avatarUrl = "https://drive.google.com/thumbnail?id={$fileId}";
 
-                $editor->query()->update([
+                $editor->update([
                     'avatar' => $avatarUrl,
                     'file_id' => $fileId,
                 ]);
@@ -274,7 +274,7 @@ class AdminController extends Controller
             'department' => ['required'],
         ]);
 
-        $consultant->query()->update([
+        $consultant->update([
             'name' => $data['name'],
             'email' => $data['email'],
             'position' => $data['position'],
@@ -321,7 +321,7 @@ class AdminController extends Controller
 
                 $avatarUrl = "https://drive.google.com/thumbnail?id={$fileId}";
 
-                $consultant->query()->update([
+                $consultant->update([
                     'avatar' => $avatarUrl,
                     'file_id' => $fileId
                 ]);
@@ -405,7 +405,7 @@ class AdminController extends Controller
             'name' => ['required']
         ]);
 
-        $author->query()->update([
+        $author->update([
             'name' => $data['name'],
             'email' => $data['email'],
         ]);
@@ -450,7 +450,7 @@ class AdminController extends Controller
 
                 $avatarUrl = "https://drive.google.com/thumbnail?id={$fileId}";
 
-                $author->query()->update([
+                $author->update([
                     'avatar' => $avatarUrl,
                     'file_id' => $fileId
                 ]);
@@ -654,7 +654,7 @@ class AdminController extends Controller
             // 'soft_price.required' => 'The soft bound price field is required.'
         ]);
 
-        $book->query()->update([
+        $book->update([
             'title' => $data['title'],
             'soft_isbn' => $data['soft_isbn'],
             'hard_isbn' => $data['hard_isbn'],
@@ -710,7 +710,7 @@ class AdminController extends Controller
 
                 $coverPageUrl = "https://drive.google.com/thumbnail?id={$coverFileId}";
 
-                $book->query()->update([
+                $book->update([
                     'cover_page' => $coverPageUrl,
                     'cover_file_id' => $coverFileId
                 ]);
@@ -755,7 +755,7 @@ class AdminController extends Controller
 
                 Http::withToken($accessToken)->delete("https://www.googleapis.com/drive/v3/files/{$book->pdf_file}");
 
-                $book->query()->update([
+                $book->update([
                     'pdf_file' => $newPdfFileId,
                 ]);
             }
@@ -797,7 +797,7 @@ class AdminController extends Controller
 
                 Http::withToken($accessToken)->delete("https://www.googleapis.com/drive/v3/files/{$book->overview_pdf_file}");
 
-                $book->query()->update([
+                $book->update([
                     'overview_pdf_file' => $newOverviewPdfFileId,
                 ]);
             }
@@ -806,7 +806,7 @@ class AdminController extends Controller
 
     public function linkAuthorBook(Request $request)
     {
-        AuthorBook::query()->where('book_publication_id', $request->input('book_id'))->delete();
+        AuthorBook::where('book_publication_id', $request->input('book_id'))->delete();
 
         foreach ($request->input('author_id') as $authorId) {
             AuthorBook::create(attributes: [
@@ -927,7 +927,7 @@ class AdminController extends Controller
             'published_at' => ['required'],
         ]);
 
-        $magazine->query()->update([
+        $magazine->update([
             'volume' => $data['volume'],
             'issue' => $data['issue'],
             'published_at' => Carbon::parse($data['published_at'])
@@ -975,7 +975,7 @@ class AdminController extends Controller
 
                 $coverPageUrl = "https://drive.google.com/thumbnail?id={$coverFileId}";
 
-                $magazine->query()->update([
+                $magazine->update([
                     'cover_page' => $coverPageUrl,
                     'cover_file_id' => $coverFileId
                 ]);
@@ -1020,7 +1020,7 @@ class AdminController extends Controller
 
                 Http::withToken($accessToken)->delete("https://www.googleapis.com/drive/v3/files/{$magazine->pdf_file}");
 
-                $magazine->query()->update([
+                $magazine->update([
                     'pdf_file' => $newPdfFileId,
                 ]);
             }
@@ -1218,7 +1218,7 @@ class AdminController extends Controller
             }
         }
 
-        $journal->query()->update([
+        $journal->update([
             'volume' => $data['volume'],
             'issue' => $data['issue'],
             'title' => $data['title'],
@@ -1242,7 +1242,7 @@ class AdminController extends Controller
             Http::withToken($accessToken)->delete("https://www.googleapis.com/drive/v3/files/{$journal->pdf_file}");
         }
 
-        $journal->query()->delete();
+        $journal->delete();
     }
 
     public function event()
@@ -1322,7 +1322,7 @@ class AdminController extends Controller
             'date' => ['required'],
         ]);
 
-        $event->query()->update([
+        $event->update([
             'title' => $data['title'],
             'content' => $data['contents'],
             'date' => Carbon::parse($data['date'])
@@ -1370,7 +1370,7 @@ class AdminController extends Controller
 
                 $imageUrl = "https://drive.google.com/thumbnail?id={$imageFileId}";
 
-                $event->query()->update([
+                $event->update([
                     'image' => $imageUrl,
                     'image_file_id' => $imageFileId,
                 ]);
@@ -1393,7 +1393,7 @@ class AdminController extends Controller
 
     public function trainingApplicant($event_name)
     {
-        $training = CooperativeTraining::query()->where('event_name', $event_name)
+        $training = CooperativeTraining::where('event_name', $event_name)
             ->with('applicant_training.applicant')
             ->firstOrFail();
 
@@ -1411,7 +1411,7 @@ class AdminController extends Controller
     {
         $applicant = ApplicantTraining::findOrFail($id);
 
-        $applicant->query()->update([
+        $applicant->update([
             'status' => 'approved'
         ]);
     }
@@ -1448,7 +1448,7 @@ class AdminController extends Controller
             'to_date' => ['required'],
         ]);
 
-        $training->query()->update([
+        $training->update([
             'event_name' => $data['event_name'],
             'description' => $data['description'],
             'from_date' => Carbon::parse($data['from_date'])
@@ -1464,7 +1464,7 @@ class AdminController extends Controller
     {
         $search = $request->input('search');
 
-        $journals = JournalMonitoring::query()->when($search, function ($query, $search) {
+        $journals = JournalMonitoring::when($search, function ($query, $search) {
             $query->where('submission', 'like', "%{$search}%");
         })
             ->paginate(10);
@@ -1603,7 +1603,7 @@ class AdminController extends Controller
             }
         }
 
-        $journal->query()->update([
+        $journal->update([
             'submission' => $data['submission'],
             'institution' => $data['institution'],
             'paper_type' => $data['paper_type'],
@@ -1625,7 +1625,7 @@ class AdminController extends Controller
     {
         $search = $request->input('search');
 
-        $books = BookMonitoring::query()->when($search, function ($query, $search) {
+        $books = BookMonitoring::when($search, function ($query, $search) {
             $query->where('book_title', 'like', "%{$search}%");
         })
             ->paginate(10);
@@ -1774,7 +1774,7 @@ class AdminController extends Controller
             }
         }
 
-        $book->query()->update([
+        $book->update([
             'book_title' => $data['book_title'],
             'chapter' => $data['chapter'],
             'chapter_title' => $data['chapter_title'],
@@ -1842,7 +1842,7 @@ class AdminController extends Controller
             'account_email' => ['unique:payment_methods,account_email,' . $request->input('id')],
         ]);
 
-        $payment->query()->update([
+        $payment->update([
             'name' => $data['name'],
             'account_name' => $data['account_name'],
             'account_number' => $data['account_number'],
@@ -1873,7 +1873,7 @@ class AdminController extends Controller
 
                 $qr_code = $uploadedQrCode['secure_url'];
 
-                $payment->query()->update([
+                $payment->update([
                     'qr_code' => $qr_code
                 ]);
             }
@@ -1882,7 +1882,7 @@ class AdminController extends Controller
                 $publicId = pathinfo(parse_url($payment->qr_code, PHP_URL_PATH), PATHINFO_FILENAME);
                 Cloudinary::uploadApi()->destroy('ditads/payment_methods/qr_code/' . $publicId);
 
-                $payment->query()->update([
+                $payment->update([
                     'qr_code' => null,
                 ]);
             }
@@ -1918,7 +1918,7 @@ class AdminController extends Controller
             'name' => ['required', 'unique:schools,name,' . $request->input('id')],
         ]);
 
-        $school->query()->update([
+        $school->update([
             'name' => $data['name'],
         ]);
     }
@@ -1951,7 +1951,7 @@ class AdminController extends Controller
             'name' => ['required', 'unique:book_categories,name,' . $request->input('id')],
         ]);
 
-        $category->query()->update([
+        $category->update([
             'name' => $data['name'],
         ]);
     }
